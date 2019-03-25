@@ -113,6 +113,7 @@ import com.android.camera.ui.PanoCaptureProcessView;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.ApiHelper;
 import com.android.camera.util.CameraUtil;
+import com.android.camera.util.FeatureHelper;
 import com.android.camera.util.GcamHelper;
 import com.android.camera.util.IntentHelper;
 import com.android.camera.util.PersistUtil;
@@ -2079,6 +2080,10 @@ public class CameraActivity extends Activity
     }
 
     protected void initPowerShutter(ComboPreferences prefs) {
+        if (!FeatureHelper.isPowerShutterSupported(this)) {
+            return;
+        }
+
         String val = prefs.getString(CameraSettings.KEY_POWER_SHUTTER,
                 getResources().getString(R.string.pref_camera_power_shutter_default));
         if (!CameraUtil.hasCameraKey()) {
