@@ -218,6 +218,7 @@ public class CameraActivity extends Activity
     private ImageView mThumbnail;
     private UpdateThumbnailTask mUpdateThumbnailTask;
     private CircularDrawable mThumbnailDrawable;
+    private Bitmap mThumbnailBitmap;
     private Cursor mCursor;
 
     private WakeLock mWakeLock;
@@ -668,6 +669,10 @@ public class CameraActivity extends Activity
 
     public void updateThumbnail(final Bitmap bitmap) {
         if (bitmap == null) return;
+        if (mThumbnailBitmap != null) {
+            mThumbnailBitmap.recycle();
+        }
+        mThumbnailBitmap = bitmap;
         mThumbnailDrawable = new CircularDrawable(bitmap);
         if (mThumbnail != null) {
             mThumbnail.setImageDrawable(mThumbnailDrawable);
@@ -844,6 +849,9 @@ public class CameraActivity extends Activity
                 matrix.setRotate(orientation);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0,
                         bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+            }
+            if (decoder != null) {
+                decoder.recycle();
             }
             return bitmap;
         }
