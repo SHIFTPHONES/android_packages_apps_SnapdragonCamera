@@ -133,7 +133,7 @@ public class Camera2FaceView extends FaceView {
                 rh = temp;
             }
             if (rw * mCameraBound.width() != mCameraBound.height() * rh) {
-                if (rw == rh || (rh * 288 == rw * 352) || (rh * 480 == rw * 800)) {
+                if (rw == rh || (rh * 288 == rw * 352)) {
                     rh = rw * mCameraBound.width() / mCameraBound.height();
                 } else {
                     rw = rh * mCameraBound.height() / mCameraBound.width();
