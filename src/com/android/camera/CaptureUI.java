@@ -1228,6 +1228,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     public void showUIAfterCountDown() {
         hideCameraControls(false);
         mGestures.setZoomOnly(false);
+        updateMenus();
     }
 
     public void hideCameraControls(boolean hide) {
