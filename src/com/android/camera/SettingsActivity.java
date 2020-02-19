@@ -112,6 +112,12 @@ public class SettingsActivity extends PreferenceActivity {
             for (String dependentKey : list) {
                 updatePreferenceButton(dependentKey);
             }
+            if (key.equals(SettingsManager.KEY_CAPTURE_MFNR_VALUE) ) {
+                if(isMFNREnabled()){
+                    ListPreference manualexp = (ListPreference) findPreference(SettingsManager.KEY_MANUAL_EXPOSURE);
+                    manualexp.setEnabled(false);
+                }
+            }
         }
     };
 
@@ -169,6 +175,16 @@ public class SettingsActivity extends PreferenceActivity {
         }
     };
 
+    public boolean isMFNREnabled() {
+        boolean mfnrEnable = false;
+        if (mSettingsManager != null) {
+            String mfnrValue = mSettingsManager.getValue(SettingsManager.KEY_CAPTURE_MFNR_VALUE);
+            if (mfnrValue != null) {
+                mfnrEnable = mfnrValue.equals("1");
+            }
+        }
+        return mfnrEnable;
+    }
 
     /**
      * This method is to enable or disable the option which is conflict with changed setting
