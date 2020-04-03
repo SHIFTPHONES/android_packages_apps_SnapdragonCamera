@@ -879,8 +879,23 @@ public class SettingsActivity extends PreferenceActivity {
     private void restoreSettings() {
         mSettingsManager.restoreSettings();
         filterPreferences();
+        restoreAllPreference();
         initializePreferences();
 
         Toast.makeText(this, R.string.toast_settings_restored, Toast.LENGTH_SHORT).show();
+    }
+
+    private void restoreAllPreference(){
+        Map<String, SettingsManager.Values> map = mSettingsManager.getValuesMap();
+        if (map == null) return;
+        Set<Map.Entry<String, SettingsManager.Values>> set = map.entrySet();
+
+        for (Map.Entry<String, SettingsManager.Values> entry : set) {
+            String key = entry.getKey();
+            Preference p = findPreference(key);
+            if (p == null) continue;
+
+            p.setEnabled(true);
+        }
     }
 }
