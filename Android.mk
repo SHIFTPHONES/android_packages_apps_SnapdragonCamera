@@ -34,19 +34,19 @@ LOCAL_STATIC_JAVA_AAR_LIBRARIES += \
     qreader-core \
     qreader-zxing
 
-LOCAL_JAVA_LIBRARIES := org.lineageos.platform.internal
+LOCAL_JAVA_LIBRARIES := com.shiftos.platform.internal
 
-LOCAL_PACKAGE_NAME := Snap
+LOCAL_PACKAGE_NAME := SnapdragonCamera
 LOCAL_PRIVILEGED_MODULE := true
 LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_CERTIFICATE := platform
 
-LOCAL_AAPT_FLAGS += --rename-manifest-package org.lineageos.snap
+#LOCAL_AAPT_FLAGS += --rename-manifest-package com.shiftos.snap
 
 #LOCAL_SDK_VERSION := current
 LOCAL_RENDERSCRIPT_TARGET_API := 23
 
-LOCAL_OVERRIDES_PACKAGES := Camera2
+LOCAL_OVERRIDES_PACKAGES := Camera2 Snap
 
 LOCAL_PRODUCT_MODULE := true
 
@@ -62,12 +62,12 @@ else
   LOCAL_REQUIRED_MODULES := libjni_snapmosaic libjni_snaptinyplanet libjni_snapimageutil
 endif
 
-LOCAL_REQUIRED_MODULES += privapp_whitelist_org.lineageos.snap.xml
+LOCAL_REQUIRED_MODULES += privapp_whitelist_org.codeaurora.snapcam.xml
 
 include $(BUILD_PACKAGE)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := privapp_whitelist_org.lineageos.snap.xml
+LOCAL_MODULE := privapp_whitelist_org.codeaurora.snapcam.xml
 LOCAL_MODULE_CLASS := ETC
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_PRODUCT_ETC)/permissions
