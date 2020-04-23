@@ -297,9 +297,8 @@ public class Storage {
             File dir = new File(SDCard.instance().getDirectory());
             dir.mkdirs();
             try {
-                StatFs stat = new StatFs(SDCard.instance().getDirectory());
-                long ret = stat.getAvailableBlocks() * (long) stat.getBlockSize();
-                return ret;
+                final StatFs stat = new StatFs(SDCard.instance().getDirectory());
+                return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
             } catch (Exception e) {
             }
             return UNKNOWN_SIZE;
@@ -324,8 +323,8 @@ public class Storage {
         }
 
         try {
-            StatFs stat = new StatFs(DIRECTORY);
-            return stat.getAvailableBlocks() * (long) stat.getBlockSize();
+            final StatFs stat = new StatFs(DIRECTORY);
+            return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (Exception e) {
             Log.i(TAG, "Failed to access external storage", e);
         }
