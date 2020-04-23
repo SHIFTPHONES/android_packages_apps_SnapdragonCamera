@@ -6568,7 +6568,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         if(DEBUG) Log.d(TAG, "applyFlash: " + value);
         String redeye = mSettingsManager.getValue(SettingsManager.KEY_REDEYE_REDUCTION);
         mIsAutoFlash = false;
-        if (redeye != null && redeye.equals("on") && !mLongshotActive) {
+        if (redeye != null && redeye.equals("on") && !mLongshotActive && !isHDREnable()) {
             request.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
         } else {
@@ -6608,7 +6608,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             return;
         }
         String redeye = mSettingsManager.getValue(SettingsManager.KEY_REDEYE_REDUCTION);
-        if (redeye != null && redeye.equals("on") && !mLongshotActive) {
+        if (redeye != null && redeye.equals("on") && !mLongshotActive && !isHDREnable()) {
             Log.w(TAG, "redeye mode is on, can't set android.flash.mode");
             return;
         }
