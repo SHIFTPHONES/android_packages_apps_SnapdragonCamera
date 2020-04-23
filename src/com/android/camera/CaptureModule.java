@@ -5845,16 +5845,12 @@ public class CaptureModule implements CameraModule, PhotoController,
             SECONDARY_SERVER_MEM = memInfo.secondaryServerThreshold;
         }
 
-        long totalMemory = Runtime.getRuntime().totalMemory();
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        long remainMemory = maxMemory - totalMemory;
-
         MemInfoReader reader = new MemInfoReader();
         reader.readMemInfo();
         long[] info = reader.getRawInfo();
         long availMem = (info[Debug.MEMINFO_FREE] + info[Debug.MEMINFO_CACHED]) * 1024;
 
-        if (availMem <= SECONDARY_SERVER_MEM || remainMemory <= LONGSHOT_CANCEL_THRESHOLD) {
+        if (availMem <= SECONDARY_SERVER_MEM || availMem <= LONGSHOT_CANCEL_THRESHOLD) {
             Log.e(TAG, "cancel longshot: free=" + info[Debug.MEMINFO_FREE] * 1024
                     + " cached=" + info[Debug.MEMINFO_CACHED] * 1024
                     + " threshold=" + SECONDARY_SERVER_MEM);
