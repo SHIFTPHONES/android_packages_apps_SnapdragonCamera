@@ -889,6 +889,8 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     }
 
     private boolean needShowInstructional() {
+        return false;
+        /*
         boolean needShow = true;
         final SharedPreferences pref = mActivity.getSharedPreferences(
                 ComboPreferences.getGlobalSharedPreferencesName(mActivity), Context.MODE_PRIVATE);
@@ -901,7 +903,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         }
 
         return needShow;
-
+        */
     }
 
     private void showSceneInstructionalDialog(int orientation) {
