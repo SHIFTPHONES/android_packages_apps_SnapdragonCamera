@@ -866,7 +866,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
             } else {
                 mFlashButton.init(true);
             }
-            mVideoButton.setImageResource(R.drawable.video_stop);
+            mVideoButton.setImageResource(R.drawable.shutter_button_video_stop);
             mRecordingTimeView.setText("00:00");
             mRecordingTimeRect.setVisibility(View.VISIBLE);
             mMuteButton.setVisibility(View.VISIBLE);

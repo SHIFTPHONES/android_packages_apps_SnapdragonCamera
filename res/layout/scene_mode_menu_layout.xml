@@ -30,17 +30,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/blur"
-    android:padding="5dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/close_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:padding="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/x" />
+        android:padding="4dp"
+        android:src="@drawable/ic_custom_close" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
@@ -59,11 +58,13 @@
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/setting_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
+        android:padding="8dp"
+        android:layout_margin="4dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/settings" />
+        android:background="@drawable/bg_custom_icon"
+        android:src="@drawable/ic_custom_settings" />
 </RelativeLayout>

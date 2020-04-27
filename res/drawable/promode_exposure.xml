@@ -28,6 +28,6 @@
     -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true" android:state_pressed="false"
-          android:drawable="@drawable/icon_exposure_blue" />
-    <item android:drawable="@drawable/icon_exposure" />
+          android:drawable="@drawable/ic_custom_exposure_tint" />
+    <item android:drawable="@drawable/ic_custom_exposure" />
 </selector>

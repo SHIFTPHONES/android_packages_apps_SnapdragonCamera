@@ -19,11 +19,11 @@
     <style name="Theme.ProxyLauncher" parent="@android:Theme.Translucent.NoTitleBar">
     </style>
 
-    <style name="Theme.OneUISettings" parent="@android:style/Theme.Material.Light.NoActionBar.Fullscreen">
-        <item name="android:colorAccent">#5999e1</item>
+    <style name="Theme.OneUISettings" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:colorAccent">#feb705</item>
     </style>
-    <style name="Theme.Settings" parent="@android:style/Theme.Material.Light">
-        <item name="android:colorAccent">#5999e1</item>
+    <style name="Theme.Settings" parent="@android:style/Theme.Material">
+        <item name="android:colorAccent">#feb705</item>
     </style>
 
     <style name="Theme.Camera" parent="Theme.CameraBase">
@@ -270,10 +270,9 @@
         <item name="android:scaleType">center</item>
     </style>
     <style name="OneUIMenuButton">
-        <item name="android:layout_width">45dp</item>
-        <item name="android:layout_height">45dp</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:padding">12dp</item>
     </style>
     <style name="MenuIndicator">
         <item name="android:layout_width">wrap_content</item>

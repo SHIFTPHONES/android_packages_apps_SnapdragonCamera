@@ -192,21 +192,21 @@
     </string-array>
 
     <array name="pref_camera2_scenemode_thumbnails" translatable="false">
-        <item>@drawable/auto</item>
-        <item>@drawable/hdr</item>
-        <item>@drawable/hdr</item>
-        <item>@drawable/ubifocus</item>
+        <item>@drawable/ic_custom_camera</item>
+        <item>@drawable/ic_custom_hdr_on</item>
+        <item>@drawable/ic_custom_hdr_on</item>
+        <item>@drawable/ic_custom_focus</item>
         <item>@drawable/optizoom</item>
-        <item>@drawable/portrait</item>
-        <item>@drawable/landscape</item>
-        <item>@drawable/sports</item>
+        <item>@drawable/ic_custom_portrait</item>
+        <item>@drawable/ic_custom_landscape</item>
+        <item>@drawable/ic_custom_sports</item>
         <item>@drawable/flower</item>
         <item>@drawable/backlight</item>
-        <item>@drawable/candlelight</item>
-        <item>@drawable/sunset</item>
-        <item>@drawable/night</item>
-        <item>@drawable/beach</item>
-        <item>@drawable/snow</item>
+        <item>@drawable/ic_custom_candlelight</item>
+        <item>@drawable/ic_custom_sunny</item>
+        <item>@drawable/ic_custom_night</item>
+        <item>@drawable/ic_custom_beach</item>
+        <item>@drawable/ic_custom_snow</item>
         <item>@drawable/ic_scene_mode_smartauto</item>
         <item>@drawable/pick_the_best_photo</item>
         <item>@drawable/chroma_flash</item>
@@ -214,9 +214,9 @@
         <item>@drawable/sharp_photo</item>
         <item>@drawable/tracking_focus</item>
         <item>@drawable/scene_panorama</item>
-        <item>@drawable/promode</item>
+        <item>@drawable/ic_custom_pro</item>
         <item>@drawable/sharp_photo</item>
-	<item>@drawable/deep_portrait</item>
+        <item>@drawable/ic_custom_portrait</item>
     </array>
 
     <array name="pref_camera2_scenemode_black_thumbnails" translatable="false">
@@ -302,19 +302,19 @@
     </string-array>
 
     <array name="pref_camera2_whitebalance_icons" translatable="false">
-        <item>@drawable/ic_wb_auto</item>
-        <item>@drawable/ic_wb_incandescent</item>
-        <item>@drawable/ic_wb_fluorescent</item>
-        <item>@drawable/ic_wb_sunlight</item>
-        <item>@drawable/ic_wb_cloudy</item>
+        <item>@drawable/ic_custom_wb_incandescent</item>
+        <item>@drawable/ic_custom_wb_iridescent</item>
+        <item>@drawable/ic_custom_wb_auto</item>
+        <item>@drawable/ic_custom_wb_sunny</item>
+        <item>@drawable/ic_custom_wb_cloudy</item>
     </array>
 
     <array name="pref_camera2_whitebalance_largeicons" translatable="false">
-        <item>@drawable/ic_wb_incandescent</item>
-        <item>@drawable/ic_wb_fluorescent</item>
-        <item>@drawable/ic_wb_auto</item>
-        <item>@drawable/ic_wb_sunlight</item>
-        <item>@drawable/ic_wb_cloudy</item>
+        <item>@drawable/ic_custom_wb_incandescent</item>
+        <item>@drawable/ic_custom_wb_iridescent</item>
+        <item>@drawable/ic_custom_wb_auto</item>
+        <item>@drawable/ic_custom_wb_sunny</item>
+        <item>@drawable/ic_custom_wb_cloudy</item>
     </array>
 
     <!-- Refer to CONTROL_EFFECT_MODE of Camera2 API for values

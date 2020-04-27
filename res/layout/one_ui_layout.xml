@@ -20,6 +20,7 @@
     android:id="@+id/camera_controls"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
@@ -78,7 +79,7 @@
         android:focusable="true"
         android:scaleType="fitCenter"
         android:visibility="gone"
-        android:src="@drawable/ic_menu_cancel_holo_light" />
+        android:src="@drawable/ic_custom_close" />
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/preview_thumb"
@@ -91,20 +92,20 @@
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/exit_best_mode"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:clickable="true"
         android:contentDescription="@string/accessibility_exit_best_mode_button"
         android:focusable="true"
         android:layout_gravity="top|left"
-        android:scaleType="fitCenter"
-        android:src="@drawable/x"
+        android:padding="4dp"
+        android:src="@drawable/ic_custom_close"
         android:visibility="gone"/>
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/front_back_switcher"
         style="@style/OneUIMenuButton"
-        android:src="@drawable/front_back_camera" />
+        android:src="@drawable/ic_custom_flip_camera" />
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/hdr_switcher"
@@ -113,12 +114,12 @@
     <com.android.camera.ui.RotateImageView
         android:id="@+id/scene_mode_switcher"
         style="@style/OneUIMenuButton"
-        android:src="@drawable/more_options" />
+        android:src="@drawable/ic_custom_more" />
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/filter_mode_switcher"
         style="@style/OneUIMenuButton"
-        android:src="@drawable/filters" />
+        android:src="@drawable/ic_custom_filter" />
 
     <com.android.camera.ui.RotateImageView
         android:id="@+id/ts_makeup_switcher"
@@ -152,10 +153,9 @@
 
     <ImageView
         android:id="@+id/promode_close_button"
-        android:layout_height="20dp"
-        android:layout_width="20dp"
-        android:src="@drawable/icon_x" />
-
+        android:layout_height="36dp"
+        android:layout_width="36dp"
+        android:src="@drawable/ic_custom_close" />
 
     <SeekBar
         android:layout_width="320dp"

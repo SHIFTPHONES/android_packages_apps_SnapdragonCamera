@@ -227,17 +227,17 @@
     </string-array>
 
     <array name="camera_flashmode_icons" translatable="false">
-        <item>@drawable/ic_flash_off</item>
-        <item>@drawable/ic_flash_auto</item>
-        <item>@drawable/ic_flash_on</item>
-        <item>@drawable/ic_flash_redeye_holo_light</item>
+        <item>@drawable/ic_custom_flash_off</item>
+        <item>@drawable/ic_custom_flash_auto</item>
+        <item>@drawable/ic_custom_flash_on</item>
+        <item>@drawable/ic_custom_red_eye</item>
     </array>
 
     <array name="camera_flashmode_largeicons" translatable="false">
-        <item>@drawable/ic_flash_off</item>
-        <item>@drawable/ic_flash_auto</item>
-        <item>@drawable/ic_flash_on</item>
-        <item>@drawable/ic_flash_redeye_holo_light</item>
+        <item>@drawable/ic_custom_flash_off</item>
+        <item>@drawable/ic_custom_flash_auto</item>
+        <item>@drawable/ic_custom_flash_on</item>
+        <item>@drawable/ic_custom_red_eye</item>
     </array>
 
     <!-- Videocamera Preferences flash mode dialog box entries -->
@@ -257,13 +257,13 @@
     </string-array>
 
     <array name="video_flashmode_icons" translatable="false">
-        <item>@drawable/ic_flash_off</item>
-        <item>@drawable/ic_flash_on</item>
+        <item>@drawable/ic_custom_flash_off</item>
+        <item>@drawable/ic_custom_flash_on</item>
     </array>
 
     <array name="video_flashmode_largeicons" translatable="false">
-        <item>@drawable/ic_flash_off</item>
-        <item>@drawable/ic_flash_on</item>
+        <item>@drawable/ic_custom_flash_off</item>
+        <item>@drawable/ic_custom_flash_on</item>
     </array>
 
     <string-array name="pref_camera_recordlocation_entryvalues" translatable="false">
@@ -282,13 +282,13 @@
     </array>
 
     <array name="camera_recordlocation_icons" translatable="false">
-        <item>@drawable/ic_location_off</item>
-        <item>@drawable/ic_location</item>
+        <item>@drawable/ic_custom_location_off</item>
+        <item>@drawable/ic_custom_location</item>
     </array>
 
     <array name="camera_recordlocation_largeicons" translatable="false">
-        <item>@drawable/ic_location_off</item>
-        <item>@drawable/ic_location</item>
+        <item>@drawable/ic_custom_location_off</item>
+        <item>@drawable/ic_custom_location</item>
     </array>
 
     <!-- Camera Preferences White Balance dialog box entries -->
@@ -317,27 +317,27 @@
     </string-array>
 
     <array name="whitebalance_icons" translatable="false">
-        <item>@drawable/ic_wb_incandescent</item>
-        <item>@drawable/ic_wb_fluorescent</item>
-        <item>@drawable/ic_wb_auto</item>
-        <item>@drawable/ic_wb_sunlight</item>
-        <item>@drawable/ic_wb_cloudy</item>
+        <item>@drawable/ic_custom_wb_incandescent</item>
+        <item>@drawable/ic_custom_wb_iridescent</item>
+        <item>@drawable/ic_custom_wb_auto</item>
+        <item>@drawable/ic_custom_wb_sunny</item>
+        <item>@drawable/ic_custom_wb_cloudy</item>
     </array>
 
     <array name="whitebalance_largeicons" translatable="false">
-        <item>@drawable/ic_wb_incandescent</item>
-        <item>@drawable/ic_wb_fluorescent</item>
-        <item>@drawable/ic_wb_auto</item>
-        <item>@drawable/ic_wb_sunlight</item>
-        <item>@drawable/ic_wb_cloudy</item>
+        <item>@drawable/ic_custom_wb_incandescent</item>
+        <item>@drawable/ic_custom_wb_iridescent</item>
+        <item>@drawable/ic_custom_wb_auto</item>
+        <item>@drawable/ic_custom_wb_sunny</item>
+        <item>@drawable/ic_custom_wb_cloudy</item>
     </array>
 
     <array name="camera_wb_indicators" translatable="false">
-        <item>@drawable/ic_indicator_wb_tungsten</item>
-        <item>@drawable/ic_indicator_wb_fluorescent</item>
-        <item>@drawable/ic_indicator_wb_off</item>
-        <item>@drawable/ic_indicator_wb_daylight</item>
-        <item>@drawable/ic_indicator_wb_cloudy</item>
+        <item>@drawable/ic_custom_wb_incandescent</item>
+        <item>@drawable/ic_custom_wb_iridescent</item>
+        <item>@drawable/ic_custom_wb_auto</item>
+        <item>@drawable/ic_custom_wb_sunny</item>
+        <item>@drawable/ic_custom_wb_cloudy</item>
     </array>
 
     <string-array name="pref_camera_chromaflash_entries" translatable="false">
@@ -409,24 +409,24 @@
     </string-array>
 
     <array name="scenemode_thumbnails" translatable="false">
-        <item>@drawable/ic_scene_mode_auto</item>
-        <item>@drawable/ic_scene_mode_hdr</item>
-        <item>@drawable/ic_scene_mode_refocus</item>
+        <item>@drawable/ic_custom_camera</item>
+        <item>@drawable/ic_custom_hdr_on</item>
+        <item>@drawable/ic_custom_focus</item>
         <item>@drawable/ic_scene_mode_optizoom</item>
         <item>@drawable/ic_scene_mode_action</item>
         <item>@drawable/ic_scene_mode_entry_antimotionblur</item>
         <item>@drawable/ic_scene_mode_entry_aqua</item>
         <item>@drawable/ic_scene_mode_entry_ar</item>
         <item>@drawable/ic_scene_mode_entry_baby</item>
-        <item>@drawable/ic_scene_mode_entry_backgroundblur</item>
+        <item>@drawable/ic_custom_blur</item>
         <item>@drawable/ic_scene_mode_backlight</item>
         <item>@drawable/ic_scene_mode_backlight</item>
         <item>@drawable/ic_scene_mode_entry_backlightportrait</item>
         <item>@drawable/ic_scene_mode_entry_backlightportrait</item>
         <item>@drawable/ic_scene_mode_entry_barcode</item>
-        <item>@drawable/ic_scene_mode_beach</item>
+        <item>@drawable/ic_custom_beach</item>
         <item>@drawable/ic_scene_mode_entry_beauty</item>
-        <item>@drawable/ic_scene_mode_candlelight</item>
+        <item>@drawable/ic_custom_candlelight</item>
         <item>@drawable/ic_scene_mode_entry_cine</item>
         <item>@drawable/ic_scene_mode_entry_closeup</item>
         <item>@drawable/ic_scene_mode_entry_dark</item>
@@ -439,24 +439,24 @@
         <item>@drawable/ic_scene_mode_entry_handheldtwilight</item>
         <item>@drawable/ic_scene_mode_entry_highsensitivity</item>
         <item>@drawable/ic_scene_mode_entry_indoor</item>
-        <item>@drawable/ic_scene_mode_landscape</item>
+        <item>@drawable/ic_custom_landscape</item>
         <item>@drawable/ic_scene_mode_entry_macro</item>
         <item>@drawable/ic_scene_mode_entry_mix_illuminant</item>
         <item>@drawable/ic_scene_mode_entry_mood</item>
-        <item>@drawable/ic_scene_mode_entry_night</item>
+        <item>@drawable/ic_custom_night</item>
         <item>@drawable/ic_scene_mode_entry_nightportrait</item>
         <item>@drawable/ic_scene_mode_entry_nightportrait</item>
         <item>@drawable/ic_scene_mode_entry_nightindoor</item>
         <item>@drawable/ic_scene_mode_entry_oldfilm</item>
         <item>@drawable/ic_scene_mode_party</item>
         <item>@drawable/ic_scene_mode_pet</item>
-        <item>@drawable/ic_scene_mode_portrait</item>
-        <item>@drawable/ic_scene_mode_snow</item>
+        <item>@drawable/ic_custom_portrait</item>
+        <item>@drawable/ic_custom_snow</item>
         <item>@drawable/ic_scene_mode_softskin</item>
-        <item>@drawable/ic_scene_mode_sports</item>
+        <item>@drawable/ic_custom_sports</item>
         <item>@drawable/ic_scene_mode_entry_spotlight</item>
         <item>@drawable/ic_scene_mode_entry_steadyphoto</item>
-        <item>@drawable/ic_scene_mode_sunset</item>
+        <item>@drawable/ic_custom_sunny</item>
         <item>@drawable/ic_scene_mode_entry_supernight</item>
         <item>@drawable/ic_scene_mode_entry_sweepstitch</item>
         <item>@drawable/ic_scene_mode_entry_text</item>
@@ -549,13 +549,13 @@
     </array>
 
     <array name="camera_id_icons" translatable="false">
-        <item>@drawable/ic_switch_back</item>
-        <item>@drawable/ic_switch_front</item>
+        <item>@drawable/ic_custom_flip_camera</item>
+        <item>@drawable/ic_custom_flip_camera</item>
     </array>
 
     <array name="camera_id_largeicons" translatable="false">
-        <item>@drawable/ic_switch_back</item>
-        <item>@drawable/ic_switch_front</item>
+        <item>@drawable/ic_custom_flip_camera</item>
+        <item>@drawable/ic_custom_flip_camera</item>
     </array>
 
     <string-array name="pref_video_effect_entries" translatable="false">
@@ -608,8 +608,8 @@
     </string-array>
 
     <string-array name="pref_camera_hdr_plus_icons" translatable="false">
-        <item>@drawable/ic_hdr_plus_disabled</item>
-        <item>@drawable/ic_hdr_plus_normal</item>
+        <item>@drawable/ic_custom_hdr_off</item>
+        <item>@drawable/ic_custom_hdr_on</item>
     </string-array>
 
     <string-array name="pref_camera_hdr_plus_entryvalues" translatable="false">
@@ -629,8 +629,8 @@
     </string-array>
 
     <string-array name="pref_camera_hdr_icons" translatable="false">
-        <item>@drawable/ic_hdr_off</item>
-        <item>@drawable/ic_hdr</item>
+        <item>@drawable/ic_custom_hdr_off</item>
+        <item>@drawable/ic_custom_hdr_on</item>
     </string-array>
 
     <string-array name="pref_camera_hdr_entryvalues" translatable="false">

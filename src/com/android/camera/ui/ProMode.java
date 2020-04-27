@@ -58,13 +58,23 @@ public class ProMode extends View {
     public static final int ISO_MODE = 3;
     private static final int DRAG_Y_THRESHOLD = 100;
     private static final int DRAG_X_THRESHOLD = 30;
-    private static final int BLUE = 0xff4693fb;
+    private static final int BLUE = 0xfffeb705;
     private static final int SELECTED_DOT_SIZE = 20;
     private static final int DOT_SIZE = 10;
-    private static final int[] wbIcons = {R.drawable.auto, R.drawable.incandecent,
-            R.drawable.fluorescent, R.drawable.sunlight, R.drawable.cloudy};
-    private static final int[] wbIconsBlue = {R.drawable.auto_blue, R.drawable.incandecent_blue,
-            R.drawable.fluorescent_blue, R.drawable.sunlight_blue, R.drawable.cloudy_blue};
+    private static final int[] wbIcons = {
+        R.drawable.ic_custom_wb_auto,
+        R.drawable.ic_custom_wb_incandescent,
+        R.drawable.ic_custom_wb_iridescent,
+        R.drawable.ic_custom_wb_sunny,
+        R.drawable.ic_custom_wb_cloudy
+    };
+    private static final int[] wbIconsBlue = {
+        R.drawable.ic_custom_wb_auto_tint,
+        R.drawable.ic_custom_wb_incandescent_tint,
+        R.drawable.ic_custom_wb_iridescent_tint,
+        R.drawable.ic_custom_wb_sunny_tint,
+        R.drawable.ic_custom_wb_cloudy_tint
+        };
     private static final int WB_ICON_SIZE = 80;
     private PathMeasure mCurveMeasure;
     private int mCurveLeft;
