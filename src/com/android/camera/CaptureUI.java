@@ -774,7 +774,8 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
             return;
         }
         removeFilterMenu(false);
-        Intent intent = new Intent(mActivity, SettingsActivity.class);
+        Intent intent = new Intent(mActivity, SceneModeActivity.class);
+        intent.putExtra(CameraUtil.KEY_IS_SECURE_CAMERA, mActivity.isSecureCamera());
         mActivity.startActivity(intent);
     }
 
