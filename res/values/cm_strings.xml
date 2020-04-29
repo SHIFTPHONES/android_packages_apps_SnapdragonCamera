@@ -31,7 +31,7 @@
          NOTE: for Chinese (zh) and Korean (ko) the pixel number (parameter two)
          will be multiplied by 100 as those languages want to count by ten thousands -->
     <string name="pref_camera_megapixel_format">(<xliff:g id="ratio" example="16:9">%1$s</xliff:g>) <xliff:g id="pixels">%2$1.1f</xliff:g> megapixels</string>
- 
+
     <!-- Settings screen, scene mode -->
     <string name="pref_camera_scenemode_entry_antimotionblur">Motion blur reduction</string>
     <string name="pref_camera_scenemode_entry_aqua">Aqua</string>
@@ -149,4 +149,6 @@
     <string name="developer_menu_disabled">You have disabled advanced camera options</string>
     <string name="pref_camera2_preferences_category_developer">Advanced options</string>
 
+    <!-- Quick reader -->
+    <string name="pref_camera_scenemode_entry_quickreader">QuickReader</string>
 </resources>

@@ -252,6 +252,7 @@
             android:defaultValue="false"
             android:key="version_info"
             android:summary="Version"
+            android:icon="@drawable/bg_custom_empty"
             android:title="@string/perf_camera2_version_info" />
         -->
     </PreferenceCategory>

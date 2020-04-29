@@ -37,5 +37,5 @@
         android:layout_height="wrap_content"
         android:columnWidth="@dimen/scene_mode_width"
         android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"></GridView>
+        android:stretchMode="spacingWidthUniform"></GridView>
 </LinearLayout>

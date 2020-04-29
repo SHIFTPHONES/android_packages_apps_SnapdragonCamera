@@ -53,6 +53,8 @@ import com.android.camera.ui.DotsViewItem;
 import com.android.camera.ui.RotateImageView;
 import com.android.camera.util.CameraUtil;
 
+import org.lineageos.quickreader.ScannerActivity;
+
 public class SceneModeActivity extends Activity {
     private ViewPager mPager;
     private View mCloseButton;
@@ -149,6 +151,13 @@ public class SceneModeActivity extends Activity {
                 startActivity(intent);
                 finish();
             }
+        });
+
+        final Intent scannerIntent = new Intent(this, ScannerActivity.class);
+        final View scannerButton = findViewById(R.id.qr_scanner_button);
+        scannerButton.setOnClickListener((v) -> {
+            startActivity(scannerIntent);
+            finish();
         });
     }
 
