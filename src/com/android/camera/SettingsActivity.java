@@ -758,7 +758,6 @@ public class SettingsActivity extends PreferenceActivity {
             p.setEnabled(false);
         }
 
-        /*
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             int index = versionName.indexOf(' ');
@@ -767,7 +766,6 @@ public class SettingsActivity extends PreferenceActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        */
     }
 
     private void updateVideoHDRPreference() {
