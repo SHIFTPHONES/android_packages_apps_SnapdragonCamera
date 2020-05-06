@@ -971,7 +971,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         @Override
         public void onOpened(CameraDevice cameraDevice) {
             int id = Integer.parseInt(cameraDevice.getId());
-            Log.d(TAG, "onOpened " + id);
+            if (DEBUG) {
+                Log.d(TAG, "onOpened " + id);
+            }
             mCameraOpenCloseLock.release();
             if (mPaused) {
                 return;
@@ -998,7 +1000,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         @Override
         public void onDisconnected(CameraDevice cameraDevice) {
             int id = Integer.parseInt(cameraDevice.getId());
-            Log.d(TAG, "onDisconnected " + id);
+            if (DEBUG) {
+                Log.d(TAG, "onDisconnected " + id);
+            }
             cameraDevice.close();
             mCameraDevice[id] = null;
             mCameraOpenCloseLock.release();
@@ -1024,7 +1028,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         @Override
         public void onClosed(CameraDevice cameraDevice) {
             int id = Integer.parseInt(cameraDevice.getId());
-            Log.d(TAG, "onClosed " + id);
+            if (DEBUG) {
+                Log.d(TAG, "onClosed " + id);
+            }
             mCameraDevice[id] = null;
             mCameraOpenCloseLock.release();
             mCamerasOpened = false;
@@ -1045,7 +1051,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                 break;
             }
             case STATE_WAITING_AF_LOCK: {
-                Log.d(TAG, "STATE_WAITING_AF_LOCK id: " + id + " afState:" + afState + " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_WAITING_AF_LOCK id: " + id + " afState:" + afState + " aeState:" + aeState);
+                }
 
                 // AF_PASSIVE is added for continous auto focus mode
                 if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
@@ -1081,7 +1089,9 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
             case STATE_WAITING_PRECAPTURE: {
                 // CONTROL_AE_STATE can be null on some devices
-                Log.d(TAG, "STATE_WAITING_PRECAPTURE id: " + id + " afState: " + afState + " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_WAITING_PRECAPTURE id: " + id + " afState: " + afState + " aeState:" + aeState);
+                }
                 if (aeState == null ||
                         aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
                         aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED ||
@@ -1106,18 +1116,24 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
             case STATE_WAITING_AE_LOCK: {
                 // CONTROL_AE_STATE can be null on some devices
-                Log.d(TAG, "STATE_WAITING_AE_LOCK id: " + id + " afState: " + afState + " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_WAITING_AE_LOCK id: " + id + " afState: " + afState + " aeState:" + aeState);
+                }
                 if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_LOCKED) {
                     checkAfAeStatesAndCapture(id);
                 }
                 break;
             }
             case STATE_AF_AE_LOCKED: {
-                Log.d(TAG, "STATE_AF_AE_LOCKED id: " + id + " afState:" + afState + " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_AF_AE_LOCKED id: " + id + " afState:" + afState + " aeState:" + aeState);
+                }
                 break;
             }
             case STATE_WAITING_TOUCH_FOCUS: {
-                Log.d(TAG, "STATE_WAITING_TOUCH_FOCUS id: " + id + " afState:" + afState + " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_WAITING_TOUCH_FOCUS id: " + id + " afState:" + afState + " aeState:" + aeState);
+                }
                 try {
                     if (mIsAutoFocusStarted) {
                         if (mIsCanceled && mSetAePrecaptureTriggerIdel == 1) {
@@ -1158,8 +1174,10 @@ public class CaptureModule implements CameraModule, PhotoController,
                 break;
             }
             case STATE_WAITING_AF_AE_LOCK: {
-                Log.d(TAG, "STATE_WAITING_AF_AE_LOCK id: " + id + " afState: " + afState +
-                        " aeState:" + aeState);
+                if (DEBUG) {
+                    Log.d(TAG, "STATE_WAITING_AF_AE_LOCK id: " + id + " afState: " + afState +
+                            " aeState:" + aeState);
+                }
                 if ((aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED)) {
                     if (isFlashOn(id)) {
                         // if flash is on and AE state is CONVERGED then lock AE
@@ -1523,7 +1541,9 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
     private void createSession(final int id) {
         if (mPaused || !mCameraOpened[id] || (mCameraDevice[id] == null)) return;
-        Log.d(TAG, "createSession " + id);
+        if (DEBUG) {
+            Log.d(TAG, "createSession " + id);
+        }
         List<Surface> list = new LinkedList<Surface>();
         try {
             // We set up a CaptureRequest.Builder with the output Surface.
@@ -1992,7 +2012,7 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private void takeZSLPictureInHAL() {
-        Log.d(TAG, "takeHALZSLPicture");
+        Log.d(TAG, "takeZSLPictureInHAL");
         int cameraId = BAYER_ID;
         if (isBackCamera()) {
             switch (getCameraMode()) {
