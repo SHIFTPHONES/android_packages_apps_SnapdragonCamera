@@ -3829,7 +3829,10 @@ public class CaptureModule implements CameraModule, PhotoController,
                     mActivity.setResultEx(Activity.RESULT_OK);
                     mActivity.finish();
                 } catch (IOException ex) {
-                    // ignore exception
+                    Log.e(TAG, "Could not save picture to uri", ex);
+                    mActivity.setResultEx(Activity.RESULT_CANCELED);
+                    mActivity.finish();
+                    return;
                 } finally {
                     CameraUtil.closeSilently(outputStream);
                 }
@@ -3854,10 +3857,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                 tempStream.close();
                 tempUri = Uri.fromFile(path);
             } catch (FileNotFoundException ex) {
+                Log.e(TAG, "Could not save picture for cropping", ex);
                 mActivity.setResultEx(Activity.RESULT_CANCELED);
                 mActivity.finish();
                 return;
             } catch (IOException ex) {
+                Log.e(TAG, "Could not save picture for cropping", ex);
                 mActivity.setResultEx(Activity.RESULT_CANCELED);
                 mActivity.finish();
                 return;
