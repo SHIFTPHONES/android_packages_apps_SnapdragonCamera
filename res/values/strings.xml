@@ -249,16 +249,16 @@
     <string name="pref_video_quality_entry_4kdci" translatable="false">4k DCI</string>
     <!-- Video quality setting entry. Videos will be recorded in 4k UHD quality. [CHAR LIMIT=24] -->
     <string name="pref_video_quality_entry_2160p" translatable="false">4k UHD</string>
+    <!-- Video quality setting entry. Videos will be recorded in QHD quality. [CHAR LIMIT=24] -->
+    <string name="pref_video_quality_entry_qHD" translatable="false">QHD 1440p</string>
+    <!-- Video quality setting entry. Videos will be recorded in 2K quality. [CHAR LIMIT=24] -->
+    <string name="pref_video_quality_entry_2k" translatable="false">2k 1080p</string>
     <!-- Video quality setting entry. Videos will be recorded in 1080p quality. [CHAR LIMIT=24] -->
     <string name="pref_video_quality_entry_1080p" translatable="false">FHD 1080p</string>
     <!-- Video quality setting entry. Videos will be recorded in 720p quality. [CHAR LIMIT=24] -->
     <string name="pref_video_quality_entry_720p" translatable="false">HD 720p</string>
     <!-- Video quality setting entry. Videos will be recorded in 480p quality. [CHAR LIMIT=24] -->
     <string name="pref_video_quality_entry_480p" translatable="false">SD 480p</string>
-    <!-- Video quality setting entry. Videos will be recorded in QHD quality. [CHAR LIMIT=24] -->
-    <string name="pref_video_quality_entry_qHD" translatable="false">QHD</string>
-    <!-- Video quality setting entry. Videos will be recorded in 2K quality. [CHAR LIMIT=24] -->
-    <string name="pref_video_quality_entry_2k" translatable="false">2K</string>
 
     <!-- Describes the preference dialog for choosing interval between frame capture for
     time lapse recording. Appears at top of the dialog. [CHAR LIMIT=30] -->
