@@ -19,7 +19,7 @@
     <style name="Theme.ProxyLauncher" parent="@android:Theme.Translucent.NoTitleBar">
     </style>
 
-    <style name="Theme.OneUISettings" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+    <style name="Theme.OneUISettings" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:colorAccent">#feb705</item>
     </style>
     <style name="Theme.Settings" parent="@android:style/Theme.Material">
@@ -27,16 +27,11 @@
     </style>
 
     <style name="Theme.Camera" parent="Theme.CameraBase">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowTitleSize">0dp</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:colorBackgroundCacheHint">@android:color/black</item>
-        <item name="android:actionBarStyle">@style/Material.ActionBar</item>
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
-    <style name="Theme.CameraBase" parent="android:Theme.Material"/>
+    <style name="Theme.CameraBase" parent="android:Theme.Material.NoActionBar"/>
     <style name="Theme.Crop" parent="Theme.GalleryBase">
         <item name="android:displayOptions"></item>
         <item name="android:windowContentOverlay">@null</item>

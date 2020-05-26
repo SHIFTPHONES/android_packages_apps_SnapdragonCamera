@@ -586,9 +586,6 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int flag = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        Window window = getWindow();
-        window.setFlags(flag, flag);
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

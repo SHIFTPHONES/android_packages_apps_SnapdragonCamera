@@ -136,6 +136,9 @@ public class CameraActivity extends Activity
 
     private static final String TAG = "CAM_Activity";
 
+    // Set to true to force disable switching to fullscreen
+    private static final boolean FORCE_DISABLE_FULLSCREEN = true;
+
     private static final String INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE =
             "android.media.action.STILL_IMAGE_CAMERA_SECURE";
     public static final String ACTION_IMAGE_CAPTURE_SECURE =
@@ -675,6 +678,10 @@ public class CameraActivity extends Activity
      * will be sent after a timeout to hide the action bar.
      */
     private void setSystemBarsVisibility(boolean visible, boolean hideLater) {
+        if (FORCE_DISABLE_FULLSCREEN) {
+            return;
+        }
+
         mMainHandler.removeMessages(HIDE_ACTION_BAR);
 
         View decorView = getWindow().getDecorView();
