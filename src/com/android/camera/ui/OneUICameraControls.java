@@ -58,7 +58,6 @@ public class OneUICameraControls extends RotatableLayout {
     private View mTsMakeupSwitcher;
     private View mPreview;
     private View mSceneModeSwitcher;
-    private View mFilterModeSwitcher;
     private View mMakeupSeekBar;
     private View mMakeupSeekBarLowText;
     private View mMakeupSeekBarHighText;
@@ -156,7 +155,6 @@ public class OneUICameraControls extends RotatableLayout {
         mMute = findViewById(R.id.mute_button);
         mPreview = findViewById(R.id.preview_thumb);
         mSceneModeSwitcher = findViewById(R.id.scene_mode_switcher);
-        mFilterModeSwitcher = findViewById(R.id.filter_mode_switcher);
         mRemainingPhotos = (LinearLayout) findViewById(R.id.remaining_photos);
         mRemainingPhotosText = (TextView) findViewById(R.id.remaining_photos_text);
         mCancelButton = findViewById(R.id.cancel_button);
@@ -229,7 +227,7 @@ public class OneUICameraControls extends RotatableLayout {
         });
 
         mViews = new View[]{
-                mSceneModeSwitcher, mFilterModeSwitcher, mFrontBackSwitcher,
+                mSceneModeSwitcher, mFrontBackSwitcher,
                 mFlashButton,
                 mPreview, mVideoShutter, mPauseButton, mCancelButton
         };
@@ -335,17 +333,16 @@ public class OneUICameraControls extends RotatableLayout {
     private void setLocation(int w, int h) {
         int rotation = getUnifiedRotation();
         setLocation(mSceneModeSwitcher, true, 0);
-        setLocation(mFilterModeSwitcher, true, 1);
         if (mIsVideoMode) {
-            setLocation(mMute, true, 2);
-            setLocation(mFlashButton, true, 3);
+            setLocation(mMute, true, 0);
+            setLocation(mFlashButton, true, 1);
             setLocation(mPauseButton, false, 3.15f);
             setLocation(mShutter, false , 0.85f);
             setLocation(mVideoShutter, false, 2);
             setLocation(mExitBestPhotpMode ,false, 4);
         } else {
-            setLocation(mFrontBackSwitcher, true, 2);
-            setLocation(mFlashButton, true, 3);
+            setLocation(mFrontBackSwitcher, true, 1);
+            setLocation(mFlashButton, true, 2);
             if (mIntentMode == CaptureModule.INTENT_MODE_CAPTURE) {
                 setLocation(mShutter, false, 2);
                 setLocation(mCancelButton, false, 0.85f);
@@ -495,7 +492,7 @@ public class OneUICameraControls extends RotatableLayout {
     public void setOrientation(int orientation, boolean animation) {
         mOrientation = orientation;
         View[] views = {
-                mSceneModeSwitcher, mFilterModeSwitcher, mFrontBackSwitcher,
+                mSceneModeSwitcher, mFrontBackSwitcher,
                 mFlashButton, mPreview, mMute,
                 mMakeupSeekBarLowText, mMakeupSeekBarHighText,
                 mPauseButton, mExitBestPhotpMode

@@ -193,7 +193,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     private int mBottomMargin = 0;
     private ViewGroup mFilterLayout;
 
-    private View mFilterModeSwitcher;
     private View mSceneModeSwitcher;
     private View mFrontBackSwitcher;
     private ImageView mMakeupButton;
@@ -312,7 +311,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         mShutterButton = (ShutterButton) mRootView.findViewById(R.id.shutter_button);
         mVideoButton = (ImageView) mRootView.findViewById(R.id.video_button);
         mExitBestMode = (ImageView) mRootView.findViewById(R.id.exit_best_mode);
-        mFilterModeSwitcher = mRootView.findViewById(R.id.filter_mode_switcher);
         mSceneModeSwitcher = mRootView.findViewById(R.id.scene_mode_switcher);
         mFrontBackSwitcher = mRootView.findViewById(R.id.front_back_switcher);
         mMakeupButton = (ImageView) mRootView.findViewById(R.id.ts_makeup_switcher);
@@ -389,7 +387,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
                 mSettingsManager.setValue(SettingsManager.KEY_SCENE_MODE, "" + SettingsManager.SCENE_MODE_AUTO_INT);
             }
         });
-        initFilterModeButton();
         initSceneModeButton();
         initSwitchCamera();
         initFlashButton();
@@ -675,7 +672,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
 
     public void reInitUI() {
         initSceneModeButton();
-        initFilterModeButton();
         initFlashButton();
         setMakeupButtonIcon();
         showSceneModeLabel();
@@ -694,9 +690,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
             } else {
                 mSurfaceViewMono.setVisibility(View.GONE);
             }
-        }
-        if(mModule.isMFNREnabled() && mModule.getMainCameraId() ==  android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT){
-            mFilterModeSwitcher.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -823,24 +816,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
                 Intent intent = new Intent(mActivity, SceneModeActivity.class);
                 intent.putExtra(CameraUtil.KEY_IS_SECURE_CAMERA, mActivity.isSecureCamera());
                 mActivity.startActivity(intent);
-            }
-        });
-    }
-
-    public void initFilterModeButton() {
-        mFilterModeSwitcher.setVisibility(View.INVISIBLE);
-        String value = mSettingsManager.getValue(SettingsManager.KEY_COLOR_EFFECT);
-        if (value == null) return;
-
-        enableView(mFilterModeSwitcher, SettingsManager.KEY_COLOR_EFFECT);
-
-        mFilterModeSwitcher.setVisibility(View.VISIBLE);
-        mFilterModeSwitcher.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addFilterMode();
-                adjustOrientation();
-                updateMenus();
             }
         });
     }
@@ -1027,7 +1002,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         mSceneModeLabelRect.setVisibility(View.INVISIBLE);
         mDeepZoomModeRect.setVisibility(View.INVISIBLE);
         mFrontBackSwitcher.setVisibility(View.INVISIBLE);
-        mFilterModeSwitcher.setVisibility(View.INVISIBLE);
         mSceneModeSwitcher.setVisibility(View.INVISIBLE);
         String value = mSettingsManager.getValue(SettingsManager.KEY_MAKEUP);
         if(value != null && value.equals("0")) {
@@ -1040,7 +1014,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     public void showUIafterRecording() {
         mCameraControls.setVideoMode(false);
         mFrontBackSwitcher.setVisibility(View.VISIBLE);
-        mFilterModeSwitcher.setVisibility(View.VISIBLE);
         mSceneModeSwitcher.setVisibility(View.VISIBLE);
         mMakeupButton.setVisibility(View.GONE);
         mIsVideoUI = false;
@@ -1266,8 +1239,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         }
         if (mFrontBackSwitcher != null) mFrontBackSwitcher.setVisibility(status);
         if (mSceneModeSwitcher != null) mSceneModeSwitcher.setVisibility(status);
-        if (mFilterModeSwitcher != null) mFilterModeSwitcher.setVisibility(status);
-        if (mFilterModeSwitcher != null) mFilterModeSwitcher.setVisibility(status);
         if (mMakeupButton != null) mMakeupButton.setVisibility(View.GONE);
     }
 
@@ -1362,7 +1333,6 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         if(!BeautificationFilter.isSupportedStatic()) {
             mMakeupButton.setVisibility(View.GONE);
         }
-        mFilterModeSwitcher.setEnabled(enableFilterMenu);
         mSceneModeSwitcher.setEnabled(enableSceneMenu);
     }
 
@@ -1753,9 +1723,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     @Override
     public void onSettingsChanged(List<SettingsManager.SettingState> settings) {
         for( SettingsManager.SettingState state : settings) {
-            if (state.key.equals(SettingsManager.KEY_COLOR_EFFECT)) {
-                enableView(mFilterModeSwitcher, SettingsManager.KEY_COLOR_EFFECT);
-            } else if (state.key.equals(SettingsManager.KEY_SCENE_MODE)) {
+            if (state.key.equals(SettingsManager.KEY_SCENE_MODE)) {
                 String value = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
                 if ( value.equals("104") ) {//panorama
                     mSceneModeLabelRect.setVisibility(View.GONE);

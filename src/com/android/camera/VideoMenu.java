@@ -81,7 +81,6 @@ public class VideoMenu extends MenuController
     private static final int DEVELOPER_MENU_TOUCH_COUNT = 7;
     private int mSceneStatus;
     private View mFrontBackSwitcher;
-    private View mFilterModeSwitcher;
     private int mPopupStatus;
     private int mPreviewMenuStatus;
     private CameraActivity mActivity;
@@ -101,7 +100,6 @@ public class VideoMenu extends MenuController
         mUI = ui;
         mActivity = activity;
         mFrontBackSwitcher = ui.getRootView().findViewById(R.id.front_back_switcher);
-        mFilterModeSwitcher = ui.getRootView().findViewById(R.id.filter_mode_switcher);
     }
 
     public void initialize(PreferenceGroup group) {
@@ -110,7 +108,6 @@ public class VideoMenu extends MenuController
         mListSubMenu = null;
         mPopupStatus = POPUP_NONE;
         mPreviewMenuStatus = POPUP_NONE;
-        initFilterModeButton(mFilterModeSwitcher);
         // settings popup
         mOtherKeys1 = new String[] {
                 CameraSettings.KEY_VIDEOCAMERA_FLASH_MODE,
@@ -527,7 +524,6 @@ public class VideoMenu extends MenuController
         if (pref == null || pref.getValue() == null)
             return;
 
-        changeFilterModeControlIcon(pref.getValue());
         button.setVisibility(View.VISIBLE);
         button.setOnClickListener(new OnClickListener() {
             @Override
@@ -628,7 +624,6 @@ public class VideoMenu extends MenuController
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         if (System.currentTimeMillis() - startTime < CLICK_THRESHOLD) {
                             pref.setValueIndex(j);
-                            changeFilterModeControlIcon(pref.getValue());
                             for (View v1 : views) {
                                 v1.setActivated(v1 == v);
                             }
@@ -649,22 +644,6 @@ public class VideoMenu extends MenuController
         }
         previewMenuLayout.addView(basic);
         mPreviewMenu = basic;
-    }
-
-    private void changeFilterModeControlIcon(String value) {
-        if(!value.equals("")) {
-            if(value.equalsIgnoreCase("none")) {
-                value = "Off";
-            } else {
-                value = "On";
-            }
-            final IconListPreference pref = (IconListPreference) mPreferenceGroup
-                    .findPreference(CameraSettings.KEY_FILTER_MODE);
-            pref.setValue(value);
-            int index = pref.getCurrentIndex();
-            ImageView iv = (ImageView) mFilterModeSwitcher;
-            iv.setImageResource(((IconListPreference) pref).getLargeIconIds()[index]);
-        }
     }
 
     public void openFirstLevel() {
@@ -748,7 +727,7 @@ public class VideoMenu extends MenuController
             mPrevSavedVideoCDS = cds;
         }
 
-        if ((tnr != null) && !tnr.equals("off")) { 
+        if ((tnr != null) && !tnr.equals("off")) {
             mListMenu.setPreferenceEnabled(
                     CameraSettings.KEY_VIDEO_CDS_MODE,false);
             mListMenu.overrideSettings(
@@ -865,16 +844,10 @@ public class VideoMenu extends MenuController
 
     public void hideUI() {
         mFrontBackSwitcher.setVisibility(View.INVISIBLE);
-        mFilterModeSwitcher.setVisibility(View.INVISIBLE);
     }
 
     public void showUI() {
         mFrontBackSwitcher.setVisibility(View.VISIBLE);
-        final IconListPreference pref = (IconListPreference) mPreferenceGroup
-                .findPreference(CameraSettings.KEY_FILTER_MODE);
-        if (pref != null) {
-            mFilterModeSwitcher.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
