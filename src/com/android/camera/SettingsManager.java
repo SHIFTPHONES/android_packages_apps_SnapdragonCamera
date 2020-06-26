@@ -220,6 +220,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
 
     private static final String TAG = "SnapCam_SettingsManager";
 
+    private static final ArrayList<Integer> SHIFT_SUPPORTED_SCENES = new ArrayList<>();
+
     private static SettingsManager sInstance;
     private ArrayList<CameraCharacteristics> mCharacteristics;
     private ArrayList<Listener> mListeners;
@@ -261,6 +263,12 @@ public class SettingsManager implements ListMenu.SettingsListener {
         h265.add("HEVCProfileMain10");
         h265.add("HEVCProfileMain10HDR10");
         VIDEO_ENCODER_PROFILE_TABLE.put("h265", h265);
+        SHIFT_SUPPORTED_SCENES.add(3);
+        SHIFT_SUPPORTED_SCENES.add(4);
+        SHIFT_SUPPORTED_SCENES.add(9);
+        SHIFT_SUPPORTED_SCENES.add(10);
+        SHIFT_SUPPORTED_SCENES.add(15);
+        SHIFT_SUPPORTED_SCENES.add(18);
     }
 
     private SettingsManager(Context context) {
@@ -1911,7 +1919,10 @@ public class SettingsManager implements ListMenu.SettingsListener {
         if (DeepPortraitFilter.isSupportedStatic()) modes.add(SCENE_MODE_DEEPPORTRAIT_INT+"");
         modes.add("" + SCENE_MODE_PROMODE_INT);
         for (int mode : sceneModes) {
-            modes.add("" + mode);
+            // TODO: remove this hack and fix reported scenes in the HAL
+            if (SHIFT_SUPPORTED_SCENES.contains(mode)) {
+                modes.add("" + mode);
+            }
         }
         return modes;
     }
