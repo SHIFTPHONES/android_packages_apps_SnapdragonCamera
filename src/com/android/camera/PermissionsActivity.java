@@ -28,7 +28,6 @@ public class PermissionsActivity extends Activity {
     private int mIndexPermissionRequestStorageRead;
     private boolean mShouldRequestCameraPermission;
     private boolean mShouldRequestMicrophonePermission;
-    private boolean mShouldRequestFineLocationPermission;
     private boolean mShouldRequestStoragePermission;
     private int mNumPermissionsToRequest;
     private boolean mFlagHasCameraPermission;
@@ -78,12 +77,6 @@ public class PermissionsActivity extends Activity {
             mFlagHasStoragePermission = true;
         }
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            mNumPermissionsToRequest++;
-            mShouldRequestFineLocationPermission = true;
-        }
-
         if (mNumPermissionsToRequest != 0) {
             buildPermissionsRequest();
         } else {
@@ -115,10 +108,6 @@ public class PermissionsActivity extends Activity {
             mIndexPermissionRequestStorageRead = permissionsRequestIndex;
             permissionsRequestIndex++;
 
-        }
-        if (mShouldRequestFineLocationPermission) {
-            permissionsToRequest[permissionsRequestIndex] =
-                    Manifest.permission.ACCESS_FINE_LOCATION;
         }
         requestPermissions(permissionsToRequest, PERMISSION_REQUEST_CODE);
     }
