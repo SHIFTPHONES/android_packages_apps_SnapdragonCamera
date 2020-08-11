@@ -24,12 +24,10 @@ public class PermissionsActivity extends Activity {
 
     private int mIndexPermissionRequestCamera;
     private int mIndexPermissionRequestMicrophone;
-    private int mIndexPermissionRequestLocation;
     private int mIndexPermissionRequestStorageWrite;
     private int mIndexPermissionRequestStorageRead;
     private boolean mShouldRequestCameraPermission;
     private boolean mShouldRequestMicrophonePermission;
-    private boolean mShouldRequestLocationPermission;
     private boolean mShouldRequestFineLocationPermission;
     private boolean mShouldRequestStoragePermission;
     private int mNumPermissionsToRequest;
@@ -83,11 +81,6 @@ public class PermissionsActivity extends Activity {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             mNumPermissionsToRequest++;
-            mShouldRequestLocationPermission = true;
-        }
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            mNumPermissionsToRequest++;
             mShouldRequestFineLocationPermission = true;
         }
 
@@ -122,12 +115,6 @@ public class PermissionsActivity extends Activity {
             mIndexPermissionRequestStorageRead = permissionsRequestIndex;
             permissionsRequestIndex++;
 
-        }
-        if (mShouldRequestLocationPermission) {
-            permissionsToRequest[permissionsRequestIndex] =
-                    Manifest.permission.ACCESS_FINE_LOCATION;
-            mIndexPermissionRequestLocation = permissionsRequestIndex;
-            permissionsRequestIndex++;
         }
         if (mShouldRequestFineLocationPermission) {
             permissionsToRequest[permissionsRequestIndex] =
@@ -167,16 +154,6 @@ public class PermissionsActivity extends Activity {
                 mFlagHasStoragePermission = true;
             } else {
                 mCriticalPermissionDenied = true;
-            }
-        }
-
-        if (mShouldRequestLocationPermission) {
-            if ((grantResults.length >= mIndexPermissionRequestLocation + 1) &&
-                (grantResults[mIndexPermissionRequestLocation] ==
-                        PackageManager.PERMISSION_GRANTED)) {
-                // Do nothing
-            } else {
-                // Do nothing
             }
         }
 
