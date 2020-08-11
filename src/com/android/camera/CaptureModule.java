@@ -1914,7 +1914,9 @@ public class CaptureModule implements CameraModule, PhotoController,
             mCropValue = myExtras.getString("crop");
             mUseFrontCamera = myExtras.getBoolean("android.intent.extra.USE_FRONT_CAMERA", false) ||
                     myExtras.getBoolean("com.google.assistant.extra.USE_FRONT_CAMERA", false);
-            mTimer = myExtras.getInt("android.intent.extra.TIMER_DURATION_SECONDS", 0);
+
+            mTimer = myExtras.getInt("android.intent.extra.TIMER_DURATION_SECONDS",
+                    myExtras.getInt("com.google.assistant.extra.TIMER_DURATION_SECONDS", 0));
             Log.d(TAG, "mUseFrontCamera :" + mUseFrontCamera + ", mTimer :" + mTimer);
         }
     }
