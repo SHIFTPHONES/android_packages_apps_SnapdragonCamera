@@ -222,6 +222,8 @@ public class CaptureModule implements CameraModule, PhotoController,
     private static final int STATE_WAITING_AF_LOCKING = 7;
     private static final int STATE_WAITING_AF_AE_LOCK = 8;
     private static final String TAG = "SnapCam_CaptureModule";
+    private static final String INTENT_CATEGORY_VOICE =
+            "android.intent.category.VOICE";
 
     // Used for check memory status for longshot mode
     // Currently, this cancel threshold selection is based on test experiments,
@@ -1896,6 +1898,14 @@ public class CaptureModule implements CameraModule, PhotoController,
 
         mFocusStateListener = new FocusStateListener(mUI);
         mLocationManager = new LocationManager(mActivity, this);
+
+        // if launched by voice interaction, take picture
+        // - https://developers.google.com/voice-actions/interaction/voice-interactions
+        if (mActivity.isVoiceInteractionRoot() ||
+                mActivity.getIntent().hasCategory(INTENT_CATEGORY_VOICE)) {
+            // add delay to allow the camera to setup
+            mHandler.postDelayed(this::onShutterButtonClick, 500);
+        }
     }
 
     private void initModeByIntent() {
