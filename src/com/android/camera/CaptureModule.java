@@ -1904,7 +1904,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         if (mActivity.isVoiceInteractionRoot() ||
                 mActivity.getIntent().hasCategory(INTENT_CATEGORY_VOICE)) {
             // add delay to allow the camera to setup
-            mHandler.postDelayed(this::onShutterButtonClick, 500);
+            mHandler.postDelayed(this::onShutterButtonClick, 3000);
         }
     }
 
