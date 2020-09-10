@@ -1657,7 +1657,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 byte bsgc_available = mCharacteristics.get(id).get(CaptureModule.bsgcAvailable);
                 ret = bsgc_available == 1;
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             e.printStackTrace();
         }
         return ret;
@@ -1668,7 +1668,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
         try {
             byte fastModeSupport = mCharacteristics.get(id).get(CaptureModule.fs_mode_support);
             result = (fastModeSupport == 1);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             e.printStackTrace();
         }
         return result;
