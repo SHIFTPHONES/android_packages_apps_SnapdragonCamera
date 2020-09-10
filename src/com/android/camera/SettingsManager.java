@@ -286,32 +286,45 @@ public class SettingsManager implements ListMenu.SettingsListener {
             String[] cameraIdList = manager.getCameraIdList();
             boolean isFirstBackCameraId = true;
             for (int i = 0; i < cameraIdList.length; i++) {
-                String cameraId = cameraIdList[i];
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(cameraId);
-                Log.d(TAG,"cameraIdList size ="+cameraIdList.length);
+                final String cameraId = cameraIdList[i];
+                Log.d(TAG,"cameraIdList size = " + cameraIdList.length);
+
+                final CameraCharacteristics characteristics;
+                try {
+                    characteristics = manager.getCameraCharacteristics(cameraId);
+                } catch (Exception exc) {
+                    Log.w(TAG, "Could not obtain camera characteristics for cameraId: " + cameraId + ", skipping", exc);
+                    continue;
+                }
+
                 byte monoOnly = 0;
                 try {
                     monoOnly = characteristics.get(CaptureModule.MetaDataMonoOnlyKey);
-                }catch(Exception e) {
+                } catch(Exception ignored) {
+                    // ignored
                 }
                 if (monoOnly == 1) {
                     CaptureModule.MONO_ID = i;
                     mIsMonoCameraPresent = true;
                 }
-                int facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                int facing = 0;
+                try {
+                    facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                } catch (Exception ignored) {
+                    // ignored
+                }
+                if (facing == CameraMetadata.LENS_FACING_FRONT) {
                     CaptureModule.FRONT_ID = i;
                     mIsFrontCameraPresent = true;
-                } else if (facing == CameraCharacteristics.LENS_FACING_BACK &&
-                        isFirstBackCameraId) {
+                } else if (facing == CameraMetadata.LENS_FACING_BACK && isFirstBackCameraId) {
                     isFirstBackCameraId = false;
                     upgradeCameraId(mPreferences.getGlobal(), i);
                 }
+
                 mCharacteristics.add(i, characteristics);
             }
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Could not properly initialize SettingsManager", e);
         }
 
         mDependency = parseJson("dependency.json");
