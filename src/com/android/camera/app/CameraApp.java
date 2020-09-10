@@ -16,7 +16,6 @@
 
 package com.android.camera.app;
 
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
@@ -26,30 +25,24 @@ import com.android.camera.util.UsageStatistics;
 import com.android.camera.SettingsManager;
 
 public class CameraApp extends Application {
-    private static long mMaxSystemMemory;
-    public static boolean mIsLowMemoryDevice = false;
-    private static final long LOW_MEMORY_DEVICE_THRESHOLD = 2L*1024*1024*1024;
     private static Application mApp = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mApp = this;
-        ActivityManager actManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
-        actManager.getMemoryInfo(memInfo);
-        mMaxSystemMemory = memInfo.totalMem;
-        if(mMaxSystemMemory <= LOW_MEMORY_DEVICE_THRESHOLD) {
-            mIsLowMemoryDevice = true;
-        }
+        CameraApp.setApplication(this);
+
         SettingsManager.createInstance(this);
         UsageStatistics.initialize(this);
         CameraUtil.initialize(this);
         SDCard.initialize(this);
     }
 
+    private static void setApplication(final Application application) {
+        mApp = application;
+    }
+
     public static Context getContext() {
         return mApp.getApplicationContext();
     }
 }
-

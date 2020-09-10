@@ -23,6 +23,7 @@ import java.util.Locale;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1069,6 +1070,7 @@ public class PhotoMenu extends MenuController
             label.setText(entries[i]);
             layout.addView(layout2);
 
+            final ActivityManager activityManager = mActivity.getSystemService(ActivityManager.class);
             // ASD only available when developer options are enabled.
             if(entryValues[i].equals("asd")) {
                 layout2.setVisibility(mActivity.isDeveloperMenuEnabled()?View.VISIBLE:View.GONE);
@@ -1077,7 +1079,7 @@ public class PhotoMenu extends MenuController
                 if (autoHdrPref != null && autoHdrPref.getValue().equalsIgnoreCase("enable")) {
                     layout2.setVisibility(View.GONE);
                 }
-            } else if(CameraApp.mIsLowMemoryDevice &&
+            } else if(activityManager.isLowRamDevice() &&
                     (entryValues[i].equals(mActivity.getResources().getString(R.string.pref_camera_advanced_feature_value_refocus_on))
                             ||
                      entryValues[i].equals(mActivity.getResources().getString(R.string.pref_camera_advanced_feature_value_optizoom_on)))) {
