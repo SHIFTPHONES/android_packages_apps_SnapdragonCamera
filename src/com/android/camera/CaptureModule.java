@@ -469,6 +469,8 @@ public class CaptureModule implements CameraModule, PhotoController,
     private boolean mExistAWBVendorTag = true;
     private boolean mExistAECWarmTag = true;
 
+    private static final int VOICE_LAUNCH_TIMER = 3;
+
     private static final long SDCARD_SIZE_LIMIT = 4000 * 1024 * 1024L;
     private static final String sTempCropFilename = "crop-temp";
     private static final int REQUEST_CROP = 1000;
@@ -1904,8 +1906,12 @@ public class CaptureModule implements CameraModule, PhotoController,
         final boolean isFromVoice = mActivity.isVoiceInteractionRoot() ||
                 mActivity.getIntent().hasCategory(INTENT_CATEGORY_VOICE);
         if (isFromVoice && !mOpenCameraOnly) {
+            Log.d(TAG, "Requested capture via voice launch");
+
+            // set up timer for the capture
+            mTimer = VOICE_LAUNCH_TIMER;
             // add delay to allow the camera to setup
-            mHandler.postDelayed(this::onShutterButtonClick, 3000);
+            mHandler.postDelayed(this::onShutterButtonClick, 1000);
         }
     }
 
@@ -3657,11 +3663,7 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private void loadSoundPoolResource() {
-        String timer = mSettingsManager.getValue(SettingsManager.KEY_TIMER);
-        int seconds = Integer.parseInt(timer);
-        if (seconds > 0) {
-            mUI.initCountDownView();
-        }
+        mUI.initCountDownView();
     }
 
     @Override
