@@ -1657,8 +1657,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 byte bsgc_available = mCharacteristics.get(id).get(CaptureModule.bsgcAvailable);
                 ret = bsgc_available == 1;
             }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+            // key not supported, ignore it
         }
         return ret;
     }
@@ -1668,8 +1668,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
         try {
             byte fastModeSupport = mCharacteristics.get(id).get(CaptureModule.fs_mode_support);
             result = (fastModeSupport == 1);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+            // key not supported, ignore it
         }
         return result;
     }
