@@ -479,6 +479,7 @@ public class CaptureModule implements CameraModule, PhotoController,
     private Uri mSaveUri;
     private boolean mQuickCapture;
     private boolean mUseFrontCamera;
+    private boolean mOpenCameraOnly;
     private int mTimer;
     private byte[] mJpegImageData;
     private boolean mSaveRaw = false;
@@ -1899,17 +1900,23 @@ public class CaptureModule implements CameraModule, PhotoController,
         mFocusStateListener = new FocusStateListener(mUI);
         mLocationManager = new LocationManager(mActivity, this);
 
-        // if launched by voice interaction, take picture
-        // - https://developers.google.com/voice-actions/interaction/voice-interactions
-        if (mActivity.isVoiceInteractionRoot() ||
-                mActivity.getIntent().hasCategory(INTENT_CATEGORY_VOICE)) {
+        // https://developers.google.com/voice-actions/interaction/voice-interactions
+        final boolean isFromVoice = mActivity.isVoiceInteractionRoot() ||
+                mActivity.getIntent().hasCategory(INTENT_CATEGORY_VOICE);
+        if (isFromVoice && !mOpenCameraOnly) {
             // add delay to allow the camera to setup
             mHandler.postDelayed(this::onShutterButtonClick, 3000);
         }
     }
 
     private void initModeByIntent() {
-        String action = mActivity.getIntent().getAction();
+        final Intent intent = mActivity.getIntent();
+        if (intent == null) {
+            Log.w(TAG, "Intent is null, can not configure stuff without it");
+            return;
+        }
+
+        final String action = intent.getAction();
         if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)) {
             mIntentMode = INTENT_MODE_CAPTURE;
         } else if (CameraActivity.ACTION_IMAGE_CAPTURE_SECURE.equals(action)) {
@@ -1917,17 +1924,30 @@ public class CaptureModule implements CameraModule, PhotoController,
         } else if (MediaStore.ACTION_VIDEO_CAPTURE.equals(action)) {
             mIntentMode = INTENT_MODE_VIDEO;
         }
-        mQuickCapture = mActivity.getIntent().getBooleanExtra(EXTRA_QUICK_CAPTURE, true);
-        Bundle myExtras = mActivity.getIntent().getExtras();
+
+        final Bundle myExtras = intent.getExtras();
         if (myExtras != null) {
+            final StringBuilder debugStringBuilder = new StringBuilder();
+
             mSaveUri = (Uri) myExtras.getParcelable(MediaStore.EXTRA_OUTPUT);
             mCropValue = myExtras.getString("crop");
+
+            mQuickCapture = myExtras.getBoolean(EXTRA_QUICK_CAPTURE, true);
+            debugStringBuilder.append("mQuickCapture: ").append(mQuickCapture);
+
             mUseFrontCamera = myExtras.getBoolean("android.intent.extra.USE_FRONT_CAMERA", false) ||
                     myExtras.getBoolean("com.google.assistant.extra.USE_FRONT_CAMERA", false);
+            debugStringBuilder.append(", mUseFrontCamera: ").append(mUseFrontCamera);
+
+            mOpenCameraOnly = myExtras.getBoolean("android.intent.extra.CAMERA_OPEN_ONLY", false) ||
+                    myExtras.getBoolean("com.google.assistant.extra.CAMERA_OPEN_ONLY", false);
+            debugStringBuilder.append(", mOpenCameraOnly: ").append(mOpenCameraOnly);
 
             mTimer = myExtras.getInt("android.intent.extra.TIMER_DURATION_SECONDS",
                     myExtras.getInt("com.google.assistant.extra.TIMER_DURATION_SECONDS", 0));
-            Log.d(TAG, "mUseFrontCamera :" + mUseFrontCamera + ", mTimer :" + mTimer);
+            debugStringBuilder.append(", mTimer: ").append(mTimer);
+
+            Log.d(TAG, debugStringBuilder.toString());
         }
     }
 
