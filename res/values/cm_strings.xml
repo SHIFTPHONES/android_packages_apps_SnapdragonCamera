@@ -60,6 +60,7 @@
     <string name="pref_camera_scenemode_entry_highsensitivity">High sensitivity</string>
     <string name="pref_camera_scenemode_entry_indoor">Indoor</string>
     <string name="pref_camera_scenemode_entry_landscape">Landscape</string>
+    <string name="pref_camera_scenemode_entry_low_light">Low light</string>
     <string name="pref_camera_scenemode_entry_mix_illuminant">Mixed lighting</string>
     <string name="pref_camera_scenemode_entry_mood">Mood</string>
     <string name="pref_camera_scenemode_entry_nightportrait">Night portrait</string>
@@ -81,6 +82,7 @@
     <string name="pref_camera_scenemode_entry_whiteboard">Whiteboard</string>
 
     <!-- TODO: write instructions? -->
+    <string name="pref_camera2_scene_mode_low_light_instructional_content" />
     <string name="pref_camera2_scene_mode_qr_instructional_content" />
 
     <!-- Settings screen, focus mode -->

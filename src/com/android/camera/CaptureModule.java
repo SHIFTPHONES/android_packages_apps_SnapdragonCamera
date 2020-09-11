@@ -618,6 +618,8 @@ public class CaptureModule implements CameraModule, PhotoController,
     private boolean mIsProModeEnabled = false;
     private boolean mIsRedEyeRemovalEnabled = false;
 
+    private boolean mIsLowLightShotEnabled = false;
+
     private class SelfieThread extends Thread {
         public void run() {
             try {
@@ -3735,6 +3737,8 @@ public class CaptureModule implements CameraModule, PhotoController,
                 mActivity.onModuleSelected(ModuleSwitcher.PANOCAPTURE_MODULE_INDEX);
             }
         }
+
+        applyShiftLowLightShot();
     }
 
     @Override
@@ -4615,6 +4619,13 @@ public class CaptureModule implements CameraModule, PhotoController,
                 opMode |= STREAM_CONFIG_MODE_FS2;
             }
         }
+        Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode: " + opMode);
+
+        if (shouldUseShiftLowLightShot(cameraId)) {
+            Log.d(TAG, "Enabling SHIFT LowLightShot");
+            opMode = LowLightShot.SESSION_TYPE;
+        }
+
         Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode: " + opMode);
 
         final SessionConfiguration sessionConfig = new SessionConfiguration(
@@ -7607,6 +7618,23 @@ public class CaptureModule implements CameraModule, PhotoController,
         public int getOrientation() {
             return mOrientation;
         }
+    }
+
+    private boolean shouldUseShiftLowLightShot(final int cameraId) {
+        return ShiftConfig.USE_CUSTOM_MODES && mIsLowLightShotEnabled && LowLightShot.supportsCameraId(cameraId)
+                && !mIsProModeEnabled && !mIsFormatHeif && !isLongShotSettingEnabled();
+    }
+
+    private void applyShiftLowLightShot() {
+        String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
+        boolean lowLightMode = false;
+        if (scene != null) {
+            int mode = Integer.parseInt(scene);
+            if (mode == SettingsManager.SCENE_MODE_SHIFT_LOW_LIGHT_SHOT) {
+                lowLightMode = true;
+            }
+        }
+        mIsLowLightShotEnabled = lowLightMode;
     }
 }
 

@@ -71,6 +71,8 @@ import com.android.camera.util.SettingTranslation;
 import com.android.camera.app.CameraApp;
 import com.android.camera.util.AutoTestUtil;
 
+import com.shiftos.ShiftConfig;
+
 import org.codeaurora.snapcam.R;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,6 +125,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
     // SHIFT Scene Modes
     public static final int SCENE_MODE_SHIFT_START = 200;
     public static final int SCENE_MODE_SHIFT_QR_READER = SCENE_MODE_SHIFT_START;
+    public static final int SCENE_MODE_SHIFT_LOW_LIGHT_SHOT = SCENE_MODE_SHIFT_START + 1;
 
     public static final int JPEG_FORMAT = 0;
     public static final int HEIF_FORMAT = 1;
@@ -1922,6 +1925,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
 
         // Special SHIFT entries
         modes.add("" + SCENE_MODE_SHIFT_QR_READER);
+        if (ShiftConfig.USE_CUSTOM_MODES) {
+            modes.add("" + SCENE_MODE_SHIFT_LOW_LIGHT_SHOT);
+        }
 
         if (mIsMonoCameraPresent) modes.add(SCENE_MODE_DUAL_STRING); // need special case handle for dual mode
         if (OptizoomFilter.isSupportedStatic()) modes.add(SCENE_MODE_OPTIZOOM_INT + "");
