@@ -267,12 +267,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
         h265.add("HEVCProfileMain10");
         h265.add("HEVCProfileMain10HDR10");
         VIDEO_ENCODER_PROFILE_TABLE.put("h265", h265);
-        SHIFT_SUPPORTED_SCENES.add(3);
-        SHIFT_SUPPORTED_SCENES.add(4);
-        SHIFT_SUPPORTED_SCENES.add(9);
-        SHIFT_SUPPORTED_SCENES.add(10);
-        SHIFT_SUPPORTED_SCENES.add(15);
-        SHIFT_SUPPORTED_SCENES.add(18);
+
+        SHIFT_SUPPORTED_SCENES.add(18); // HDR
     }
 
     private SettingsManager(Context context) {
