@@ -119,7 +119,11 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public static final int SCENE_MODE_TRACKINGFOCUS_INT = SCENE_MODE_CUSTOM_START + 8;
     public static final int SCENE_MODE_PROMODE_INT = SCENE_MODE_CUSTOM_START + 9;
     public static final int SCENE_MODE_DEEPZOOM_INT = SCENE_MODE_CUSTOM_START + 10;
-	public static final int SCENE_MODE_DEEPPORTRAIT_INT = SCENE_MODE_CUSTOM_START + 11;
+    public static final int SCENE_MODE_DEEPPORTRAIT_INT = SCENE_MODE_CUSTOM_START + 11;
+    // SHIFT Scene Modes
+    public static final int SCENE_MODE_SHIFT_START = 200;
+    public static final int SCENE_MODE_SHIFT_QR_READER = SCENE_MODE_SHIFT_START;
+
     public static final int JPEG_FORMAT = 0;
     public static final int HEIF_FORMAT = 1;
     public static final String SCENE_MODE_DUAL_STRING = "100";
@@ -1919,6 +1923,10 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 .CONTROL_AVAILABLE_SCENE_MODES);
         List<String> modes = new ArrayList<>();
         modes.add("0"); // need special case handle for auto scene mode
+
+        // Special SHIFT entries
+        modes.add("" + SCENE_MODE_SHIFT_QR_READER);
+
         if (mIsMonoCameraPresent) modes.add(SCENE_MODE_DUAL_STRING); // need special case handle for dual mode
         if (OptizoomFilter.isSupportedStatic()) modes.add(SCENE_MODE_OPTIZOOM_INT + "");
         if (UbifocusFilter.isSupportedStatic() && cameraId == CaptureModule.BAYER_ID) modes.add(SCENE_MODE_UBIFOCUS_INT + "");

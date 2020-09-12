@@ -44,6 +44,8 @@
     <string name="pref_camera_scenemode_entry_barcode">Barcode</string>
     <string name="pref_camera_scenemode_entry_beach">Beach</string>
     <string name="pref_camera_scenemode_entry_beauty">Beauty</string>
+    <string name="pref_camera_scenemode_entry_camera">Camera</string>
+    <string name="pref_camera_scenemode_entry_camera_dual">Dual camera</string>
     <string name="pref_camera_scenemode_entry_candlelight">Candlelight</string>
     <string name="pref_camera_scenemode_entry_cine">Cine</string>
     <string name="pref_camera_scenemode_entry_closeup">Closeup</string>
@@ -65,6 +67,8 @@
     <string name="pref_camera_scenemode_entry_oldfilm">Old film</string>
     <string name="pref_camera_scenemode_entry_pet">Pet</string>
     <string name="pref_camera_scenemode_entry_portrait">Portrait</string>
+    <string name="pref_camera_scenemode_entry_qr">QR reader</string>
+    <string name="pref_camera_scenemode_entry_settings">Settings</string>
     <string name="pref_camera_scenemode_entry_snow">Snow</string>
     <string name="pref_camera_scenemode_entry_softskin">Soft skin</string>
     <string name="pref_camera_scenemode_entry_sports">Sports</string>
@@ -75,6 +79,9 @@
     <string name="pref_camera_scenemode_entry_text">Text</string>
     <string name="pref_camera_scenemode_entry_theatre">Theatre</string>
     <string name="pref_camera_scenemode_entry_whiteboard">Whiteboard</string>
+
+    <!-- TODO: write instructions? -->
+    <string name="pref_camera2_scene_mode_qr_instructional_content" />
 
     <!-- Settings screen, focus mode -->
     <string name="pref_camera_focusmode_entry_continuous">Continuous</string>

@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -55,6 +54,10 @@ import com.android.camera.util.CameraUtil;
 
 import org.lineageos.quickreader.ScannerActivity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class SceneModeActivity extends Activity {
     private ViewPager mPager;
     private View mCloseButton;
@@ -62,8 +65,9 @@ public class SceneModeActivity extends Activity {
     private DotsView mDotsView;
     private MyPagerAdapter mAdapter;
     private SettingsManager mSettingsManager;
-    private CharSequence[] mEntries;
-    private int[] mThumbnails;
+    private List<CharSequence> mEntries;
+    private List<CharSequence> mEntryValues;
+    private List<Integer> mThumbnails;
     private int mCurrentScene;
     private int mNumElement;
     private int mElemPerPage = 12;
@@ -102,12 +106,11 @@ public class SceneModeActivity extends Activity {
 
         mCurrentScene = mSettingsManager.getValueIndex(SettingsManager.KEY_SCENE_MODE);
 
-        mEntries = mSettingsManager.getEntries(SettingsManager.KEY_SCENE_MODE);
+        mEntries = loadEntries();
+        mEntryValues = loadEntryValues();
+        mThumbnails = loadThumbnails();
 
-        mThumbnails = mSettingsManager.getResource(SettingsManager.KEY_SCENE_MODE,
-                SettingsManager.RESOURCE_TYPE_THUMBNAIL);
-
-        mNumElement = mThumbnails.length;
+        mNumElement = mThumbnails.size();
         int pages = mNumElement / mElemPerPage;
         if (mNumElement % mElemPerPage != 0) pages++;
         mNumPage = pages;
@@ -152,13 +155,6 @@ public class SceneModeActivity extends Activity {
                 finish();
             }
         });
-
-        final Intent scannerIntent = new Intent(this, ScannerActivity.class);
-        final View scannerButton = findViewById(R.id.qr_scanner_button);
-        scannerButton.setOnClickListener((v) -> {
-            startActivity(scannerIntent);
-            finish();
-        });
     }
 
     public int getElmentPerPage() {
@@ -177,12 +173,15 @@ public class SceneModeActivity extends Activity {
         return mPager.getCurrentItem();
     }
 
-    public CharSequence[] getEntries() {
+    public List<CharSequence> getEntries() {
         return mEntries;
     }
 
+    public List<CharSequence> getEntryValues() {
+        return mEntryValues;
+    }
 
-    public int[] getThumbnails() {
+    public List<Integer> getThumbnails() {
         return mThumbnails;
     }
 
@@ -203,39 +202,73 @@ public class SceneModeActivity extends Activity {
         super.onStop();
         finish();
     }
+
+    void openQr() {
+        startActivity(new Intent(this, ScannerActivity.class));
+    }
+
+    private List<CharSequence> loadEntries() {
+        final CharSequence[] sceneEntries = mSettingsManager.getEntries(SettingsManager.KEY_SCENE_MODE);
+        final ArrayList<CharSequence> entryList = new ArrayList<>();
+        Collections.addAll(entryList, sceneEntries);
+        return entryList;
+    }
+
+    private List<CharSequence> loadEntryValues() {
+        final CharSequence[] sceneEntryValues = mSettingsManager.getEntryValues(SettingsManager.KEY_SCENE_MODE);
+        final ArrayList<CharSequence> valueList = new ArrayList<>();
+        Collections.addAll(valueList, sceneEntryValues);
+        return valueList;
+    }
+
+    private List<Integer> loadThumbnails() {
+        final int[] sceneThumbnails = mSettingsManager.getResource(SettingsManager.KEY_SCENE_MODE,
+                SettingsManager.RESOURCE_TYPE_THUMBNAIL);
+        final ArrayList<Integer> thumbnailList = new ArrayList<>();
+        for (final int sceneThumbnail : sceneThumbnails) {
+            thumbnailList.add(sceneThumbnail);
+        }
+        return thumbnailList;
+    }
 }
 
 class MyPagerAdapter extends PagerAdapter {
 
-    private SceneModeActivity mActivity;
-    private ViewGroup mRootView;
+    private final SceneModeActivity mActivity;
 
     public MyPagerAdapter(SceneModeActivity activity) {
         mActivity = activity;
     }
 
     public Object instantiateItem(ViewGroup viewGroup, int i) {
-        mRootView = (ViewGroup) mActivity.getLayoutInflater().inflate(R.layout.scene_mode_grid, null);
-        GridView mGridView = (GridView) mRootView.findViewById(R.id.grid);
+        final ViewGroup rootView = (ViewGroup) mActivity.getLayoutInflater().inflate(R.layout.scene_mode_grid, viewGroup, false);
+        GridView mGridView = (GridView) rootView.findViewById(R.id.grid);
         mGridView.setAdapter(new GridAdapter(mActivity, i));
-        viewGroup.addView(mRootView);
+        viewGroup.addView(rootView);
 
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int page = mActivity.getCurrentPage();
-                int index = page * mActivity.getElmentPerPage() + position;
-                for (int i = 0; i < parent.getChildCount(); i++) {
-                    View v = parent.getChildAt(i);
-                    if (v != null) {
-                        v.setBackground(null);
-                    }
+        mGridView.setOnItemClickListener((parent, view, position, id) -> {
+            final int page = mActivity.getCurrentPage();
+            final int index = page * mActivity.getElmentPerPage() + position;
+            // Clear bg
+            for (int j = 0; j < parent.getChildCount(); j++) {
+                View v = parent.getChildAt(j);
+                if (v != null) {
+                    v.setBackground(null);
                 }
-                SettingsManager.getInstance().setValueIndex(SettingsManager.KEY_SCENE_MODE, index);
-                mActivity.finish();
             }
+
+            final List<CharSequence> valueList = mActivity.getEntryValues();
+            final String entryValue = valueList.get(index).toString();
+            if (("" + SettingsManager.SCENE_MODE_SHIFT_QR_READER).equals(entryValue)) {
+                mActivity.openQr();
+            } else {
+                SettingsManager.getInstance().setValueIndex(SettingsManager.KEY_SCENE_MODE, index);
+            }
+
+            mActivity.finish();
         });
-        return mRootView;
+
+        return rootView;
     }
 
     @Override
@@ -251,7 +284,6 @@ class MyPagerAdapter extends PagerAdapter {
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
-
 }
 
 class GridAdapter extends BaseAdapter {
@@ -298,9 +330,13 @@ class GridAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        int idx = position + mPage * mActivity.getElmentPerPage();
-        viewHolder.imageView.setImageResource(mActivity.getThumbnails()[idx]);
-        viewHolder.textTitle.setText(mActivity.getEntries()[position + mPage * mActivity.getElmentPerPage()]);
+
+        final List<CharSequence> entryList = mActivity.getEntries();
+        final List<Integer> thumbnailList = mActivity.getThumbnails();
+
+        final int idx = position + mPage * mActivity.getElmentPerPage();
+        viewHolder.imageView.setImageResource(thumbnailList.get(idx));
+        viewHolder.textTitle.setText(entryList.get(position + mPage * mActivity.getElmentPerPage()));
 
         return view;
     }

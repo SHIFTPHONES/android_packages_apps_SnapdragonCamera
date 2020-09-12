@@ -137,6 +137,7 @@
     <string-array name="pref_camera2_scenemode_entryvalues" translatable="false">
         <item>0</item>
         <item>100</item>
+        <item>200</item>
         <item>18</item>
         <item>102</item>
         <item>101</item>
@@ -159,13 +160,14 @@
         <item>104</item>
         <item>109</item>
         <item>110</item>
-	<item>111</item>
+        <item>111</item>
     </string-array>
 
     <!-- Camera Preferences Scene Mode dialog box entries -->
     <string-array name="pref_camera2_scenemode_entries" translatable="false">
-        <item>@string/pref_camera_scenemode_entry_auto</item>
-        <item>Dual</item>
+        <item>@string/pref_camera_scenemode_entry_camera</item>
+        <item>@string/pref_camera_scenemode_entry_camera_dual</item>
+        <item>@string/pref_camera_scenemode_entry_qr</item>
         <item>@string/pref_camera_scenemode_entry_hdr</item>
         <item>@string/pref_camera_scenemode_entry_refocus</item>
         <item>@string/pref_camera_scenemode_entry_optizoom</item>
@@ -188,12 +190,13 @@
         <item>@string/pref_camera_scenemode_entry_panorama</item>
         <item>@string/pref_camera_scenemode_entry_promode</item>
         <item>@string/pref_camera_scenemode_entry_deepzoom</item>
-	<item>@string/pref_camera_scenemode_entry_deepportrait</item>
+        <item>@string/pref_camera_scenemode_entry_deepportrait</item>
     </string-array>
 
     <array name="pref_camera2_scenemode_thumbnails" translatable="false">
         <item>@drawable/ic_custom_camera</item>
-        <item>@drawable/ic_custom_hdr_on</item>
+        <item>@drawable/ic_custom_camera</item>
+        <item>@drawable/ic_custom_qr</item>
         <item>@drawable/ic_custom_hdr_on</item>
         <item>@drawable/ic_custom_focus</item>
         <item>@drawable/optizoom</item>
@@ -222,6 +225,7 @@
     <array name="pref_camera2_scenemode_black_thumbnails" translatable="false">
         <item>@drawable/ic_scene_mode_black_auto</item>
         <item>@drawable/ic_scene_mode_black_dual_camera</item>
+        <item>@drawable/ic_scene_mode_black_qr</item>
         <item>@drawable/ic_scene_mode_black_hdr</item>
         <item>@drawable/ic_scene_mode_black_ubifocus</item>
         <item>@drawable/ic_scene_mode_black_optizoom</item>
@@ -244,13 +248,14 @@
         <item>@drawable/ic_scene_mode_black_panorama</item>
         <item>@drawable/ic_scene_mode_black_dual_camera</item>
         <item>@drawable/ic_scene_mode_black_sharp_photo</item>
-	<item>@drawable/deep_portrait_black</item>
+        <item>@drawable/deep_portrait_black</item>
     </array>
 
     <!-- Camera Preferences Scene Mode dialog box entries -->
     <string-array name="pref_camera2_scenemode_instructional_entries" translatable="false">
         <item>@string/pref_camera_scenemode_entry_auto</item>
         <item>@string/pref_camera2_scene_mode_dual_camera_instructional_content</item>
+        <item>@string/pref_camera2_scene_mode_qr_instructional_content</item>
         <item>@string/pref_camera2_scene_mode_hdr_instructional_content</item>
         <item>@string/pref_camera2_scene_mode_ubi_focus_instructional_content</item>
         <item>@string/pref_camera2_scene_mode_opti_zoom_instructional_content</item>
@@ -273,7 +278,7 @@
         <item>@string/pref_camera2_scene_mode_panorama_instructional_content</item>
         <item>@string/pref_camera2_scene_mode_pro_instructional_content</item>
         <item>@string/pref_camera2_scene_mode_deepzoom_instructional_content</item>
-	<item>@string/pref_camera2_scene_mode_deepportrait_instructional_content</item>
+        <item>@string/pref_camera2_scene_mode_deepportrait_instructional_content</item>
     </string-array>
 
     <string-array name="pref_camera2_whitebalance_entryvalues" translatable="false">

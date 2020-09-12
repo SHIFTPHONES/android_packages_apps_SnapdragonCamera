@@ -34,13 +34,13 @@
     android:minWidth="96dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:padding="8dp"
+        android:padding="10dp"
         android:background="@drawable/bg_custom_icon"
         android:layout_gravity="center" />
 
