@@ -128,6 +128,7 @@ import com.android.camera.util.VendorTagUtil;
 import com.android.internal.util.MemInfoReader;
 
 import com.shift.camera.CaptureRequestKey;
+import com.shift.camera.Metadata.HDR;
 import com.shift.camera.Metadata.LowLightShot;
 import com.shiftos.ShiftConfig;
 
@@ -1237,6 +1238,8 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private void captureStillPictureForHDRTest(int id) {
+        if (ShiftConfig.USE_CUSTOM_MODES) return;
+
         String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
         if (SettingsManager.getInstance().isCamera2HDRSupport()
                 && scene != null && scene.equals("18")){
@@ -2310,6 +2313,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 VendorTagUtil.setCdsMode(captureBuilder, 2);// CDS 0-OFF, 1-ON, 2-AUTO
                 applyCaptureMFNR(captureBuilder);
             }
+            applyShiftHdr(captureBuilder, id);
             applyCaptureBurstFps(captureBuilder);
             String valueFS2 = mSettingsManager.getValue(SettingsManager.KEY_SENSOR_MODE_FS2_VALUE);
             int fs2Value = 0;
@@ -3095,7 +3099,8 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private boolean captureWaitImageReceive() {
-        return mIsSupportedQcfa || isMFNREnabled() || isHDREnable();
+        return mIsSupportedQcfa || isMFNREnabled() ||
+                (!ShiftConfig.USE_CUSTOM_MODES && isHDREnable());
     }
 
     private Size parsePictureSize(String value) {
@@ -4621,7 +4626,10 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
         Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode: " + opMode);
 
-        if (shouldUseShiftLowLightShot(cameraId)) {
+        if (shouldUseShiftHdr(cameraId)) {
+            Log.d(TAG, "Enabling SHIFT HDR");
+            opMode = HDR.SESSION_TYPE;
+        } else if (shouldUseShiftLowLightShot(cameraId)) {
             Log.d(TAG, "Enabling SHIFT LowLightShot");
             opMode = LowLightShot.SESSION_TYPE;
         }
@@ -7617,6 +7625,20 @@ public class CaptureModule implements CameraModule, PhotoController,
 
         public int getOrientation() {
             return mOrientation;
+        }
+    }
+
+    private boolean shouldUseShiftHdr(final int cameraId) {
+        return ShiftConfig.USE_CUSTOM_MODES && isHDREnable() && HDR.supportsCameraId(cameraId)
+                && !mIsProModeEnabled && !mIsFormatHeif && !mIsRedEyeRemovalEnabled && !isLongShotSettingEnabled();
+    }
+
+    private void applyShiftHdr(CaptureRequest.Builder builder, int cameraId) {
+        final boolean enableHdr = shouldUseShiftHdr(cameraId);
+        try {
+            builder.set(CaptureRequestKey.HDR_CAPTURE_ENABLE, enableHdr ? 1 : 0);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Can't find vendor tag: " + CaptureRequestKey.HDR_CAPTURE_ENABLE.toString());
         }
     }
 
