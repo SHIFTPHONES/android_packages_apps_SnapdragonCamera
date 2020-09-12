@@ -9,4 +9,4 @@ libs/
 !quickReader/libs/
 gen/
 .idea/
-.gitignore
+out/

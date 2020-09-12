@@ -31,13 +31,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -63,7 +61,6 @@ import android.media.EncoderCapabilities;
 import android.media.EncoderCapabilities.VideoEncoderCap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.media.MediaActionSound;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
@@ -72,7 +69,6 @@ import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecInfo.VideoCapabilities;
 import android.media.MediaCodecList;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -86,7 +82,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Range;
 import android.util.Size;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
@@ -97,7 +92,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout;
 import android.widget.FrameLayout;
 import android.graphics.Paint;
 import android.graphics.Canvas;
@@ -121,7 +115,6 @@ import com.android.camera.imageprocessor.filter.SharpshooterFilter;
 import com.android.camera.imageprocessor.filter.StillmoreFilter;
 import com.android.camera.imageprocessor.filter.UbifocusFilter;
 import com.android.camera.ui.CountDownView;
-import com.android.camera.ui.focus.FocusRing;
 import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.ProMode;
 import com.android.camera.ui.RotateTextToast;
@@ -133,6 +126,10 @@ import com.android.camera.util.SettingTranslation;
 import com.android.camera.util.AccessibilityUtils;
 import com.android.camera.util.VendorTagUtil;
 import com.android.internal.util.MemInfoReader;
+
+import com.shift.camera.CaptureRequestKey;
+import com.shift.camera.Metadata.LowLightShot;
+import com.shiftos.ShiftConfig;
 
 import org.codeaurora.snapcam.R;
 import org.codeaurora.snapcam.filter.ClearSightImageProcessor;
@@ -146,11 +143,9 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -617,6 +612,11 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     private CamGLRenderer mRenderer;
     private boolean mDeepPortraitMode = false;
+
+    private boolean mIsCaptureDone = true;
+    private boolean mIsFormatHeif = false;
+    private boolean mIsProModeEnabled = false;
+    private boolean mIsRedEyeRemovalEnabled = false;
 
     private class SelfieThread extends Thread {
         public void run() {
@@ -1687,11 +1687,14 @@ public class CaptureModule implements CameraModule, PhotoController,
                     for (Surface s : list) {
                         outputConfigurations.add(new OutputConfiguration(s));
                     }
+
+                    mIsFormatHeif = false;
                     if (mSettingsManager.getSavePictureFormat() == SettingsManager.HEIF_FORMAT ) {
                         if (mInitHeifWriter != null) {
                             mHeifOutput = new OutputConfiguration(mInitHeifWriter.getInputSurface());
                             mHeifOutput.enableSurfaceSharing();
                             outputConfigurations.add(mHeifOutput);
+                            mIsFormatHeif = true;
                         }
                     }
                 }
@@ -2904,6 +2907,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                                             }
                                         }
                                         image.close();
+                                        mIsCaptureDone = true;
                                     }
                                 }
                             }
@@ -5757,6 +5761,11 @@ public class CaptureModule implements CameraModule, PhotoController,
                 captureVideoSnapshot(getMainCameraId());
             }
         } else {
+            if (ShiftConfig.USE_CUSTOM_MODES) {
+                if (!mIsFormatHeif && !mIsCaptureDone) return;
+                mIsCaptureDone = false;
+            }
+
             String timer = mSettingsManager.getValue(SettingsManager.KEY_TIMER);
 
             int seconds = Integer.parseInt(timer);
@@ -6593,9 +6602,13 @@ public class CaptureModule implements CameraModule, PhotoController,
         String redeye = mSettingsManager.getValue(SettingsManager.KEY_REDEYE_REDUCTION);
         mIsAutoFlash = false;
         if (redeye != null && redeye.equals("on") && !mLongshotActive && !isHDREnable()) {
+            mIsRedEyeRemovalEnabled = true;
+
             request.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
         } else {
+            mIsRedEyeRemovalEnabled = false;
+
             boolean isCaptureBrust = isCaptureBrustMode();
             switch (value) {
                 case "on":
@@ -7508,6 +7521,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 promode = true;
             }
         }
+        mIsProModeEnabled = promode;
         mUI.initializeProMode(!mPaused && promode);
     }
 
