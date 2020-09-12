@@ -83,6 +83,7 @@
 
     <!-- TODO: write instructions? -->
     <string name="pref_camera2_scene_mode_low_light_instructional_content" />
+    <string name="pref_camera2_scene_mode_portrait_instructional_content" />
     <string name="pref_camera2_scene_mode_qr_instructional_content" />
 
     <!-- Settings screen, focus mode -->

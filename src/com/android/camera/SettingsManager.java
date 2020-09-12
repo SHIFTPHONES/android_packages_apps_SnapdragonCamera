@@ -123,6 +123,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public static final int SCENE_MODE_SHIFT_START = 200;
     public static final int SCENE_MODE_SHIFT_QR_READER = SCENE_MODE_SHIFT_START;
     public static final int SCENE_MODE_SHIFT_LOW_LIGHT_SHOT = SCENE_MODE_SHIFT_START + 1;
+    public static final int SCENE_MODE_SHIFT_BOKEH = SCENE_MODE_SHIFT_START + 2;
 
     public static final int JPEG_FORMAT = 0;
     public static final int HEIF_FORMAT = 1;
@@ -1882,6 +1883,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
         // Special SHIFT entries
         modes.add("" + SCENE_MODE_SHIFT_QR_READER);
         if (ShiftConfig.USE_CUSTOM_MODES) {
+            modes.add("" + SCENE_MODE_SHIFT_BOKEH);
             modes.add("" + SCENE_MODE_SHIFT_LOW_LIGHT_SHOT);
         }
 

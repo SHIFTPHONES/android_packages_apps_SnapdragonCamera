@@ -97,7 +97,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.camera.NamedImages;
 import com.android.camera.NamedImages.NamedEntity;
 import com.android.camera.deepportrait.CamGLRenderObserver;
 import com.android.camera.deepportrait.CamGLRenderer;
@@ -124,6 +123,7 @@ import com.android.camera.util.SettingTranslation;
 import com.android.camera.util.VendorTagUtil;
 import com.android.internal.util.MemInfoReader;
 import com.shift.camera.CaptureRequestKey;
+import com.shift.camera.Metadata.Bokeh;
 import com.shift.camera.Metadata.HDR;
 import com.shift.camera.Metadata.LowLightShot;
 import com.shift.camera.Metadata.VideoStabilization;
@@ -132,6 +132,7 @@ import com.shiftos.ShiftConfig;
 import org.codeaurora.snapcam.R;
 import org.codeaurora.snapcam.filter.ClearSightImageProcessor;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -145,6 +146,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -152,7 +154,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.heifwriter.HeifWriter;
-
 
 public class CaptureModule implements CameraModule, PhotoController,
         MediaSaveService.Listener, ClearSightImageProcessor.Callback,
@@ -612,12 +613,25 @@ public class CaptureModule implements CameraModule, PhotoController,
     private CamGLRenderer mRenderer;
     private boolean mDeepPortraitMode = false;
 
+    private String mShutterButtonClickTimestamp;
+
     private boolean mIsCaptureDone = true;
     private boolean mIsFormatHeif = false;
     private boolean mIsProModeEnabled = false;
     private boolean mIsRedEyeRemovalEnabled = false;
 
+    private boolean mIsBokehEnabled = false;
     private boolean mIsLowLightShotEnabled = false;
+
+    private int mBokehCameraId = -1;
+
+    // TODO: improve file format
+    private static final String BOKEH_FILE_FORMAT_GRAY = "IMG_%1$s_%2$dx%3$d.gray";
+    private static final String BOKEH_FILE_FORMAT_NV12 = "IMG_%1$s_%2$dx%3$d.nv12";
+    private static final String BOKEH_PATH_DCIM = "/sdcard/DCIM";
+
+    private final ImageReader[] mBokehMainInputImageReader = new ImageReader[MAX_NUM_CAM];
+    private final ImageReader[] mBokehDepthImageReader = new ImageReader[MAX_NUM_CAM];
 
     private class SelfieThread extends Thread {
         public void run() {
@@ -991,6 +1005,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mCameraDevice[id] = cameraDevice;
             mCameraOpened[id] = true;
 
+
             if (isBackCamera() && getCameraMode() == DUAL_MODE && id == BAYER_ID) {
                 Message msg = mCameraHandler.obtainMessage(OPEN_CAMERA, MONO_ID, 0);
                 mCameraHandler.sendMessage(msg);
@@ -1274,6 +1289,9 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     public boolean isBackCamera() {
         if (mUseFrontCamera)return false;
+        if (isUsingShiftBokeh()) {
+            return true;
+        }
         String switchValue = mSettingsManager.getValue(SettingsManager.KEY_SWITCH_CAMERA);
         if (switchValue != null && !switchValue.equals("-1") ) {
             CharSequence[] value = mSettingsManager.getEntryValues(SettingsManager.KEY_SWITCH_CAMERA);
@@ -1459,6 +1477,10 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     private void createSessions() {
         if (mPaused || !mCamerasOpened ) return;
+        if (isUsingShiftBokeh()) {
+            createSession(mBokehCameraId);
+            return;
+        }
         if (isBackCamera()) {
             switch (getCameraMode()) {
                 case DUAL_MODE:
@@ -1570,6 +1592,8 @@ public class CaptureModule implements CameraModule, PhotoController,
             // We set up a CaptureRequest.Builder with the output Surface.
             mPreviewRequestBuilder[id] = getRequestBuilder(id);
             mPreviewRequestBuilder[id].setTag(id);
+
+            applyShiftBokehPreviewLevel(mPreviewRequestBuilder[id], id);
 
             CameraCaptureSession.StateCallback captureSessionCallback =
                     new CameraCaptureSession.StateCallback() {
@@ -1694,6 +1718,10 @@ public class CaptureModule implements CameraModule, PhotoController,
                 }
                 if (mSettingsManager.getSavePictureFormat() == SettingsManager.JPEG_FORMAT) {
                     list.add(mImageReader[id].getSurface());
+                    if (isUsingShiftBokeh()) {
+                        list.add(mBokehMainInputImageReader[id].getSurface());
+                        list.add(mBokehDepthImageReader[id].getSurface());
+                    }
                 }
                 if (mSaveRaw) {
                     list.add(mRawImageReader[id].getSurface());
@@ -1983,6 +2011,12 @@ public class CaptureModule implements CameraModule, PhotoController,
     private void takePicture() {
         Log.d(TAG, "takePicture");
         mUI.enableShutter(false);
+
+        if (isUsingShiftBokeh()) {
+            lockFocus(mBokehCameraId);
+            return;
+        }
+
         if ((mSettingsManager.isZSLInHALEnabled() || isActionImageCapture()) &&
                 !isFlashOn(getMainCameraId()) && (mPreviewCaptureResult != null &&
                 mPreviewCaptureResult.get(CaptureResult.CONTROL_AE_STATE) !=
@@ -2304,6 +2338,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 applyCaptureMFNR(captureBuilder);
             }
             applyShiftHdr(captureBuilder, id);
+            applyShiftBokehCaptureLevel(captureBuilder, id);
             applyCaptureBurstFps(captureBuilder);
             String valueFS2 = mSettingsManager.getValue(SettingsManager.KEY_SENSOR_MODE_FS2_VALUE);
             int fs2Value = 0;
@@ -2356,6 +2391,14 @@ public class CaptureModule implements CameraModule, PhotoController,
                 } else {
                     if (mImageReader[id] != null) {
                         captureBuilder.addTarget(mImageReader[id].getSurface());
+                        if (isUsingShiftBokeh()) {
+                            if (mBokehMainInputImageReader[id] != null) {
+                                captureBuilder.addTarget(mBokehMainInputImageReader[id].getSurface());
+                            }
+                            if (mBokehDepthImageReader[id] != null) {
+                                captureBuilder.addTarget(mBokehDepthImageReader[id].getSurface());
+                            }
+                        }
                     }
                 }
 
@@ -2880,7 +2923,17 @@ public class CaptureModule implements CameraModule, PhotoController,
 
                                     byte[] bytes = getJpegData(image);
 
-                                    if (image.getFormat() == ImageFormat.RAW10) {
+                                    if (isUsingShiftBokeh() && image.getFormat() == ImageFormat.Y16) {
+                                        final String fileName = String.format(Locale.ROOT, BOKEH_FILE_FORMAT_GRAY,
+                                                mShutterButtonClickTimestamp, mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                                        saveBokehFile(bytes, fileName);
+                                        image.close();
+                                    } else if (isUsingShiftBokeh() && image.getFormat() == ImageFormat.YUV_420_888) {
+                                        final String fileName = String.format(Locale.ROOT, BOKEH_FILE_FORMAT_NV12,
+                                                mShutterButtonClickTimestamp, mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                                        saveBokehFile(bytes, fileName);
+                                        image.close();
+                                    } else if (image.getFormat() == ImageFormat.RAW10) {
                                         mActivity.getMediaSaveService().addRawImage(bytes, title,
                                                 "raw");
                                         image.close();
@@ -2913,6 +2966,16 @@ public class CaptureModule implements CameraModule, PhotoController,
                             }
                         };
                         mImageReader[i].setOnImageAvailableListener(listener, mImageAvailableHandler);
+
+                        if (isUsingShiftBokeh()) {
+                            mBokehMainInputImageReader[i] = ImageReader.newInstance(
+                                    mPictureSize.getWidth(), mPictureSize.getHeight(), imageFormat, MAX_IMAGEREADERS);
+                            mBokehMainInputImageReader[i].setOnImageAvailableListener(listener, mImageAvailableHandler);
+
+                            mBokehDepthImageReader[i] = ImageReader.newInstance(
+                                    mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, MAX_IMAGEREADERS);
+                            mBokehDepthImageReader[i].setOnImageAvailableListener(listener, mImageAvailableHandler);
+                        }
 
                         if (mSaveRaw) {
                             mRawImageReader[i] = ImageReader.newInstance(mSupportedRawPictureSize.getWidth(),
@@ -3701,10 +3764,18 @@ public class CaptureModule implements CameraModule, PhotoController,
     public void onResumeAfterSuper() {
         Log.d(TAG, "onResume " + getCameraMode());
         reinit();
+
+        setupShiftSceneConfiguration();
+
         mDeepPortraitMode = isDeepPortraitMode();
         initializeValues();
         updatePreviewSize();
         mCameraIdList = new ArrayList<>();
+
+        int cameraId = getMainCameraId();
+        if (isUsingShiftBokeh()) {
+            cameraId = mBokehCameraId;
+        }
 
         // Set up sound playback for shutter button, video record and video stop
         if (mSoundPlayer == null) {
@@ -3716,10 +3787,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         startBackgroundThread();
         openProcessors();
         loadSoundPoolResource();
-        Message msg = Message.obtain();
-        msg.what = OPEN_CAMERA;
-        int cameraId = getMainCameraId();
-        msg.arg1 = cameraId;
+
+        Log.d(TAG, "Going to open camera id: " + cameraId);
+        final Message msg = mCameraHandler.obtainMessage(OPEN_CAMERA, cameraId, 0);
         mCameraHandler.sendMessage(msg);
 
         if (mDeepPortraitMode) {
@@ -3753,8 +3823,6 @@ public class CaptureModule implements CameraModule, PhotoController,
         if (Integer.parseInt(scene) != SettingsManager.SCENE_MODE_UBIFOCUS_INT) {
             setRefocusLastTaken(false);
         }
-
-        applyShiftLowLightShot();
     }
 
     @Override
@@ -3855,6 +3923,9 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private boolean isInMode(int cameraId) {
+        if (isUsingShiftBokeh()) {
+            return cameraId == mBokehCameraId;
+        }
         if (isBackCamera()) {
             switch (getCameraMode()) {
                 case DUAL_MODE:
@@ -4029,6 +4100,10 @@ public class CaptureModule implements CameraModule, PhotoController,
         x = newXY[0];
         y = newXY[1];
         mInTAF = true;
+        if (isUsingShiftBokeh()) {
+            triggerFocusAtPoint(x, y, mBokehCameraId);
+            return;
+        }
         if (isBackCamera()) {
             switch (getCameraMode()) {
                 case DUAL_MODE:
@@ -4052,6 +4127,9 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     public int getMainCameraId() {
+        if (isUsingShiftBokeh()) {
+            return mBokehCameraId;
+        }
         if (isBackCamera()) {
             switch (getCameraMode()) {
                 case DUAL_MODE:
@@ -4627,9 +4705,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                 opMode |= STREAM_CONFIG_MODE_FS2;
             }
         }
-        Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode: " + opMode);
+        Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode (before): " + opMode);
 
-        if (shouldUseShiftHdr(cameraId)) {
+        if (shouldUseShiftBokeh(cameraId)) {
+            Log.d(TAG, "Enabling SHIFT Bokeh");
+            opMode = Bokeh.SESSION_TYPE;
+        } else if (shouldUseShiftHdr(cameraId)) {
             Log.d(TAG, "Enabling SHIFT HDR");
             opMode = HDR.SESSION_TYPE;
         } else if (shouldUseShiftLowLightShot(cameraId)) {
@@ -4637,7 +4718,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             opMode = LowLightShot.SESSION_TYPE;
         }
 
-        Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode: " + opMode);
+        Log.v(TAG, " createCameraSessionWithSessionConfiguration opMode (after): " + opMode);
 
         final SessionConfiguration sessionConfig = new SessionConfiguration(
                 opMode, outConfigurations, new HandlerExecutor(handler), listener);
@@ -5692,6 +5773,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                     + mActivity.getStorageSpaceBytes());
             return;
         }
+
+        mShutterButtonClickTimestamp = "" + System.currentTimeMillis();
+
         Log.d(TAG,"onShutterButtonClick");
 
         if (mIsRecordingVideo) {
@@ -7567,6 +7651,88 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
     }
 
+    private void setupShiftSceneConfiguration() {
+        final String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
+        final int mode = (scene != null ? Integer.parseInt(scene) : -1);
+        if (DEBUG) Log.d(TAG, " setupShiftSceneConfiguration(), scene='" + scene + "', mode='" + mode + "'");
+
+        mIsBokehEnabled = (mode == SettingsManager.SCENE_MODE_SHIFT_BOKEH);
+        if (mIsBokehEnabled) {
+            mBokehCameraId = getShiftBokehCameraId();
+        } else {
+            mBokehCameraId = -1;
+        }
+        if (DEBUG) Log.d(TAG, "   mIsBokehEnabled='" + mIsBokehEnabled + "', mBokehCameraId='" + mBokehCameraId + "'");
+
+        mIsLowLightShotEnabled = (mode == SettingsManager.SCENE_MODE_SHIFT_LOW_LIGHT_SHOT);
+        if (DEBUG) Log.d(TAG, "   mIsLowLightShotEnabled='" + mIsLowLightShotEnabled + "'");
+    }
+
+    private void saveBokehFile(byte[] buffer, String fileName) {
+        try {
+            final File dir = new File(BOKEH_PATH_DCIM);
+            if (!dir.exists() && dir.isDirectory()) {
+                dir.mkdirs();
+            }
+
+            final File file = new File(dir, fileName);
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 BufferedOutputStream bos = new BufferedOutputStream(fos);) {
+                bos.write(buffer);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to write file: " + BOKEH_PATH_DCIM + "/" + fileName, e);
+        }
+    }
+
+    private boolean isUsingShiftBokeh() {
+        return ShiftConfig.USE_CUSTOM_MODES && mIsBokehEnabled && mBokehCameraId > -1;
+    }
+
+    private boolean shouldUseShiftBokeh(final int cameraId) {
+        return isUsingShiftBokeh() && Bokeh.supportsCameraId(cameraId);
+    }
+
+    private void applyShiftBokehCaptureLevel(final CaptureRequest.Builder builder, final int cameraId) {
+        if (!shouldUseShiftBokeh(cameraId)) return;
+
+        try {
+            builder.set(CaptureRequestKey.BOKEH_CAPTURE_LEVEL, Bokeh.CAPTURE_LEVEL_DEFAULT_VALUE);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Can't find vendor tag: " + CaptureRequestKey.BOKEH_CAPTURE_LEVEL.toString());
+        }
+    }
+
+    private void applyShiftBokehPreviewLevel(final CaptureRequest.Builder builder, final int cameraId) {
+        if (!shouldUseShiftBokeh(cameraId)) return;
+
+        try {
+            builder.set(CaptureRequestKey.BOKEH_PREVIEW_LEVEL, Bokeh.PREVIEW_LEVEL_DEFAULT_VALUE);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Can't find vendor tag: " + CaptureRequestKey.BOKEH_PREVIEW_LEVEL.toString());
+        }
+    }
+
+    private int getShiftBokehCameraId() {
+        final CameraManager manager = mActivity.getSystemService(CameraManager.class);
+        try {
+            final String[] cameraIds = manager.getCameraIdList();
+            for (final String cameraId : cameraIds) {
+                try {
+                    final int id = Integer.parseInt(cameraId);
+                    if (Bokeh.supportsCameraId(id)) {
+                        return id;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // empty
+                }
+            }
+        } catch (CameraAccessException | IllegalArgumentException e) {
+            Log.e(TAG, "Could not obtain SHIFT Bokeh camera id", e);
+        }
+        return -1;
+    }
+
     private boolean shouldUseShiftHdr(final int cameraId) {
         return ShiftConfig.USE_CUSTOM_MODES && isHDREnable() && HDR.supportsCameraId(cameraId)
                 && !mIsProModeEnabled && !mIsFormatHeif && !mIsRedEyeRemovalEnabled && !isLongShotSettingEnabled();
@@ -7584,18 +7750,6 @@ public class CaptureModule implements CameraModule, PhotoController,
     private boolean shouldUseShiftLowLightShot(final int cameraId) {
         return ShiftConfig.USE_CUSTOM_MODES && mIsLowLightShotEnabled && LowLightShot.supportsCameraId(cameraId)
                 && !mIsProModeEnabled && !mIsFormatHeif && !isLongShotSettingEnabled();
-    }
-
-    private void applyShiftLowLightShot() {
-        String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
-        boolean lowLightMode = false;
-        if (scene != null) {
-            int mode = Integer.parseInt(scene);
-            if (mode == SettingsManager.SCENE_MODE_SHIFT_LOW_LIGHT_SHOT) {
-                lowLightMode = true;
-            }
-        }
-        mIsLowLightShotEnabled = lowLightMode;
     }
 
     private boolean isUsingShiftVideoStabilization() {

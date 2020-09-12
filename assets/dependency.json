@@ -131,6 +131,16 @@
       "pref_camera2_picture_format_key": "0",
       "pref_camera2_redeyereduction_key": "disable",
       "pref_camera2_zsl_key": "disable"
+    },
+    "202": {
+      "_name": "SHIFT - BOKEH",
+      "pref_camera2_coloreffect_key": "0",
+      "pref_camera2_flashmode_key": "off",
+      "pref_camera2_force_hide_video_key": "1",
+      "pref_camera2_longshot_key": "off",
+      "pref_camera2_picture_format_key": "0",
+      "pref_camera2_redeyereduction_key": "disable",
+      "pref_camera2_zsl_key": "disable"
     }
   },
   "pref_camera2_clearsight_key": {
