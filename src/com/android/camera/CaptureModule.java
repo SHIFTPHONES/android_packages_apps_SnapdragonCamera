@@ -130,6 +130,7 @@ import com.android.internal.util.MemInfoReader;
 import com.shift.camera.CaptureRequestKey;
 import com.shift.camera.Metadata.HDR;
 import com.shift.camera.Metadata.LowLightShot;
+import com.shift.camera.Metadata.VideoStabilization;
 import com.shiftos.ShiftConfig;
 
 import org.codeaurora.snapcam.R;
@@ -4617,7 +4618,8 @@ public class CaptureModule implements CameraModule, PhotoController,
                  List<OutputConfiguration> outConfigurations, CameraCaptureSession.StateCallback listener,
                  Handler handler, CaptureRequest initialRequest) {
         int opMode = SessionConfiguration.SESSION_REGULAR;
-        String valueFS2 = mSettingsManager.getValue(SettingsManager.KEY_SENSOR_MODE_FS2_VALUE);
+
+        final String valueFS2 = mSettingsManager.getValue(SettingsManager.KEY_SENSOR_MODE_FS2_VALUE);
         if (valueFS2 != null) {
             int intValue = Integer.parseInt(valueFS2);
             if (intValue == 1) {
@@ -4680,10 +4682,13 @@ public class CaptureModule implements CameraModule, PhotoController,
         if (zzHdrStatue) {
             mStreamConfigOptMode = STREAM_CONFIG_MODE_ZZHDR;
         }
-        if (DEBUG) {
-            Log.v(TAG, "configureCameraSessionWithParameters mStreamConfigOptMode :"
-                    + mStreamConfigOptMode);
+
+        if (mIsRecordingVideo && shouldUseShiftVideoStabilization(cameraId)) {
+            Log.d(TAG, "Enabling SHIFT Video Stabilization");
+            mStreamConfigOptMode = VideoStabilization.STREAM_CONFIG_OPT_MODE;
         }
+
+        Log.v(TAG, "configureCameraSessionWithParameters opMode: " + opMode + ", mStreamConfigOptMode: " + mStreamConfigOptMode);
 
         final SessionConfiguration sessionConfig = new SessionConfiguration(
                 opMode | mStreamConfigOptMode, outConfigurations, new HandlerExecutor(handler), listener);
@@ -4878,10 +4883,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                     if (zzHdrStatue) {
                         mStreamConfigOptMode = STREAM_CONFIG_MODE_ZZHDR;
                     }
-                    if (DEBUG) {
-                        Log.v(TAG, "createCustomCaptureSession mStreamConfigOptMode :"
-                                + mStreamConfigOptMode);
-                    }
+
+                    Log.v(TAG, "createCustomCaptureSession mStreamConfigOptMode: " + mStreamConfigOptMode);
+
                     if (mStreamConfigOptMode == 0) {
                         mCameraDevice[cameraId].createCaptureSession(surfaces, mCCSSateCallback, null);
                     } else {
@@ -5359,15 +5363,21 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private boolean isAbortCapturesEnable() {
-        boolean result = true;
-        String value = mSettingsManager.getValue(SettingsManager.KEY_ABORT_CAPTURES);
+        if (mIsRecordingVideo && isUsingShiftVideoStabilization()) {
+            Log.v(TAG, "isAbortCapturesEnable - forcing result to false");
+            return false;
+        }
+
+        final boolean result;
+        final String value = mSettingsManager.getValue(SettingsManager.KEY_ABORT_CAPTURES);
         if (value != null) {
-            result = value.equals(mActivity.getResources().getString(
-                    R.string.pref_camera2_abort_captures_entry_value_enable));
+            result = value.equals(
+                    mActivity.getResources().getString(R.string.pref_camera2_abort_captures_entry_value_enable));
         } else {
             result = false;
         }
-        Log.v(TAG, "isAbortCapturesEnable :" + result);
+
+        Log.v(TAG, "isAbortCapturesEnable: " + result);
         return result;
     }
 
@@ -5389,7 +5399,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mLiveShotInitHeifWriter.close();
         }
         mIsRecordingVideo = false;
-        if (isEISDisable() && isAbortCapturesEnable() && mCurrentSession != null) {
+        if (!isUsingShiftVideoStabilization() && isEISDisable() && isAbortCapturesEnable() && mCurrentSession != null) {
             try {
                 if (mCurrentSession != null) {
                     mCurrentSession.abortCaptures();
@@ -7657,6 +7667,15 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
         }
         mIsLowLightShotEnabled = lowLightMode;
+    }
+
+    private boolean isUsingShiftVideoStabilization() {
+        return ShiftConfig.USE_CUSTOM_MODES && mStreamConfigOptMode == VideoStabilization.STREAM_CONFIG_OPT_MODE;
+    }
+
+    private boolean shouldUseShiftVideoStabilization(final int cameraId) {
+        return ShiftConfig.USE_CUSTOM_MODES && VideoStabilization.supportsCameraId(cameraId)
+                && "on".equals(mSettingsManager.getValue(SettingsManager.KEY_DIS));
     }
 }
 
