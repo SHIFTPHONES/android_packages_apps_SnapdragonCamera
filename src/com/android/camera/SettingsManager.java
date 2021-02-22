@@ -1734,7 +1734,10 @@ public class SettingsManager implements ListMenu.SettingsListener {
         boolean isHeifEnabled = getSavePictureFormat() == HEIF_FORMAT;
 
         if (getQcfaPrefEnabled() && getIsSupportedQcfa(cameraId)) {
-            res.add(getSupportedQcfaDimension(cameraId));
+            final String qcfaDimension = getSupportedQcfaDimension(cameraId);
+            if (qcfaDimension != null) {
+                res.add(qcfaDimension);
+            }
         }
 
         VideoCapabilities heifCap = null;
@@ -2173,7 +2176,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
         int[] qcfaDimension = mCharacteristics.get(cameraId).get(
                 CaptureModule.QCFA_SUPPORT_DIMENSION);
         if (qcfaDimension == null) {
-            return "";
+            return null;
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < qcfaDimension.length; i ++) {
@@ -2182,13 +2185,13 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 sb.append("x");
             }
         }
-        return  sb.toString();
+        return sb.toString();
     }
 
     public Size getQcfaSupportSize() {
-        String qcfaSize = getSupportedQcfaDimension(mCameraId);
+        final String qcfaSize = getSupportedQcfaDimension(mCameraId);
         if (qcfaSize != null) {
-            return parseSize(getSupportedQcfaDimension(mCameraId));
+            return parseSize(qcfaSize);
         }
         return new Size(0, 0);
     }
