@@ -193,6 +193,7 @@ public class CameraUtil {
     }
 
     public static boolean isCameraHdrSupported(Parameters params) {
+        if (params == null) return false;
         List<String> supported = params.getSupportedSceneModes();
         return (supported != null) && supported.contains(SCENE_MODE_HDR);
     }
@@ -206,7 +207,7 @@ public class CameraUtil {
     }
 
     public static boolean isFocusAreaSupported(Parameters params) {
-        return (params.getMaxNumFocusAreas() > 0
+        return (params != null && params.getMaxNumFocusAreas() > 0
                 && isSupported(Parameters.FOCUS_MODE_AUTO,
                         params.getSupportedFocusModes()));
     }

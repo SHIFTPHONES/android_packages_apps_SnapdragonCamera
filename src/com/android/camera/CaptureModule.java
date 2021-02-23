@@ -4549,20 +4549,16 @@ public class CaptureModule implements CameraModule, PhotoController,
                         deviceSocId == SettingsManager.MOOREA_SOCID ||
                         deviceSocId == SettingsManager.SAIPAN_SOCID ||
                         deviceSocId == SettingsManager.SM6250_SOCID) {
-                    List list = CameraUtil
+                    final List<CaptureRequest> list = CameraUtil
                             .createHighSpeedRequestList(mVideoRequestBuilder.build());
                     mCurrentSession.setRepeatingBurst(list,mCaptureCallback, mCameraHandler);
                 } else {
-                    if (mHighSpeedCapture &&
-                            ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
-                        slowMoRequests =
-                                ((CameraConstrainedHighSpeedCaptureSession) mCurrentSession).
-                                        createHighSpeedRequestList(mVideoRequestBuilder.build());
-                        mCurrentSession.setRepeatingBurst(slowMoRequests, mCaptureCallback,
-                                mCameraHandler);
+                    if (mHighSpeedCapture && ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
+                        slowMoRequests = ((CameraConstrainedHighSpeedCaptureSession) mCurrentSession)
+                                .createHighSpeedRequestList(mVideoRequestBuilder.build());
+                        mCurrentSession.setRepeatingBurst(slowMoRequests, mCaptureCallback, mCameraHandler);
                     } else {
-                        mCurrentSession.setRepeatingRequest(mVideoRequestBuilder.build(),
-                                mCaptureCallback, mCameraHandler);
+                        mCurrentSession.setRepeatingRequest(mVideoRequestBuilder.build(), mCaptureCallback, mCameraHandler);
                     }
                 }
             } catch (CameraAccessException e) {
@@ -4572,32 +4568,26 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
             if ((!mFrameProcessor.isFrameListnerEnabled() && !startMediaRecorder()) || !mIsRecordingVideo) {
                 releaseMediaRecorder();
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mUI.showUIafterRecording();
-                        mFrameProcessor.setVideoOutputSurface(null);
-                        restartSession(true);
-                    }
+                mHandler.post(() -> {
+                    mUI.showUIafterRecording();
+                    mFrameProcessor.setVideoOutputSurface(null);
+                    restartSession(true);
                 });
                 return;
             }
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mUI.getFocusRing().stopFocusAnimations();
-                    mUI.resetPauseButton();
-                    mRecordingTotalTime = 0L;
-                    mRecordingStartTime = SystemClock.uptimeMillis();
-                    if (mHighSpeedCapture &&
-                            ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
-                        mUI.enableShutter(false);
-                    }
-                    mUI.showRecordingUI(true, false);
-                    updateRecordingTime();
-                    keepScreenOn();
+            mHandler.post(() -> {
+                mUI.getFocusRing().stopFocusAnimations();
+                mUI.resetPauseButton();
+                mRecordingTotalTime = 0L;
+                mRecordingStartTime = SystemClock.uptimeMillis();
+                if (mHighSpeedCapture &&
+                        ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
+                    mUI.enableShutter(false);
                 }
+                mUI.showRecordingUI(true, false);
+                updateRecordingTime();
+                keepScreenOn();
             });
 
         }

@@ -914,18 +914,15 @@ public class VideoModule implements CameraModule,
     public void onShutterButtonLongClick() {}
 
     private void qcomReadVideoPreferences() {
-        String videoEncoder = mPreferences.getString(
-               CameraSettings.KEY_VIDEO_ENCODER,
-               mActivity.getString(R.string.pref_camera_videoencoder_default));
+        final String videoEncoderDefault = mActivity.getString(R.string.pref_camera_videoencoder_default);
+        String videoEncoder = mPreferences.getString(CameraSettings.KEY_VIDEO_ENCODER, videoEncoderDefault);
         mVideoEncoder = VIDEO_ENCODER_TABLE.get(videoEncoder);
-
         Log.v(TAG, "Video Encoder selected = " +mVideoEncoder);
 
         String audioEncoder = mPreferences.getString(
                CameraSettings.KEY_AUDIO_ENCODER,
                mActivity.getString(R.string.pref_camera_audioencoder_default));
         mAudioEncoder = AUDIO_ENCODER_TABLE.get(audioEncoder);
-
         Log.v(TAG, "Audio Encoder selected = " +mAudioEncoder);
 
         if(ParametersWrapper.isPowerModeSupported(mParameters)) {

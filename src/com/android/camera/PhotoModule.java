@@ -4792,7 +4792,6 @@ public class PhotoModule
         mParameters = mCameraDevice.getParameters();
         final int minISO = mParameters.getInt(CameraSettings.KEY_MIN_ISO);
         final int maxISO = mParameters.getInt(CameraSettings.KEY_MAX_ISO);
-        String isoMode = CameraSettings.getISOValue(mParameters);
         final String isoManual = CameraSettings.KEY_MANUAL_ISO;
         String currentISO = mParameters.get(CameraSettings.KEY_CURRENT_ISO);
         if (currentISO != null) {
