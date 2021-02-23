@@ -92,6 +92,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SettingsManager implements ListMenu.SettingsListener {
+    private static final boolean DEBUG_SPAM = false;
+
     public static final int RESOURCE_TYPE_THUMBNAIL = 0;
     public static final int RESOURCE_TYPE_LARGEICON = 1;
 
@@ -2072,7 +2074,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
             isSupportQcfa = mCharacteristics.get(cameraId).get(
                     CaptureModule.IS_SUPPORT_QCFA_SENSOR);
         } catch(Exception e) {
-            e.printStackTrace();
+            if (DEBUG_SPAM) {
+                Log.d(TAG, "Could not check for QCFA support", e);
+            }
         }
         return isSupportQcfa == 1;
     }
