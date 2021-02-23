@@ -86,7 +86,7 @@
             android:entries="@array/pref_camera2_jpegquality_entries"
             android:entryValues="@array/pref_camera2_jpegquality_entryvalues"
             android:key="pref_camera2_jpegquality_key"
-            android:icon="@drawable/bg_custom_empty"
+            android:icon="@drawable/ic_settings_quality"
             android:summary="%s"
             android:title="@string/pref_camera_jpegquality_title" />
 
@@ -189,7 +189,7 @@
             android:entries="@array/pref_camera2_videoencoder_entries"
             android:entryValues="@array/pref_camera2_videoencoder_entryvalues"
             android:key="pref_camera2_videoencoder_key"
-            android:icon="@drawable/bg_custom_empty"
+            android:icon="@drawable/ic_settings_encoder_video"
             android:summary="%s"
             android:title="@string/pref_camera_videoencoder_title" />
 
@@ -244,7 +244,7 @@
         android:textAllCaps="false">
         <Preference
             android:defaultValue="false"
-            android:icon="@drawable/bg_custom_empty"
+            android:icon="@drawable/ic_custom_restore"
             android:key="pref_camera2_restore_default_key"
             android:title="@string/pref_camera2_restore_default" />
         <Preference
