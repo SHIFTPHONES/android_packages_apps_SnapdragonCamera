@@ -38,52 +38,47 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
+import android.media.EncoderCapabilities;
+import android.media.EncoderCapabilities.VideoEncoderCap;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecInfo.VideoCapabilities;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
-import android.media.CamcorderProfile;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Range;
 import android.util.Rational;
 import android.util.Size;
-import android.media.EncoderCapabilities;
-import android.media.EncoderCapabilities.VideoEncoderCap;
 
-import com.android.camera.imageprocessor.filter.BeautificationFilter;
 import com.android.camera.imageprocessor.filter.BestpictureFilter;
 import com.android.camera.imageprocessor.filter.BlurbusterFilter;
 import com.android.camera.imageprocessor.filter.ChromaflashFilter;
 import com.android.camera.imageprocessor.filter.DeepPortraitFilter;
+import com.android.camera.imageprocessor.filter.DeepZoomFilter;
 import com.android.camera.imageprocessor.filter.OptizoomFilter;
 import com.android.camera.imageprocessor.filter.SharpshooterFilter;
-import com.android.camera.imageprocessor.filter.StillmoreFilter;
 import com.android.camera.imageprocessor.filter.TrackingFocusFrameListener;
 import com.android.camera.imageprocessor.filter.UbifocusFilter;
-import com.android.camera.imageprocessor.filter.DeepZoomFilter;
 import com.android.camera.ui.ListMenu;
 import com.android.camera.ui.PanoCaptureProcessView;
-import com.android.camera.ui.TrackingFocusRenderer;
-import com.android.camera.util.SettingTranslation;
-import com.android.camera.app.CameraApp;
 import com.android.camera.util.AutoTestUtil;
-
+import com.android.camera.util.SettingTranslation;
 import com.shiftos.ShiftConfig;
 
 import org.codeaurora.snapcam.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,8 +87,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.lang.NumberFormatException;
-import java.lang.StringBuilder;
 
 public class SettingsManager implements ListMenu.SettingsListener {
     public static final int RESOURCE_TYPE_THUMBNAIL = 0;
@@ -1317,14 +1310,14 @@ public class SettingsManager implements ListMenu.SettingsListener {
     }
 
     private void filterHeifSizeOptions() {
+        final int cameraId = getCurrentCameraId();
         ListPreference picturePref = mPreferenceGroup.findPreference(KEY_PICTURE_SIZE);
-        ListPreference videoQualityPref = mPreferenceGroup.findPreference(KEY_VIDEO_QUALITY);
-        if (filterUnsupportedOptions(picturePref, getSupportedPictureSize(
-                getCurrentCameraId()))) {
+        if (picturePref != null && filterUnsupportedOptions(picturePref, getSupportedPictureSize(cameraId))) {
             mFilteredKeys.add(picturePref.getKey());
         }
-        if (filterUnsupportedOptions(videoQualityPref, getSupportedVideoSize(
-                getCurrentCameraId()))) {
+
+        ListPreference videoQualityPref = mPreferenceGroup.findPreference(KEY_VIDEO_QUALITY);
+        if (videoQualityPref != null && filterUnsupportedOptions(videoQualityPref, getSupportedVideoSize(cameraId))) {
             mFilteredKeys.add(videoQualityPref.getKey());
         }
     }
@@ -1384,26 +1377,24 @@ public class SettingsManager implements ListMenu.SettingsListener {
         ListPreference videoEncoder = mPreferenceGroup.findPreference(KEY_VIDEO_ENCODER);
         if (videoEncoder == null) return supported;
 
-        if (videoEncoder != null) {
-            String str = null;
-            List<VideoEncoderCap> videoEncoders = EncoderCapabilities.getVideoEncoders();
-            for (VideoEncoderCap vEncoder: videoEncoders) {
-                str = SettingTranslation.getVideoEncoder(vEncoder.mCodec);
-                if (str != null) {
-                    if (videoSizeStr != null) {
-                        Size videoSize = parseSize(videoSizeStr);
-                        if (videoSize.getWidth() > vEncoder.mMaxFrameWidth ||
-                                videoSize.getWidth() < vEncoder.mMinFrameWidth ||
-                                videoSize.getHeight() > vEncoder.mMaxFrameHeight ||
-                                videoSize.getHeight() < vEncoder.mMinFrameHeight) {
-                            Log.e(TAG, "Codec = " + vEncoder.mCodec + ", capabilities: " +
-                                    "mMinFrameWidth = " + vEncoder.mMinFrameWidth + " , " +
-                                    "mMinFrameHeight = " + vEncoder.mMinFrameHeight + " , " +
-                                    "mMaxFrameWidth = " + vEncoder.mMaxFrameWidth + " , " +
-                                    "mMaxFrameHeight = " + vEncoder.mMaxFrameHeight);
-                        } else {
-                            supported.add(str);
-                        }
+        String str = null;
+        List<VideoEncoderCap> videoEncoders = EncoderCapabilities.getVideoEncoders();
+        for (VideoEncoderCap vEncoder : videoEncoders) {
+            str = SettingTranslation.getVideoEncoder(vEncoder.mCodec);
+            if (str != null) {
+                if (videoSizeStr != null) {
+                    Size videoSize = parseSize(videoSizeStr);
+                    if (videoSize.getWidth() > vEncoder.mMaxFrameWidth ||
+                            videoSize.getWidth() < vEncoder.mMinFrameWidth ||
+                            videoSize.getHeight() > vEncoder.mMaxFrameHeight ||
+                            videoSize.getHeight() < vEncoder.mMinFrameHeight) {
+                        Log.e(TAG, "Codec = " + vEncoder.mCodec + ", capabilities: " +
+                                "mMinFrameWidth = " + vEncoder.mMinFrameWidth + " , " +
+                                "mMinFrameHeight = " + vEncoder.mMinFrameHeight + " , " +
+                                "mMaxFrameWidth = " + vEncoder.mMaxFrameWidth + " , " +
+                                "mMaxFrameHeight = " + vEncoder.mMaxFrameHeight);
+                    } else {
+                        supported.add(str);
                     }
                 }
             }
