@@ -860,11 +860,7 @@ public class SettingsActivity extends PreferenceActivity {
     void onRestoreDefaultSettingsClick() {
         new AlertDialog.Builder(this)
                 .setMessage(R.string.pref_camera2_restore_default_hint)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        restoreSettings();
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> restoreSettings())
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
@@ -873,5 +869,7 @@ public class SettingsActivity extends PreferenceActivity {
         mSettingsManager.restoreSettings();
         filterPreferences();
         initializePreferences();
+
+        Toast.makeText(this, R.string.toast_settings_restored, Toast.LENGTH_SHORT).show();
     }
 }
