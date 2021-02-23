@@ -6529,6 +6529,12 @@ public class CaptureModule implements CameraModule, PhotoController,
 
             request.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
+        } else if (isHDREnable()) {
+            mIsRedEyeRemovalEnabled = false;
+
+            // when HDR is on, disable flash
+            request.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+            request.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         } else {
             mIsRedEyeRemovalEnabled = false;
 
@@ -6871,8 +6877,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                     updateVideoFlash();
                     return;
                 case SettingsManager.KEY_FLASH_MODE:
-                    applyFlashForUIChange(mPreviewRequestBuilder[getMainCameraId()],
-                            getMainCameraId());
+                    applyFlashForUIChange(mPreviewRequestBuilder[getMainCameraId()], getMainCameraId());
                     // When enable APP-ZSL, run restartSession
                     if (SettingsManager.getInstance().isZSLInAppEnabled()) {
                         if (count == 0) restartSession(false);
