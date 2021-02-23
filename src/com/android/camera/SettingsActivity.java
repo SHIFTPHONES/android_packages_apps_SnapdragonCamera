@@ -29,13 +29,16 @@
 
 package com.android.camera;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
@@ -45,6 +48,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Size;
@@ -71,7 +75,10 @@ import java.util.Set;
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity {
     private static final String TAG = "SettingsActivity";
+
     private static final int DEVELOPER_MENU_TOUCH_COUNT = 10;
+
+    private static final int REQUEST_CODE_PERMISSION_LOCATION = 100;
 
     private SettingsManager mSettingsManager;
     private SharedPreferences mSharedPreferences;
@@ -591,10 +598,24 @@ public class SettingsActivity extends PreferenceActivity {
             PreferenceCategory category = (PreferenceCategory) getPreferenceScreen().getPreference(i);
             for (int j = 0; j < category.getPreferenceCount(); j++) {
                 Preference pref = category.getPreference(j);
+                pref.setOnPreferenceChangeListener(onPreferenceChangeListener);
                 pref.setOnPreferenceClickListener(onPreferenceClickListener);
             }
         }
     }
+
+    private final Preference.OnPreferenceChangeListener onPreferenceChangeListener = (preference, newValue) -> {
+        final String key = preference.getKey();
+        switch (key) {
+            case SettingsManager.KEY_RECORD_LOCATION: {
+                if ((boolean) newValue) {
+                    return checkLocationPermission();
+                }
+                break;
+            }
+        }
+        return true;
+    };
 
     private final Preference.OnPreferenceClickListener onPreferenceClickListener = (preference) -> {
         if (!mDeveloperMenuEnabled) {
@@ -620,6 +641,36 @@ public class SettingsActivity extends PreferenceActivity {
         }
         return false;
     };
+
+    private boolean checkLocationPermission() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        final String[] permissionsToRequest = { Manifest.permission.ACCESS_FINE_LOCATION };
+        requestPermissions(permissionsToRequest, REQUEST_CODE_PERMISSION_LOCATION);
+
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode != REQUEST_CODE_PERMISSION_LOCATION) {
+            return;
+        }
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            final SwitchPreference locationPreference = (SwitchPreference) findPreference(SettingsManager.KEY_RECORD_LOCATION);
+            locationPreference.setChecked(true);
+        } else {
+            final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            final Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivityForResult(intent, REQUEST_CODE_PERMISSION_LOCATION);
+        }
+    }
 
     private void filterPreferences() {
         String[] categories = {"photo", "video", "general", "developer"};
