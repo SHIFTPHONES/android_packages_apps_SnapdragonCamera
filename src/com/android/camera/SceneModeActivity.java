@@ -59,6 +59,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class SceneModeActivity extends Activity {
+    private static final int ELEMENTS_PER_PAGE = 12;
+
     private ViewPager mPager;
     private View mCloseButton;
     private RotateImageView mButton;
@@ -70,7 +72,6 @@ public class SceneModeActivity extends Activity {
     private List<Integer> mThumbnails;
     private int mCurrentScene;
     private int mNumElement;
-    private int mElemPerPage = 12;
     private int mNumPage;
 
     private static class PageItems implements DotsViewItem {
@@ -111,28 +112,23 @@ public class SceneModeActivity extends Activity {
         mThumbnails = loadThumbnails();
 
         mNumElement = mThumbnails.size();
-        int pages = mNumElement / mElemPerPage;
-        if (mNumElement % mElemPerPage != 0) pages++;
+        int pages = mNumElement / ELEMENTS_PER_PAGE;
+        if (mNumElement % ELEMENTS_PER_PAGE != 0) pages++;
         mNumPage = pages;
 
         mAdapter = new MyPagerAdapter(this);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.setOverScrollMode(ViewPager.OVER_SCROLL_NEVER);
         mPager.setAdapter(mAdapter);
 
         mCloseButton = findViewById(R.id.close_button);
-        mCloseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mCloseButton.setOnClickListener(v -> finish());
 
         int pageCount = mAdapter.getCount();
-        mDotsView = (DotsView) findViewById(R.id.page_indicator);
-        mPager.setCurrentItem(mCurrentScene / mElemPerPage);
-        mDotsView.update(mCurrentScene / mElemPerPage, 0f);
+        mDotsView = findViewById(R.id.page_indicator);
+        mPager.setCurrentItem(mCurrentScene / ELEMENTS_PER_PAGE);
+        mDotsView.update(mCurrentScene / ELEMENTS_PER_PAGE, 0f);
         if (pageCount > 1) {
             mDotsView.setItems(new PageItems(pageCount));
             mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -145,20 +141,17 @@ public class SceneModeActivity extends Activity {
             mDotsView.setVisibility(View.GONE);
         }
 
-        mButton = (RotateImageView) findViewById(R.id.setting_button);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
-                intent.putExtra(CameraUtil.KEY_IS_SECURE_CAMERA, isSecureCamera);
-                startActivity(intent);
-                finish();
-            }
+        mButton = findViewById(R.id.setting_button);
+        mButton.setOnClickListener(v -> {
+            final Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+            intent.putExtra(CameraUtil.KEY_IS_SECURE_CAMERA, isSecureCamera);
+            startActivity(intent);
+            finish();
         });
     }
 
     public int getElmentPerPage() {
-        return mElemPerPage;
+        return ELEMENTS_PER_PAGE;
     }
 
     public int getNumberOfPage() {
@@ -240,15 +233,16 @@ class MyPagerAdapter extends PagerAdapter {
         mActivity = activity;
     }
 
-    public Object instantiateItem(ViewGroup viewGroup, int i) {
+    @Override
+    public Object instantiateItem(ViewGroup viewGroup, int position) {
         final ViewGroup rootView = (ViewGroup) mActivity.getLayoutInflater().inflate(R.layout.scene_mode_grid, viewGroup, false);
-        GridView mGridView = (GridView) rootView.findViewById(R.id.grid);
-        mGridView.setAdapter(new GridAdapter(mActivity, i));
+        GridView mGridView = rootView.findViewById(R.id.grid);
+        mGridView.setAdapter(new GridAdapter(mActivity, position));
         viewGroup.addView(rootView);
 
-        mGridView.setOnItemClickListener((parent, view, position, id) -> {
+        mGridView.setOnItemClickListener((parent, view, itemPosition, id) -> {
             final int page = mActivity.getCurrentPage();
-            final int index = page * mActivity.getElmentPerPage() + position;
+            final int index = page * mActivity.getElmentPerPage() + itemPosition;
             // Clear bg
             for (int j = 0; j < parent.getChildCount(); j++) {
                 View v = parent.getChildAt(j);
@@ -273,6 +267,7 @@ class MyPagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+        // do nothing
     }
 
     @Override
@@ -287,9 +282,9 @@ class MyPagerAdapter extends PagerAdapter {
 }
 
 class GridAdapter extends BaseAdapter {
-    private SceneModeActivity mActivity;
-    private LayoutInflater mInflater;
-    private int mPage;
+    private final SceneModeActivity mActivity;
+    private final LayoutInflater mInflater;
+    private final int mPage;
 
     public GridAdapter(SceneModeActivity activity, int i) {
         mActivity = activity;
@@ -322,10 +317,8 @@ class GridAdapter extends BaseAdapter {
         ViewHolder viewHolder;
 
         if (view == null) {
-            viewHolder = new ViewHolder();
             view = mInflater.inflate(R.layout.scene_mode_menu_view, parent, false);
-            viewHolder.imageView = (ImageView) view.findViewById(R.id.image);
-            viewHolder.textTitle = (TextView) view.findViewById(R.id.label);
+            viewHolder = new ViewHolder(view);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -341,8 +334,13 @@ class GridAdapter extends BaseAdapter {
         return view;
     }
 
-    private class ViewHolder {
-        public ImageView imageView;
-        public TextView textTitle;
+    private static class ViewHolder {
+        public final ImageView imageView;
+        public final TextView textTitle;
+
+        ViewHolder(final View rootView) {
+            imageView = rootView.findViewById(R.id.image);
+            textTitle = rootView.findViewById(R.id.label);
+        }
     }
 }
