@@ -193,14 +193,16 @@
             android:summary="%s"
             android:title="@string/pref_camera_videoencoder_title" />
 
+        <!-- amartinz: disable encoder profile selection
         <ListPreference
             android:defaultValue="@string/pref_camera2_videoencoderprofile_default"
             android:entries="@array/pref_camera2_videoencoderprofile_entry"
             android:entryValues="@array/pref_camera2_videoencoderprofile_entryvalues"
             android:key="pref_camera2_videoencoderprofile_key"
-            android:icon="@drawable/bg_custom_empty"
+            android:icon="@drawable/ic_settings_encoder_video"
             android:summary="%s"
             android:title="@string/pref_camera2_videoencoderprofile_title" />
+        -->
 
         <ListPreference
             android:defaultValue="@string/pref_camera_audioencoder_default"
