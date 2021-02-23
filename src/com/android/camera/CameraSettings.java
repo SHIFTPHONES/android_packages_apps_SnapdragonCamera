@@ -1673,10 +1673,16 @@ public class CameraSettings {
         List<String> entries = new ArrayList<String>(buckets.size());
         List<String> entryValues = new ArrayList<String>(buckets.size());
         while (!buckets.isEmpty()) {
-            // find the bucket with the largest first element
-            int maxSize = 0;
+            // find the bucket with the largest first element...
             AspectRatio chosenKey = null;
+            int maxSize = 0;
             for (AspectRatio ratio : buckets.keySet()) {
+                // ... unless it is 16:9, then always get that first
+                if (ratio == AspectRatio.SixteenNine) {
+                    chosenKey = ratio;
+                    break;
+                }
+
                 int size = buckets.get(ratio).get(0).pixels;
                 if (size > maxSize) {
                     maxSize = size;
