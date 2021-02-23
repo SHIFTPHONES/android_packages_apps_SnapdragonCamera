@@ -29,10 +29,10 @@
 
 package com.android.camera;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -40,129 +40,125 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceGroup;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
-import android.view.Window;
-import android.view.WindowManager;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Size;
-import android.widget.Toast;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.EditText;
-import android.text.InputType;
+import android.widget.Toast;
+
+import com.android.camera.ui.RotateTextToast;
+import com.android.camera.util.CameraUtil;
 
 import org.codeaurora.snapcam.R;
-import com.android.camera.util.CameraUtil;
-import com.android.camera.ui.RotateTextToast;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Arrays;
 
+@SuppressLint("SetTextI18n")
+@SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity {
     private static final String TAG = "SettingsActivity";
+    private static final int DEVELOPER_MENU_TOUCH_COUNT = 10;
+
     private SettingsManager mSettingsManager;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences mLocalSharedPref;
     private boolean mDeveloperMenuEnabled;
     private int privateCounter = 0;
-    private final int DEVELOPER_MENU_TOUCH_COUNT = 10;
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mSharedPreferenceChangeListener
-            = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                              String key) {
-            Preference p = findPreference(key);
-            if (p == null) return;
-            String value;
-            if (p instanceof SwitchPreference) {
-                boolean checked = ((SwitchPreference) p).isChecked();
-                value = checked ? "on" : "off";
-                mSettingsManager.setValue(key, value);
-            } else if (p instanceof ListPreference){
-                value = ((ListPreference) p).getValue();
-                mSettingsManager.setValue(key, value);
-            } else if (p instanceof MultiSelectListPreference) {
-                Set<String> valueSet = ((MultiSelectListPreference)p).getValues();
-                mSettingsManager.setValue(key,valueSet);
-            }
-            if (key.equals(SettingsManager.KEY_VIDEO_QUALITY)) {
-                updatePreference(SettingsManager.KEY_VIDEO_HIGH_FRAME_RATE);
-                updatePreference(SettingsManager.KEY_VIDEO_ENCODER);
-            }else if ( key.equals(SettingsManager.KEY_VIDEO_ENCODER) ) {
-                updatePreference(SettingsManager.KEY_VIDEO_ENCODER_PROFILE);
-            }
-            List<String> list = mSettingsManager.getDependentKeys(key);
-            if (list != null) {
-                for (String dependentKey : list) {
-                    updatePreferenceButton(dependentKey);
-                }
+    private final SharedPreferences.OnSharedPreferenceChangeListener mSharedPreferenceChangeListener = (sharedPreferences, key) -> {
+        Preference p = findPreference(key);
+        if (p == null) return;
+        String value;
+        if (p instanceof SwitchPreference) {
+            boolean checked = ((SwitchPreference) p).isChecked();
+            value = checked ? "on" : "off";
+            mSettingsManager.setValue(key, value);
+        } else if (p instanceof ListPreference) {
+            value = ((ListPreference) p).getValue();
+            mSettingsManager.setValue(key, value);
+        } else if (p instanceof MultiSelectListPreference) {
+            Set<String> valueSet = ((MultiSelectListPreference) p).getValues();
+            mSettingsManager.setValue(key, valueSet);
+        }
+        if (key.equals(SettingsManager.KEY_VIDEO_QUALITY)) {
+            updatePreference(SettingsManager.KEY_VIDEO_HIGH_FRAME_RATE);
+            updatePreference(SettingsManager.KEY_VIDEO_ENCODER);
+        } else if (key.equals(SettingsManager.KEY_VIDEO_ENCODER)) {
+            updatePreference(SettingsManager.KEY_VIDEO_ENCODER_PROFILE);
+        }
+        List<String> list = mSettingsManager.getDependentKeys(key);
+        if (list != null) {
+            for (String dependentKey : list) {
+                updatePreferenceButton(dependentKey);
             }
         }
     };
 
-    private SettingsManager.Listener mListener = new SettingsManager.Listener(){
-        @Override
-        public void onSettingsChanged(List<SettingsManager.SettingState> settings){
-            Map<String, SettingsManager.Values> map = mSettingsManager.getValuesMap();
-            for( SettingsManager.SettingState state : settings) {
-                SettingsManager.Values values = map.get(state.key);
-                boolean enabled = false;
-                if (values != null) {
-                    enabled = values.overriddenValue == null;
-                }
-                Preference pref = findPreference(state.key);
-                if ( pref == null ) return;
-
-                pref.setEnabled(enabled);
-
-                if ( pref.getKey().equals(SettingsManager.KEY_MANUAL_EXPOSURE) ) {
-                    UpdateManualExposureSettings();
-                }
-
-                if ( pref.getKey().equals(SettingsManager.KEY_QCFA) ||
-                        pref.getKey().equals(SettingsManager.KEY_PICTURE_FORMAT) ) {
-                    mSettingsManager.updatePictureAndVideoSize();
-                    updatePreference(SettingsManager.KEY_PICTURE_SIZE);
-                    updatePreference(SettingsManager.KEY_VIDEO_QUALITY);
-                }
-
-                if ( pref.getKey().equals(SettingsManager.KEY_VIDEO_HDR_VALUE) ) {
-                    // when enable the Video HDR, app will disable the AUTO HDR.
-                    updateConflictOptionState(SettingsManager.KEY_AUTO_HDR, pref,
-                            "Disable", "disable");
-                }
-
-                if (pref.getKey().equals(SettingsManager.KEY_VIDEO_HIGH_FRAME_RATE)) {
-                    updateConflictOptionState(SettingsManager.KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL,
-                            pref, "Off", "0");
-                }
-
-                if ((pref.getKey().equals(SettingsManager.KEY_ZSL) ||
-                        pref.getKey().equals(SettingsManager.KEY_PICTURE_FORMAT)) ||
-                        pref.getKey().equals(SettingsManager.KEY_SELFIEMIRROR)) {
-                    updateFormatPreference();
-                }
-
-                if ( (pref.getKey().equals(SettingsManager.KEY_MANUAL_WB)) ) {
-                    updateManualWBSettings();
-                }
-
-                if (pref.getKey().equals(SettingsManager.KEY_DIS) ||
-                        pref.getKey().equals(SettingsManager.KEY_EIS_VALUE)) {
-                    mSettingsManager.filterEISVideQualityOptions();
-                    updatePreference(SettingsManager.KEY_VIDEO_QUALITY);
-                }
-
+    private final SettingsManager.Listener mListener = (settings) -> {
+        Map<String, SettingsManager.Values> map = mSettingsManager.getValuesMap();
+        for (SettingsManager.SettingState state : settings) {
+            SettingsManager.Values values = map.get(state.key);
+            boolean enabled = false;
+            if (values != null) {
+                enabled = values.overriddenValue == null;
             }
+            Preference pref = findPreference(state.key);
+            if (pref == null) return;
+
+            pref.setEnabled(enabled);
+
+            if (pref.getKey().equals(SettingsManager.KEY_MANUAL_EXPOSURE)) {
+                UpdateManualExposureSettings();
+            }
+
+            if (pref.getKey().equals(SettingsManager.KEY_QCFA) ||
+                    pref.getKey().equals(SettingsManager.KEY_PICTURE_FORMAT)) {
+                mSettingsManager.updatePictureAndVideoSize();
+                updatePreference(SettingsManager.KEY_PICTURE_SIZE);
+                updatePreference(SettingsManager.KEY_VIDEO_QUALITY);
+            }
+
+            if (pref.getKey().equals(SettingsManager.KEY_VIDEO_HDR_VALUE)) {
+                // when enable the Video HDR, app will disable the AUTO HDR.
+                updateConflictOptionState(SettingsManager.KEY_AUTO_HDR, pref,
+                        "Disable", "disable");
+            }
+
+            if (pref.getKey().equals(SettingsManager.KEY_VIDEO_HIGH_FRAME_RATE)) {
+                updateConflictOptionState(SettingsManager.KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL,
+                        pref, "Off", "0");
+            }
+
+            if ((pref.getKey().equals(SettingsManager.KEY_ZSL) ||
+                    pref.getKey().equals(SettingsManager.KEY_PICTURE_FORMAT)) ||
+                    pref.getKey().equals(SettingsManager.KEY_SELFIEMIRROR)) {
+                updateFormatPreference();
+            }
+
+            if ((pref.getKey().equals(SettingsManager.KEY_MANUAL_WB))) {
+                updateManualWBSettings();
+            }
+
+            if (pref.getKey().equals(SettingsManager.KEY_DIS) ||
+                    pref.getKey().equals(SettingsManager.KEY_EIS_VALUE)) {
+                mSettingsManager.filterEISVideQualityOptions();
+                updatePreference(SettingsManager.KEY_VIDEO_QUALITY);
+            }
+
         }
     };
 
@@ -174,8 +170,7 @@ public class SettingsActivity extends PreferenceActivity {
      * @param checkedValue Judgement condition of enable or disable. It is Entry not EntryValue
      * @param targetValue EntryValue you want to set into conflictKey when you disable it
      */
-    private void updateConflictOptionState(String conflictKey, Preference changedPref,
-                                           String checkedValue, String targetValue) {
+    private void updateConflictOptionState(String conflictKey, Preference changedPref, String checkedValue, String targetValue) {
         ListPreference conflictPref = (ListPreference) findPreference(conflictKey);
         if (!changedPref.getSummary().equals(checkedValue)) {
             conflictPref.setValue(targetValue);
@@ -213,9 +208,7 @@ public class SettingsActivity extends PreferenceActivity {
         //dismiss all popups first, because we need to show edit dialog
         int cameraId = mSettingsManager.getCurrentCameraId();
         final SharedPreferences pref = SettingsActivity.this.getSharedPreferences(
-                ComboPreferences.getLocalSharedPreferencesName(SettingsActivity.this,
-                        cameraId),
-                Context.MODE_PRIVATE);
+                ComboPreferences.getLocalSharedPreferencesName(SettingsActivity.this, cameraId), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         final AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
         LinearLayout linear = new LinearLayout(SettingsActivity.this);
@@ -227,11 +220,7 @@ public class SettingsActivity extends PreferenceActivity {
         ISOinput.setInputType(InputType.TYPE_CLASS_NUMBER);
         ExpTimeInput.setInputType(InputType.TYPE_CLASS_NUMBER);
         alert.setTitle("Manual Exposure Settings");
-        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int id) {
-                dialog.cancel();
-            }
-        });
+        alert.setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
         String isoPriority = this.getString(
                 R.string.pref_camera_manual_exp_value_ISO_priority);
         String expTimePriority = this.getString(
@@ -258,21 +247,19 @@ public class SettingsActivity extends PreferenceActivity {
             linear.addView(ISOinput);
             linear.addView(ISOtext);
             alert.setView(linear);
-            alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    int newISO = -1;
-                    String iso = ISOinput.getText().toString();
-                    Log.v(TAG, "string iso length " + iso.length() + ", iso :" + iso);
-                    if (iso.length() > 0) {
-                        newISO = Integer.parseInt(iso);
-                    }
-                    if (newISO <= isoRange[1] && newISO >= isoRange[0]) {
-                        editor.putString(SettingsManager.KEY_MANUAL_ISO_VALUE, iso);
-                        editor.apply();
-                    } else {
-                        RotateTextToast.makeText(SettingsActivity.this, "Invalid ISO",
-                                Toast.LENGTH_SHORT).show();
-                    }
+            alert.setPositiveButton("Ok", (dialog, id) -> {
+                int newISO = -1;
+                String iso = ISOinput.getText().toString();
+                Log.v(TAG, "string iso length " + iso.length() + ", iso :" + iso);
+                if (iso.length() > 0) {
+                    newISO = Integer.parseInt(iso);
+                }
+                if (newISO <= isoRange[1] && newISO >= isoRange[0]) {
+                    editor.putString(SettingsManager.KEY_MANUAL_ISO_VALUE, iso);
+                    editor.apply();
+                } else {
+                    RotateTextToast.makeText(SettingsActivity.this, "Invalid ISO",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
             alert.show();
@@ -286,26 +273,24 @@ public class SettingsActivity extends PreferenceActivity {
             linear.addView(ExpTimeInput);
             linear.addView(ExpTimeText);
             alert.setView(linear);
-            alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    double newExpTime = -1;
-                    String expTime = ExpTimeInput.getText().toString();
-                    if (expTime.length() > 0) {
-                        try {
-                            newExpTime = Double.parseDouble(expTime);
-                        } catch (NumberFormatException e) {
-                            Log.w(TAG, "Input expTime " + expTime + " is invalid");
-                            newExpTime = Double.parseDouble(expTime) + 1f;
-                        }
+            alert.setPositiveButton("Ok", (dialog, id) -> {
+                double newExpTime = -1;
+                String expTime = ExpTimeInput.getText().toString();
+                if (expTime.length() > 0) {
+                    try {
+                        newExpTime = Double.parseDouble(expTime);
+                    } catch (NumberFormatException e) {
+                        Log.w(TAG, "Input expTime " + expTime + " is invalid");
+                        newExpTime = Double.parseDouble(expTime) + 1f;
                     }
-                    if (exposureRange != null &&
-                            newExpTime <= exposureRange[1] && newExpTime >= exposureRange[0]) {
-                        editor.putString(SettingsManager.KEY_MANUAL_EXPOSURE_VALUE, expTime);
-                        editor.apply();
-                    } else {
-                        RotateTextToast.makeText(SettingsActivity.this, "Invalid exposure time",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                }
+                if (exposureRange != null &&
+                        newExpTime <= exposureRange[1] && newExpTime >= exposureRange[0]) {
+                    editor.putString(SettingsManager.KEY_MANUAL_EXPOSURE_VALUE, expTime);
+                    editor.apply();
+                } else {
+                    RotateTextToast.makeText(SettingsActivity.this, "Invalid exposure time",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
             alert.show();
@@ -317,8 +302,7 @@ public class SettingsActivity extends PreferenceActivity {
             if (exposureRange == null) {
                 ExpTimeRangeText.setText("Get Exposure time range is NULL ");
             } else {
-                ExpTimeRangeText.setText("Enter exposure time in the range of " + exposureRange[0]
-                        + "ns to " + exposureRange[1] + "ns");
+                ExpTimeRangeText.setText("Enter exposure time in the range of " + exposureRange[0] + "ns to " + exposureRange[1] + "ns");
             }
             linear.addView(ISORangeText);
             linear.addView(ISOinput);
@@ -327,40 +311,38 @@ public class SettingsActivity extends PreferenceActivity {
             linear.addView(ExpTimeInput);
             linear.addView(ExpTimeText);
             alert.setView(linear);
-            alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    int newISO = -1;
-                    String iso = ISOinput.getText().toString();
-                    Log.v(TAG, "string iso length " + iso.length() + ", iso :" + iso);
-                    if (iso.length() > 0) {
-                        newISO = Integer.parseInt(iso);
-                    }
-                    if (newISO <= isoRange[1] && newISO >= isoRange[0]) {
-                        editor.putString(SettingsManager.KEY_MANUAL_ISO_VALUE, iso);
-                        editor.apply();
-                    } else {
-                        RotateTextToast.makeText(SettingsActivity.this, "Invalid ISO",
-                                Toast.LENGTH_SHORT).show();
-                    }
+            alert.setPositiveButton("Ok", (dialog, id) -> {
+                int newISO = -1;
+                String iso = ISOinput.getText().toString();
+                Log.v(TAG, "string iso length " + iso.length() + ", iso :" + iso);
+                if (iso.length() > 0) {
+                    newISO = Integer.parseInt(iso);
+                }
+                if (newISO <= isoRange[1] && newISO >= isoRange[0]) {
+                    editor.putString(SettingsManager.KEY_MANUAL_ISO_VALUE, iso);
+                    editor.apply();
+                } else {
+                    RotateTextToast.makeText(SettingsActivity.this, "Invalid ISO",
+                            Toast.LENGTH_SHORT).show();
+                }
 
-                    double newExpTime = -1;
-                    String expTime = ExpTimeInput.getText().toString();
-                    if (expTime.length() > 0) {
-                        try {
-                            newExpTime = Double.parseDouble(expTime);
-                        } catch (NumberFormatException e) {
-                            Log.w(TAG, "Input expTime " + expTime + " is invalid");
-                            newExpTime = Double.parseDouble(expTime) + 1f;
-                        }
+                double newExpTime = -1;
+                String expTime = ExpTimeInput.getText().toString();
+                if (expTime.length() > 0) {
+                    try {
+                        newExpTime = Double.parseDouble(expTime);
+                    } catch (NumberFormatException e) {
+                        Log.w(TAG, "Input expTime " + expTime + " is invalid");
+                        newExpTime = Double.parseDouble(expTime) + 1f;
                     }
-                    if (exposureRange != null &&
-                            newExpTime <= exposureRange[1] && newExpTime >= exposureRange[0]) {
-                        editor.putString(SettingsManager.KEY_MANUAL_EXPOSURE_VALUE, expTime);
-                        editor.apply();
-                    } else {
-                        RotateTextToast.makeText(SettingsActivity.this, "Invalid exposure time",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                }
+                if (exposureRange != null &&
+                        newExpTime <= exposureRange[1] && newExpTime >= exposureRange[0]) {
+                    editor.putString(SettingsManager.KEY_MANUAL_EXPOSURE_VALUE, expTime);
+                    editor.apply();
+                } else {
+                    RotateTextToast.makeText(SettingsActivity.this, "Invalid exposure time",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
             alert.show();
@@ -388,28 +370,25 @@ public class SettingsActivity extends PreferenceActivity {
         linear.addView(gainsInput);
         linear.addView(gainsText);
         alert.setView(linear);
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                float newGain = -1;
-                String gain = gainsInput.getText().toString();
-                Log.v(TAG, "string gain length " + gain.length() + ", gain :" + gain);
-                if (gain.length() > 0) {
-                    newGain = Float.parseFloat(gain);
-                }
-                if (newGain <= gainsRange[1] && newGain >= gainsRange[0]) {
-                    editor.putFloat(SettingsManager.KEY_MANUAL_GAINS_VALUE, newGain);
-                    editor.apply();
-                } else {
-                    RotateTextToast.makeText(SettingsActivity.this, "Invalid GAINS",
-                            Toast.LENGTH_SHORT).show();
-                }
+        alert.setPositiveButton("Ok", (dialog, id) -> {
+            float newGain = -1;
+            String gain = gainsInput.getText().toString();
+            Log.v(TAG, "string gain length " + gain.length() + ", gain :" + gain);
+            if (gain.length() > 0) {
+                newGain = Float.parseFloat(gain);
+            }
+            if (newGain <= gainsRange[1] && newGain >= gainsRange[0]) {
+                editor.putFloat(SettingsManager.KEY_MANUAL_GAINS_VALUE, newGain);
+                editor.apply();
+            } else {
+                RotateTextToast.makeText(SettingsActivity.this, "Invalid GAINS",
+                        Toast.LENGTH_SHORT).show();
             }
         });
         alert.show();
     }
 
-    private void showManualWBGainDialog(final LinearLayout linear,
-                                        final AlertDialog.Builder alert) {
+    private void showManualWBGainDialog(final LinearLayout linear, final AlertDialog.Builder alert) {
         SharedPreferences.Editor editor = mLocalSharedPref.edit();
         final TextView rGainTtext = new TextView(SettingsActivity.this);
         final TextView rGainValue = new TextView(SettingsActivity.this);
@@ -462,51 +441,49 @@ public class SettingsActivity extends PreferenceActivity {
         linear.addView(bGainInput);
         linear.addView(bGainValue);
         alert.setView(linear);
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                float rGain = -1.0f;
-                float gGain = -1.0f;
-                float bGain = -1.0f;
-                String rgainStr = rGainInput.getText().toString();
-                String ggainStr = gGainInput.getText().toString();
-                String bgainStr = bGainInput.getText().toString();
-                if (rgainStr.length() > 0) {
-                    rGain = Float.parseFloat(rgainStr);
-                }
-                if (ggainStr.length() > 0) {
-                    gGain = Float.parseFloat(ggainStr);
-                }
-                if (bgainStr.length() > 0) {
-                    bGain = Float.parseFloat(bgainStr);
-                }
-                if (gainsRange == null) {
-                    RotateTextToast.makeText(SettingsActivity.this, "Gains Range is NULL, " +
-                            "Invalid gains", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (rGain <= gainsRange[1] && rGain >= gainsRange[0]) {
-                    Log.v(TAG, "Setting rGain value : " + rGain);
-                    editor.putFloat(SettingsManager.KEY_MANUAL_WB_R_GAIN, rGain);
-                } else {
-                    RotateTextToast.makeText(SettingsActivity.this, "Invalid rGain value:",
-                            Toast.LENGTH_SHORT).show();
-                }
-                if (gGain <= gainsRange[1] && gGain >= gainsRange[0]) {
-                    Log.v(TAG, "Setting gGain value : " + gGain);
-                    editor.putFloat(SettingsManager.KEY_MANUAL_WB_G_GAIN, gGain);
-                } else {
-                    RotateTextToast.makeText(SettingsActivity.this, "Invalid gGain value:",
-                            Toast.LENGTH_SHORT).show();
-                }
-                if (bGain <= gainsRange[1] && bGain >= gainsRange[0]) {
-                    Log.v(TAG, "Setting bGain value : " + bGain);
-                    editor.putFloat(SettingsManager.KEY_MANUAL_WB_B_GAIN, bGain);
-                } else {
-                    RotateTextToast.makeText(SettingsActivity.this, "Invalid bGain value:",
-                            Toast.LENGTH_SHORT).show();
-                }
-                editor.apply();
+        alert.setPositiveButton("Ok", (dialog, id) -> {
+            float rGain1 = -1.0f;
+            float gGain1 = -1.0f;
+            float bGain1 = -1.0f;
+            String rgainStr = rGainInput.getText().toString();
+            String ggainStr = gGainInput.getText().toString();
+            String bgainStr = bGainInput.getText().toString();
+            if (rgainStr.length() > 0) {
+                rGain1 = Float.parseFloat(rgainStr);
             }
+            if (ggainStr.length() > 0) {
+                gGain1 = Float.parseFloat(ggainStr);
+            }
+            if (bgainStr.length() > 0) {
+                bGain1 = Float.parseFloat(bgainStr);
+            }
+            if (gainsRange == null) {
+                RotateTextToast.makeText(SettingsActivity.this, "Gains Range is NULL, " +
+                        "Invalid gains", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (rGain1 <= gainsRange[1] && rGain1 >= gainsRange[0]) {
+                Log.v(TAG, "Setting rGain value : " + rGain1);
+                editor.putFloat(SettingsManager.KEY_MANUAL_WB_R_GAIN, rGain1);
+            } else {
+                RotateTextToast.makeText(SettingsActivity.this, "Invalid rGain value:",
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (gGain1 <= gainsRange[1] && gGain1 >= gainsRange[0]) {
+                Log.v(TAG, "Setting gGain value : " + gGain1);
+                editor.putFloat(SettingsManager.KEY_MANUAL_WB_G_GAIN, gGain1);
+            } else {
+                RotateTextToast.makeText(SettingsActivity.this, "Invalid gGain value:",
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (bGain1 <= gainsRange[1] && bGain1 >= gainsRange[0]) {
+                Log.v(TAG, "Setting bGain value : " + bGain1);
+                editor.putFloat(SettingsManager.KEY_MANUAL_WB_B_GAIN, bGain1);
+            } else {
+                RotateTextToast.makeText(SettingsActivity.this, "Invalid bGain value:",
+                        Toast.LENGTH_SHORT).show();
+            }
+            editor.apply();
         });
         alert.show();
     }
@@ -518,11 +495,7 @@ public class SettingsActivity extends PreferenceActivity {
         LinearLayout linear = new LinearLayout(SettingsActivity.this);
         linear.setOrientation(1);
         alert.setTitle("Manual White Balance Settings");
-        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int id) {
-                dialog.cancel();
-            }
-        });
+        alert.setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
 
         String cctMode = this.getString(
                 R.string.pref_camera_manual_wb_value_color_temperature);
@@ -552,27 +525,25 @@ public class SettingsActivity extends PreferenceActivity {
             linear.addView(CCTinput);
             linear.addView(CCTtext);
             alert.setView(linear);
-            alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    int newCCT = -1;
-                    String cct = CCTinput.getText().toString();
-                    if (cct.length() > 0) {
-                        newCCT = Integer.parseInt(cct);
-                    }
-                    if (wbRange == null) {
-                        RotateTextToast.makeText(SettingsActivity.this, "CCT Range is NULL, " +
-                                        "Invalid CCT", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (newCCT <= wbRange[1] && newCCT >= wbRange[0]) {
-                        Log.v(TAG, "Setting CCT value : " + newCCT);
-                        //0 corresponds to manual CCT mode
-                        editor.putString(SettingsManager.KEY_MANUAL_WB_TEMPERATURE_VALUE, cct);
-                        editor.apply();
-                    } else {
-                        RotateTextToast.makeText(SettingsActivity.this, "Invalid CCT",
-                                Toast.LENGTH_SHORT).show();
-                    }
+            alert.setPositiveButton("Ok", (dialog, id) -> {
+                int newCCT = -1;
+                String cct = CCTinput.getText().toString();
+                if (cct.length() > 0) {
+                    newCCT = Integer.parseInt(cct);
+                }
+                if (wbRange == null) {
+                    RotateTextToast.makeText(SettingsActivity.this, "CCT Range is NULL, " +
+                                    "Invalid CCT", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (newCCT <= wbRange[1] && newCCT >= wbRange[0]) {
+                    Log.v(TAG, "Setting CCT value : " + newCCT);
+                    //0 corresponds to manual CCT mode
+                    editor.putString(SettingsManager.KEY_MANUAL_WB_TEMPERATURE_VALUE, cct);
+                    editor.apply();
+                } else {
+                    RotateTextToast.makeText(SettingsActivity.this, "Invalid CCT",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
             alert.show();
@@ -620,39 +591,35 @@ public class SettingsActivity extends PreferenceActivity {
             PreferenceCategory category = (PreferenceCategory) getPreferenceScreen().getPreference(i);
             for (int j = 0; j < category.getPreferenceCount(); j++) {
                 Preference pref = category.getPreference(j);
-                pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                pref.setOnPreferenceClickListener(onPreferenceClickListener);
+            }
+        }
+    }
 
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        if (!mDeveloperMenuEnabled) {
-                            if (preference.getKey().equals("version_info")) {
-                                privateCounter++;
-                                if (privateCounter >= DEVELOPER_MENU_TOUCH_COUNT) {
-                                    mDeveloperMenuEnabled = true;
-                                    mSharedPreferences.edit().putBoolean(SettingsManager.KEY_DEVELOPER_MENU, true).apply();
-                                    SharedPreferences sp = SettingsActivity.this.getSharedPreferences(
-                                            ComboPreferences.getGlobalSharedPreferencesName(SettingsActivity.this),
-                                            Context.MODE_PRIVATE);
-                                    sp.edit().putBoolean(SettingsManager.KEY_DEVELOPER_MENU, true).apply();
-                                    Toast.makeText(SettingsActivity.this, "Camera developer option is enabled now", Toast.LENGTH_SHORT).show();
-                                    recreate();
-                                }
-                            } else {
-                                privateCounter = 0;
-                            }
-                        }
-
-                        if ( preference.getKey().equals(SettingsManager.KEY_RESTORE_DEFAULT) ) {
-                            onRestoreDefaultSettingsClick();
-                        }
-                        return false;
-                    }
-
-                });
+    private final Preference.OnPreferenceClickListener onPreferenceClickListener = (preference) -> {
+        if (!mDeveloperMenuEnabled) {
+            if (preference.getKey().equals("version_info")) {
+                privateCounter++;
+                if (privateCounter >= DEVELOPER_MENU_TOUCH_COUNT) {
+                    mDeveloperMenuEnabled = true;
+                    mSharedPreferences.edit().putBoolean(SettingsManager.KEY_DEVELOPER_MENU, true).apply();
+                    SharedPreferences sp = SettingsActivity.this.getSharedPreferences(
+                            ComboPreferences.getGlobalSharedPreferencesName(SettingsActivity.this),
+                            Context.MODE_PRIVATE);
+                    sp.edit().putBoolean(SettingsManager.KEY_DEVELOPER_MENU, true).apply();
+                    Toast.makeText(SettingsActivity.this, "Camera developer option is enabled now", Toast.LENGTH_SHORT).show();
+                    recreate();
+                }
+            } else {
+                privateCounter = 0;
             }
         }
 
-    }
+        if ( preference.getKey().equals(SettingsManager.KEY_RESTORE_DEFAULT) ) {
+            onRestoreDefaultSettingsClick();
+        }
+        return false;
+    };
 
     private void filterPreferences() {
         String[] categories = {"photo", "video", "general", "developer"};
@@ -691,8 +658,8 @@ public class SettingsActivity extends PreferenceActivity {
                 Preference p = findPreference(key);
                 if (p == null) continue;
 
-                for (int i = 0; i < categories.length; i++) {
-                    PreferenceGroup group = (PreferenceGroup) findPreference(categories[i]);
+                for (String category : categories) {
+                    PreferenceGroup group = (PreferenceGroup) findPreference(category);
                     if (group.removePreference(p)) break;
                 }
             }
@@ -748,8 +715,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         // when get RAW10 size is null, disable the KEY_SAVERAW
         int cameraId = mSettingsManager.getCurrentCameraId();
-        Size[] rawSize = mSettingsManager.getSupportedOutputSize(cameraId,
-                ImageFormat.RAW10);
+        Size[] rawSize = mSettingsManager.getSupportedOutputSize(cameraId, ImageFormat.RAW10);
         if (mDeveloperMenuEnabled && rawSize == null) {
             Preference p = findPreference(SettingsManager.KEY_SAVERAW);
             p.setEnabled(false);
@@ -778,11 +744,7 @@ public class SettingsActivity extends PreferenceActivity {
         if (pref != null ) {
             if( pref instanceof ListPreference) {
                 ListPreference pref2 = (ListPreference) pref;
-                if (pref2.getEntryValues().length == 1) {
-                    pref2.setEnabled(false);
-                } else {
-                    pref2.setEnabled(true);
-                }
+                pref2.setEnabled(pref2.getEntryValues().length != 1);
             }else {
                 pref.setEnabled(false);
             }
@@ -823,9 +785,7 @@ public class SettingsActivity extends PreferenceActivity {
                 Set<String> valueSet = new HashSet<String>();
                 if (values != null) {
                     String[] splitValues = values.split(";");
-                    for (String str : splitValues) {
-                        valueSet.add(str);
-                    }
+                    Collections.addAll(valueSet, splitValues);
                 }
                 pref.setValues(valueSet);
             }
