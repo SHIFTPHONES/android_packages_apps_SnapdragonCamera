@@ -1775,6 +1775,16 @@ public class CameraSettings {
             return another.pixels - pixels;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof SizeEntry)) {
+                return false;
+            }
+            return ((SizeEntry) obj).ratio == ratio &&
+                    ((SizeEntry) obj).size == size &&
+                    ((SizeEntry) obj).pixels == pixels;
+        }
+
         String resolution() { return size.getWidth()+"x"+size.getHeight(); }
 
         String formatted(Context ctx) {
