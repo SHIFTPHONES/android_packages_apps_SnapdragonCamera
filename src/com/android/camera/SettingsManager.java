@@ -1363,7 +1363,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
         Size[] highResSizes = map.getHighResolutionOutputSizes(ImageFormat.JPEG);
         if (highResSizes != null) {
             for (int i = 0; i < highResSizes.length; i++) {
-                if (sizes[i].getWidth() > 352 && sizes[i].getHeight() > 288) {
+                if (highResSizes[i].getWidth() > 352 && highResSizes[i].getHeight() > 288) {
                     res.add(highResSizes[i].toString());
                 }
             }
