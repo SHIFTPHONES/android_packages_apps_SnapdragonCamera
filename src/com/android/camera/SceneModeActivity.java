@@ -32,6 +32,7 @@ package com.android.camera;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -94,6 +95,16 @@ public class SceneModeActivity extends Activity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (mPager != null) {
+            mAdapter = new MyPagerAdapter(this);
+            mPager.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final boolean isSecureCamera = getIntent().getBooleanExtra(
@@ -103,7 +114,6 @@ public class SceneModeActivity extends Activity {
         }
         setContentView(R.layout.scene_mode_menu_layout);
         mSettingsManager = SettingsManager.getInstance();
-
 
         mCurrentScene = mSettingsManager.getValueIndex(SettingsManager.KEY_SCENE_MODE);
 
@@ -226,7 +236,6 @@ public class SceneModeActivity extends Activity {
 }
 
 class MyPagerAdapter extends PagerAdapter {
-
     private final SceneModeActivity mActivity;
 
     public MyPagerAdapter(SceneModeActivity activity) {
@@ -235,7 +244,10 @@ class MyPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup viewGroup, int position) {
-        final ViewGroup rootView = (ViewGroup) mActivity.getLayoutInflater().inflate(R.layout.scene_mode_grid, viewGroup, false);
+        final int orientation = mActivity.getResources().getConfiguration().orientation;
+        final int layoutResId = (orientation == Configuration.ORIENTATION_PORTRAIT) ? R.layout.scene_mode_grid : R.layout.scene_mode_grid_landscape;
+
+        final ViewGroup rootView = (ViewGroup) mActivity.getLayoutInflater().inflate(layoutResId, viewGroup, false);
         GridView mGridView = rootView.findViewById(R.id.grid);
         mGridView.setAdapter(new GridAdapter(mActivity, position));
         viewGroup.addView(rootView);
@@ -279,68 +291,68 @@ class MyPagerAdapter extends PagerAdapter {
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
-}
 
-class GridAdapter extends BaseAdapter {
-    private final SceneModeActivity mActivity;
-    private final LayoutInflater mInflater;
-    private final int mPage;
+    private static class GridAdapter extends BaseAdapter {
+        private final SceneModeActivity mActivity;
+        private final LayoutInflater mInflater;
+        private final int mPage;
 
-    public GridAdapter(SceneModeActivity activity, int i) {
-        mActivity = activity;
-        mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPage = i;
-    }
-
-    @Override
-    public int getCount() {
-        int elem = mActivity.getElmentPerPage();
-        if (mPage == mActivity.getNumberOfPage() - 1) {
-            elem = mActivity.getNumberOfElement() - mPage * elem;
-        }
-        return elem;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder viewHolder;
-
-        if (view == null) {
-            view = mInflater.inflate(R.layout.scene_mode_menu_view, parent, false);
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+        public GridAdapter(SceneModeActivity activity, int i) {
+            mActivity = activity;
+            mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mPage = i;
         }
 
-        final List<CharSequence> entryList = mActivity.getEntries();
-        final List<Integer> thumbnailList = mActivity.getThumbnails();
+        @Override
+        public int getCount() {
+            int elem = mActivity.getElmentPerPage();
+            if (mPage == mActivity.getNumberOfPage() - 1) {
+                elem = mActivity.getNumberOfElement() - mPage * elem;
+            }
+            return elem;
+        }
 
-        final int idx = position + mPage * mActivity.getElmentPerPage();
-        viewHolder.imageView.setImageResource(thumbnailList.get(idx));
-        viewHolder.textTitle.setText(entryList.get(position + mPage * mActivity.getElmentPerPage()));
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
 
-        return view;
-    }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-    private static class ViewHolder {
-        public final ImageView imageView;
-        public final TextView textTitle;
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            ViewHolder viewHolder;
 
-        ViewHolder(final View rootView) {
-            imageView = rootView.findViewById(R.id.image);
-            textTitle = rootView.findViewById(R.id.label);
+            if (view == null) {
+                view = mInflater.inflate(R.layout.scene_mode_menu_view, parent, false);
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            final List<CharSequence> entryList = mActivity.getEntries();
+            final List<Integer> thumbnailList = mActivity.getThumbnails();
+
+            final int idx = position + mPage * mActivity.getElmentPerPage();
+            viewHolder.imageView.setImageResource(thumbnailList.get(idx));
+            viewHolder.textTitle.setText(entryList.get(position + mPage * mActivity.getElmentPerPage()));
+
+            return view;
+        }
+
+        private static class ViewHolder {
+            public final ImageView imageView;
+            public final TextView textTitle;
+
+            ViewHolder(final View rootView) {
+                imageView = rootView.findViewById(R.id.image);
+                textTitle = rootView.findViewById(R.id.label);
+            }
         }
     }
 }

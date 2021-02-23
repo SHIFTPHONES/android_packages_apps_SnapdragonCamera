@@ -30,13 +30,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <GridView
         android:id="@+id/grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnWidth="@dimen/scene_mode_width"
-        android:numColumns="auto_fit"
+        android:numColumns="5"
         android:stretchMode="spacingWidthUniform" />
 </LinearLayout>

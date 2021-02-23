@@ -27,6 +27,7 @@
      IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -42,7 +43,8 @@
         android:layout_height="56dp"
         android:padding="10dp"
         android:background="@drawable/bg_custom_icon"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        tools:src="@drawable/ic_scene_mode_hdr" />
 
     <TextView
         android:id="@+id/label"
@@ -52,5 +54,6 @@
         android:gravity="center"
         android:layout_marginTop="8dp"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:text="@string/pref_camera_scenemode_entry_hdr" />
 </LinearLayout>
