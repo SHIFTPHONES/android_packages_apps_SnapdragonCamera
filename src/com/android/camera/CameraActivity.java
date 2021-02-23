@@ -17,9 +17,6 @@
 
 package com.android.camera;
 
-import android.hardware.camera2.CameraAccessException;
-import android.view.Display;
-import android.graphics.Point;
 import android.Manifest;
 import android.animation.Animator;
 import android.annotation.TargetApi;
@@ -46,13 +43,15 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.hardware.camera2.CameraAccessException;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -63,10 +62,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.os.SystemProperties;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -85,8 +84,8 @@ import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.android.camera.app.AppManagerFactory;
-import com.android.camera.app.PlaceholderManager;
 import com.android.camera.app.PanoramaStitchingManager;
+import com.android.camera.app.PlaceholderManager;
 import com.android.camera.crop.CropActivity;
 import com.android.camera.data.CameraDataAdapter;
 import com.android.camera.data.CameraPreviewData;
@@ -100,10 +99,10 @@ import com.android.camera.data.MediaDetails;
 import com.android.camera.data.SimpleViewData;
 import com.android.camera.exif.ExifInterface;
 import com.android.camera.tinyplanet.TinyPlanetFragment;
-import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.DetailsDialog;
 import com.android.camera.ui.FilmStripView;
 import com.android.camera.ui.FilmStripView.ImageData;
+import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.PanoCaptureProcessView;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.CameraUtil;
@@ -113,8 +112,8 @@ import com.android.camera.util.IntentHelper;
 import com.android.camera.util.PersistUtil;
 import com.android.camera.util.PhotoSphereHelper.PanoramaViewHelper;
 import com.android.camera.util.UsageStatistics;
-import org.codeaurora.snapcam.R;
 
+import org.codeaurora.snapcam.R;
 import org.lineageos.quickreader.ScannerActivity;
 
 import java.io.File;
@@ -2226,17 +2225,6 @@ public class CameraActivity extends Activity
                 mCameraVideoModuleRootView.setVisibility(View.VISIBLE);
                 break;
 
-            case ModuleSwitcher.PHOTO_MODULE_INDEX:
-                if(mPhotoModule == null) {
-                    mPhotoModule = new PhotoModule();
-                    mPhotoModule.init(this, mCameraPhotoModuleRootView);
-                } else {
-                    mPhotoModule.reinit();
-                }
-                mCurrentModule = mPhotoModule;
-                mCameraPhotoModuleRootView.setVisibility(View.VISIBLE);
-                break;
-
             case ModuleSwitcher.WIDE_ANGLE_PANO_MODULE_INDEX:
                 if(mPanoModule == null) {
                     mPanoModule = new WideAnglePanoramaModule();
@@ -2278,9 +2266,10 @@ public class CameraActivity extends Activity
                 }
             case ModuleSwitcher.LIGHTCYCLE_MODULE_INDEX: //Unused module for now
             case ModuleSwitcher.GCAM_MODULE_INDEX:  //Unused module for now
+            case ModuleSwitcher.PHOTO_MODULE_INDEX:
             default:
                 // Fall back to photo mode.
-                if(mPhotoModule == null) {
+                if (mPhotoModule == null) {
                     mPhotoModule = new PhotoModule();
                     mPhotoModule.init(this, mCameraPhotoModuleRootView);
                 } else {
