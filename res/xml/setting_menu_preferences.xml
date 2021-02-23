@@ -124,6 +124,7 @@
             android:key="pref_camera2_shutter_sound_key"
             android:title="@string/pref_camera2_shutter_sound_title" />
 
+        <!-- amartinz: disable picture format selection until HEIC / HEIF is fixed
         <ListPreference
             android:defaultValue="@string/pref_camera2_picture_format_default"
             android:entries="@array/pref_camera2_picture_format_entries"
@@ -132,6 +133,7 @@
             android:key="pref_camera2_picture_format_key"
             android:summary="%s"
             android:title="@string/pref_camera2_picture_format_title"/>
+        -->
 
         <SwitchPreference
             android:defaultValue="false"
