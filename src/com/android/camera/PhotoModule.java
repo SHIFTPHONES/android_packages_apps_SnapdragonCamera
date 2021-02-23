@@ -31,18 +31,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
-import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.CameraProfile;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -83,7 +79,6 @@ import com.android.camera.exif.Rational;
 import com.android.camera.ui.CountDownView.OnCountDownFinishedListener;
 import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.RotateTextToast;
-import com.android.camera.util.ApiHelper;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.GcamHelper;
 import com.android.camera.util.PersistUtil;
@@ -106,7 +101,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.lang.NumberFormatException;
 import java.util.List;
 import java.util.Vector;
@@ -321,9 +315,7 @@ public class PhotoModule
     private final AutoFocusCallback mAutoFocusCallback =
             new AutoFocusCallback();
     private final Object mAutoFocusMoveCallback =
-            ApiHelper.HAS_AUTO_FOCUS_MOVE_CALLBACK
-                    ? new AutoFocusMoveCallback()
-                    : null;
+            new AutoFocusMoveCallback();
 
     private final CameraErrorCallback mErrorCallback = new CameraErrorCallback();
     private final StatsCallback mStatsCallback = new StatsCallback();
@@ -4362,7 +4354,7 @@ public class PhotoModule
             }
         }
 
-        if (mContinuousFocusSupported && ApiHelper.HAS_AUTO_FOCUS_MOVE_CALLBACK) {
+        if (mContinuousFocusSupported) {
             updateAutoFocusMoveCallback();
         }
 

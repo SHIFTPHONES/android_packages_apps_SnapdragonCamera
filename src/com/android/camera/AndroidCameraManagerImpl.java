@@ -26,7 +26,6 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.AutoFocusMoveCallback;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.ErrorCallback;
 import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.Camera.OnZoomChangeListener;
@@ -44,7 +43,7 @@ import android.view.SurfaceHolder;
 import android.hardware.Camera.CameraDataCallback;
 import android.hardware.Camera.CameraMetaDataCallback;
 import com.android.camera.app.CameraApp;
-import com.android.camera.util.ApiHelper;
+
 import android.os.ConditionVariable;
 import java.lang.reflect.Method;
 

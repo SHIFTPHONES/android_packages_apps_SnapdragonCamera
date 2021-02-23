@@ -21,12 +21,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-
-import com.android.camera.util.ApiHelper;
 
 public class OrientationManager {
     private static final String TAG = "CAM_OrientationManager";

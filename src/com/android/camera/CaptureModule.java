@@ -26,13 +26,16 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -61,13 +64,13 @@ import android.media.EncoderCapabilities;
 import android.media.EncoderCapabilities.VideoEncoderCap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.media.MediaFormat;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaRecorder;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecInfo.VideoCapabilities;
 import android.media.MediaCodecList;
+import android.media.MediaFormat;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
@@ -77,8 +80,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.provider.MediaStore;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Range;
 import android.util.Size;
@@ -90,27 +93,23 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.FrameLayout;
-import android.graphics.Paint;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.util.AttributeSet;
 
+import com.android.camera.PhotoModule.NamedImages;
+import com.android.camera.PhotoModule.NamedImages.NamedEntity;
 import com.android.camera.deepportrait.CamGLRenderObserver;
 import com.android.camera.deepportrait.CamGLRenderer;
 import com.android.camera.deepportrait.DPImage;
 import com.android.camera.deepportrait.GLCameraPreview;
 import com.android.camera.exif.ExifInterface;
+import com.android.camera.imageprocessor.FrameProcessor;
+import com.android.camera.imageprocessor.PostProcessor;
 import com.android.camera.imageprocessor.filter.BlurbusterFilter;
 import com.android.camera.imageprocessor.filter.ChromaflashFilter;
 import com.android.camera.imageprocessor.filter.DeepPortraitFilter;
 import com.android.camera.imageprocessor.filter.ImageFilter;
-import com.android.camera.imageprocessor.PostProcessor;
-import com.android.camera.imageprocessor.FrameProcessor;
-import com.android.camera.PhotoModule.NamedImages;
-import com.android.camera.PhotoModule.NamedImages.NamedEntity;
 import com.android.camera.imageprocessor.filter.SharpshooterFilter;
 import com.android.camera.imageprocessor.filter.StillmoreFilter;
 import com.android.camera.imageprocessor.filter.UbifocusFilter;
@@ -119,14 +118,12 @@ import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.ProMode;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.ui.TrackingFocusRenderer;
-import com.android.camera.util.ApiHelper;
+import com.android.camera.util.AccessibilityUtils;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.PersistUtil;
 import com.android.camera.util.SettingTranslation;
-import com.android.camera.util.AccessibilityUtils;
 import com.android.camera.util.VendorTagUtil;
 import com.android.internal.util.MemInfoReader;
-
 import com.shift.camera.CaptureRequestKey;
 import com.shift.camera.Metadata.HDR;
 import com.shift.camera.Metadata.LowLightShot;
@@ -141,6 +138,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -148,12 +146,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Executor;
-import java.lang.reflect.Method;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.heifwriter.HeifWriter;
 
@@ -1687,23 +1684,21 @@ public class CaptureModule implements CameraModule, PhotoController,
                     list.add(mRawImageReader[id].getSurface());
                 }
 
-                List<OutputConfiguration> outputConfigurations = null;
-                if (ApiHelper.isAndroidPOrHigher()) {
-                    outputConfigurations = new ArrayList<OutputConfiguration>();
-                    for (Surface s : list) {
-                        outputConfigurations.add(new OutputConfiguration(s));
-                    }
+                List<OutputConfiguration> outputConfigurations = new ArrayList<>();
+                for (Surface s : list) {
+                    outputConfigurations.add(new OutputConfiguration(s));
+                }
 
-                    mIsFormatHeif = false;
-                    if (mSettingsManager.getSavePictureFormat() == SettingsManager.HEIF_FORMAT ) {
-                        if (mInitHeifWriter != null) {
-                            mHeifOutput = new OutputConfiguration(mInitHeifWriter.getInputSurface());
-                            mHeifOutput.enableSurfaceSharing();
-                            outputConfigurations.add(mHeifOutput);
-                            mIsFormatHeif = true;
-                        }
+                mIsFormatHeif = false;
+                if (mSettingsManager.getSavePictureFormat() == SettingsManager.HEIF_FORMAT) {
+                    if (mInitHeifWriter != null) {
+                        mHeifOutput = new OutputConfiguration(mInitHeifWriter.getInputSurface());
+                        mHeifOutput.enableSurfaceSharing();
+                        outputConfigurations.add(mHeifOutput);
+                        mIsFormatHeif = true;
                     }
                 }
+
                 if(mChosenImageFormat == ImageFormat.YUV_420_888 || mChosenImageFormat == ImageFormat.PRIVATE) {
                     if (mPostProcessor.isZSLEnabled()) {
                         mPreviewRequestBuilder[id].addTarget(mImageReader[id].getSurface());
@@ -1723,7 +1718,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                         }
                     }
                 } else {
-                    if (ApiHelper.isAndroidPOrHigher() && outputConfigurations != null) {
+                    if (outputConfigurations != null) {
                         createCameraSessionWithSessionConfiguration(id, outputConfigurations, captureSessionCallback,
                                 mCameraHandler, mPreviewRequestBuilder[id].build());
                     } else {
@@ -4809,94 +4804,13 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
 
 
-            if (ApiHelper.isAndroidPOrHigher()) {
-                if (mHighSpeedCapture && ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
-                    CaptureRequest initialRequest = mVideoRequestBuilder.build();
-                    buildConstrainedCameraSession(mCameraDevice[cameraId], surfaces,
-                            mSessionListener, mCameraHandler, initialRequest);
-
-                } else {
-                    configureCameraSessionWithParameters(cameraId, surfaces,
-                            mSessionListener, mCameraHandler, mVideoRequestBuilder.build());
-                }
+            if (mHighSpeedCapture && ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
+                CaptureRequest initialRequest = mVideoRequestBuilder.build();
+                buildConstrainedCameraSession(mCameraDevice[cameraId], surfaces,
+                        mSessionListener, mCameraHandler, initialRequest);
             } else {
-                if (mHighSpeedCapture && ((int) mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS)) {
-                    mCameraDevice[cameraId].createConstrainedHighSpeedCaptureSession(surfaces, new
-                            CameraConstrainedHighSpeedCaptureSession.StateCallback() {
-
-                                @Override
-                                public void onConfigured(CameraCaptureSession cameraCaptureSession) {
-                                    mCurrentSession = cameraCaptureSession;
-                                    Log.v(TAG, "createConstrainedHighSpeedCaptureSession onConfigured");
-                                    mCaptureSession[cameraId] = cameraCaptureSession;
-                                    CameraConstrainedHighSpeedCaptureSession session =
-                                            (CameraConstrainedHighSpeedCaptureSession) mCurrentSession;
-                                    try {
-                                        setUpVideoCaptureRequestBuilder(mVideoRequestBuilder, cameraId);
-                                        List list = CameraUtil
-                                                .createHighSpeedRequestList(mVideoRequestBuilder.build());
-                                        session.setRepeatingBurst(list, mCaptureCallback, mCameraHandler);
-                                    } catch (CameraAccessException e) {
-                                        Log.e(TAG, "Failed to start high speed video recording "
-                                                + e.getMessage());
-                                        e.printStackTrace();
-                                    } catch (IllegalArgumentException e) {
-                                        Log.e(TAG, "Failed to start high speed video recording "
-                                                + e.getMessage());
-                                        e.printStackTrace();
-                                    } catch (IllegalStateException e) {
-                                        Log.e(TAG, "Failed to start high speed video recording "
-                                                + e.getMessage());
-                                        e.printStackTrace();
-                                    }
-                                    if (!mFrameProcessor.isFrameListnerEnabled() && !startMediaRecorder()) {
-                                        startRecordingFailed();
-                                        return;
-                                    }
-                                    mUI.getFocusRing().stopFocusAnimations();
-                                    mUI.resetPauseButton();
-                                    mRecordingTotalTime = 0L;
-                                    mRecordingStartTime = SystemClock.uptimeMillis();
-                                    mUI.enableShutter(false);
-                                    mUI.showRecordingUI(true, false);
-                                    updateRecordingTime();
-                                    keepScreenOn();
-                                }
-
-                                @Override
-                                public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-                                    Toast.makeText(mActivity, "Failed", Toast.LENGTH_SHORT).show();
-                                }
-                            }, null);
-                } else {
-                    surfaces.add(mVideoSnapshotImageReader.getSurface());
-                    String zzHDR = mSettingsManager.getValue(SettingsManager.KEY_VIDEO_HDR_VALUE);
-                    boolean zzHdrStatue = zzHDR.equals("1");
-                    // if enable ZZHDR mode, don`t call the setOpModeForVideoStream method.
-                    if (!zzHdrStatue) {
-                        setOpModeForVideoStream(cameraId);
-                    }
-                    String value = mSettingsManager.getValue(SettingsManager.KEY_FOVC_VALUE);
-                    if (value != null && Boolean.parseBoolean(value)) {
-                        mStreamConfigOptMode = mStreamConfigOptMode | STREAM_CONFIG_MODE_FOVC;
-                    }
-                    if (zzHdrStatue) {
-                        mStreamConfigOptMode = STREAM_CONFIG_MODE_ZZHDR;
-                    }
-
-                    Log.v(TAG, "createCustomCaptureSession mStreamConfigOptMode: " + mStreamConfigOptMode);
-
-                    if (mStreamConfigOptMode == 0) {
-                        mCameraDevice[cameraId].createCaptureSession(surfaces, mCCSSateCallback, null);
-                    } else {
-                        List<OutputConfiguration> outConfigurations = new ArrayList<>(surfaces.size());
-                        for (Surface sface : surfaces) {
-                            outConfigurations.add(new OutputConfiguration(sface));
-                        }
-                        mCameraDevice[cameraId].createCustomCaptureSession(null, outConfigurations,
-                                mStreamConfigOptMode, mCCSSateCallback, null);
-                    }
-                }
+                configureCameraSessionWithParameters(cameraId, surfaces,
+                        mSessionListener, mCameraHandler, mVideoRequestBuilder.build());
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -5267,17 +5181,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         mRecordingStartTime = SystemClock.uptimeMillis();
         updateRecordingTime();
         setEndOfStream(true, false);
-        if (!ApiHelper.HAS_RESUME_SUPPORTED){
-            mMediaRecorder.start();
-            Log.d(TAG, "StartRecordingVideo done.");
-        } else {
-            try {
-                Method resumeRec = Class.forName("android.media.MediaRecorder").getMethod("resume");
-                resumeRec.invoke(mMediaRecorder);
-            } catch (Exception e) {
-                Log.v(TAG, "resume method not implemented");
-            }
-        }
+        mMediaRecorder.resume();
     }
 
     private void setEndOfStream(boolean isResume, boolean isStopRecord) {

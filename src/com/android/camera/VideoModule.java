@@ -30,8 +30,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
-import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.location.Location;
@@ -66,13 +64,10 @@ import com.android.camera.CameraManager.CameraPictureCallback;
 import com.android.camera.CameraManager.CameraProxy;
 import com.android.camera.app.OrientationManager;
 import com.android.camera.exif.ExifInterface;
-import com.android.camera.ui.RotateImageView;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.AccessibilityUtils;
-import com.android.camera.util.ApiHelper;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.UsageStatistics;
-import com.android.camera.PhotoModule;
 
 import org.codeaurora.snapcam.R;
 import org.codeaurora.snapcam.wrapper.ParametersWrapper;
@@ -85,7 +80,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
-import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 public class VideoModule implements CameraModule,
@@ -349,13 +343,7 @@ public class VideoModule implements CameraModule,
 
         VIDEO_ENCODER_TABLE.put("h263", MediaRecorder.VideoEncoder.H263);
         VIDEO_ENCODER_TABLE.put("h264", MediaRecorder.VideoEncoder.H264);
-        int h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                       "HEVC", null, MediaRecorder.VideoEncoder.DEFAULT);
-        if (h265 == MediaRecorder.VideoEncoder.DEFAULT) {
-            h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                       "H265", null, MediaRecorder.VideoEncoder.DEFAULT);
-        }
-        VIDEO_ENCODER_TABLE.put("h265", h265);
+        VIDEO_ENCODER_TABLE.put("h265", MediaRecorder.VideoEncoder.HEVC);
         VIDEO_ENCODER_TABLE.put("m4v", MediaRecorder.VideoEncoder.MPEG_4_SP);
         VIDEO_ENCODER_TABLE.putDefault(MediaRecorder.VideoEncoder.DEFAULT);
 
@@ -493,12 +481,6 @@ public class VideoModule implements CameraModule,
         }
     }
 
-    private void initializeSurfaceView() {
-        if (!ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {  // API level < 16
-            mUI.initializeSurfaceView();
-        }
-    }
-
     public void reinit() {
         mPreferences = ComboPreferences.get(mActivity);
         if (mPreferences == null) {
@@ -553,7 +535,6 @@ public class VideoModule implements CameraModule,
         // Surface texture is from camera screen nail and startPreview needs it.
         // This must be done before startPreview.
         mIsVideoCaptureIntent = isVideoCaptureIntent();
-        initializeSurfaceView();
 
         // Make sure camera device is opened.
         try {
@@ -853,7 +834,7 @@ public class VideoModule implements CameraModule,
             }
         } else if (!recordFail){
             // Start capture animation.
-            if (!mPaused && ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {
+            if (!mPaused) {
                 // The capture animation is disabled on ICS because we use SurfaceView
                 // for preview during recording. When the recording is done, we switch
                 // back to use SurfaceTexture for preview and we need to stop then start
@@ -1433,12 +1414,6 @@ public class VideoModule implements CameraModule,
         mFaceDetectionStarted = false;
     }
 
-    private void releasePreviewResources() {
-        if (!ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {
-            mUI.hideSurfaceView();
-        }
-    }
-
     @Override
     public void onPauseBeforeSuper() {
         mPaused = true;
@@ -1454,9 +1429,6 @@ public class VideoModule implements CameraModule,
         }
 
         closeVideoFileDescriptor();
-
-
-        releasePreviewResources();
 
         if (mReceiver != null) {
             mActivity.unregisterReceiver(mReceiver);
@@ -1642,25 +1614,6 @@ public class VideoModule implements CameraModule,
 
     private void setupMediaRecorderPreviewDisplay() {
         mFocusManager.resetTouchFocus();
-        // Nothing to do here if using SurfaceTexture.
-        if (!ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {
-            // We stop the preview here before unlocking the device because we
-            // need to change the SurfaceTexture to SurfaceView for preview.
-            stopPreview();
-            mCameraDevice.setPreviewDisplay(mUI.getSurfaceHolder());
-            // The orientation for SurfaceTexture is different from that for
-            // SurfaceView. For SurfaceTexture we don't need to consider the
-            // display rotation. Just consider the sensor's orientation and we
-            // will set the orientation correctly when showing the texture.
-            // Gallery will handle the orientation for the preview. For
-            // SurfaceView we will have to take everything into account so the
-            // display rotation is considered.
-            mCameraDevice.setDisplayOrientation(
-                    CameraUtil.getDisplayOrientation(mDisplayRotation, mCameraId));
-            mCameraDevice.startPreview();
-            mPreviewing = true;
-            mMediaRecorder.setPreviewDisplay(mUI.getSurfaceHolder().getSurface());
-        }
     }
     private int getHighSpeedVideoEncoderBitRate(CamcorderProfile profile, int targetRate) {
         int bitRate;
@@ -1682,14 +1635,6 @@ public class VideoModule implements CameraModule,
         Log.v(TAG, "initializeRecorder");
         // If the mCameraDevice is null, then this activity is going to finish
         if (mCameraDevice == null) return;
-
-        if (!ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {
-            // Set the SurfaceView to visible so the surface gets created.
-            // surfaceCreated() is called immediately when the visibility is
-            // changed to visible. Thus, mSurfaceViewReady should become true
-            // right after calling setVisibility().
-            mUI.showSurfaceView();
-        }
 
         Intent intent = mActivity.getIntent();
         Bundle myExtras = intent.getExtras();
@@ -2207,16 +2152,7 @@ public class VideoModule implements CameraModule,
         mMediaRecorderPausing = false;
         mRecordingStartTime = SystemClock.uptimeMillis();
         updateRecordingTime();
-        if (!ApiHelper.HAS_RESUME_SUPPORTED){
-            mMediaRecorder.start();
-        } else {
-            try {
-                Method resumeRec = Class.forName("android.media.MediaRecorder").getMethod("resume");
-                resumeRec.invoke(mMediaRecorder);
-            } catch (Exception e) {
-                Log.v(TAG, "resume method not implemented");
-            }
-        }
+        mMediaRecorder.resume();
     }
 
     private boolean stopVideoRecording() {
@@ -2283,21 +2219,14 @@ public class VideoModule implements CameraModule,
         releaseAudioFocus();
         if (!mPaused) {
             mCameraDevice.lock();
-            if (!ApiHelper.HAS_SURFACE_TEXTURE_RECORDING) {
-                stopPreview();
-                mUI.hideSurfaceView();
-                // Switch back to use SurfaceTexture for preview.
-                startPreview();
-            } else {
-                if (is4KEnabled()) {
-                    int fps = CameraUtil.getMaxPreviewFps(mParameters);
-                    if (fps > 0) {
-                        mParameters.setPreviewFrameRate(fps);
-                    } else {
-                        mParameters.setPreviewFrameRate(30);
-                    }
-                    mCameraDevice.setParameters(mParameters);
+            if (is4KEnabled()) {
+                int fps = CameraUtil.getMaxPreviewFps(mParameters);
+                if (fps > 0) {
+                    mParameters.setPreviewFrameRate(fps);
+                } else {
+                    mParameters.setPreviewFrameRate(30);
                 }
+                mCameraDevice.setParameters(mParameters);
             }
         }
         // Update the parameters here because the parameters might have been altered

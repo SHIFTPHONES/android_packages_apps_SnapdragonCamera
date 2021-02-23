@@ -18,11 +18,8 @@ package com.android.camera;
 
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.SparseIntArray;
-
-import com.android.camera.util.ApiHelper;
 
 /**
  * Loads a plays custom sounds. For playing system-standard sounds for various

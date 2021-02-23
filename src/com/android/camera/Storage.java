@@ -16,31 +16,21 @@
 
 package com.android.camera;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StatFs;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
 
-import com.android.camera.data.LocalData;
 import com.android.camera.exif.ExifInterface;
-import com.android.camera.util.ApiHelper;
-import androidx.heifwriter.HeifWriter;
-import android.graphics.ImageFormat;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class Storage {
     private static final String TAG = "CameraStorage";
@@ -72,13 +62,9 @@ public class Storage {
         sSaveSDCard = saveSDCard;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static void setImageSize(ContentValues values, int width, int height) {
-        // The two fields are available since ICS but got published in JB
-        if (ApiHelper.HAS_MEDIA_COLUMNS_WIDTH_AND_HEIGHT) {
-            values.put(MediaColumns.WIDTH, width);
-            values.put(MediaColumns.HEIGHT, height);
-        }
+        values.put(MediaColumns.WIDTH, width);
+        values.put(MediaColumns.HEIGHT, height);
     }
 
     public static int writeFile(String path, byte[] jpeg, ExifInterface exif,

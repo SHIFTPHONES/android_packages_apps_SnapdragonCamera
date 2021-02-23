@@ -46,13 +46,7 @@ public class SettingTranslation {
         VIDEO_ENCODER_TABLE.put("default", MediaRecorder.VideoEncoder.DEFAULT);
         VIDEO_ENCODER_TABLE.put("h263", MediaRecorder.VideoEncoder.H263);
         VIDEO_ENCODER_TABLE.put("h264", MediaRecorder.VideoEncoder.H264);
-        int h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                "HEVC", null, MediaRecorder.VideoEncoder.DEFAULT);
-        if (h265 == MediaRecorder.VideoEncoder.DEFAULT) {
-            h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                    "H265", null, MediaRecorder.VideoEncoder.DEFAULT);
-        }
-        VIDEO_ENCODER_TABLE.put("h265", h265);
+        VIDEO_ENCODER_TABLE.put("h265", MediaRecorder.VideoEncoder.HEVC);
         VIDEO_ENCODER_TABLE.put("mpeg-4-sp", MediaRecorder.VideoEncoder.MPEG_4_SP);
         VIDEO_ENCODER_TABLE.put("vp8", MediaRecorder.VideoEncoder.VP8);
 

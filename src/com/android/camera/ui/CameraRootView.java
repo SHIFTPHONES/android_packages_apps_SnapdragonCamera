@@ -17,26 +17,16 @@
 package com.android.camera.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.FrameLayout;
-
-import com.android.camera.util.ApiHelper;
-import com.android.camera.util.CameraUtil;
 
 @SuppressLint("NewApi")
 public class CameraRootView extends FrameLayout {
 
-    private int mTopMargin = 0;
-    private int mBottomMargin = 0;
-    private int mLeftMargin = 0;
-    private int mRightMargin = 0;
     private final Rect mCurrentInsets = new Rect(0, 0, 0, 0);
     private int mOffset = 0;
     private Object mDisplayListener;
@@ -74,23 +64,24 @@ public class CameraRootView extends FrameLayout {
     }
 
     public void initDisplayListener() {
-        if (ApiHelper.HAS_DISPLAY_LISTENER) {
-            mDisplayListener = new DisplayListener() {
+        mDisplayListener = new DisplayListener() {
+            @Override
+            public void onDisplayAdded(int arg0) {
+                // empty
+            }
 
-                @Override
-                public void onDisplayAdded(int arg0) {}
-
-                @Override
-                public void onDisplayChanged(int arg0) {
-                    if (mListener != null) {
-                        mListener.onDisplayChanged();
-                    }
+            @Override
+            public void onDisplayChanged(int arg0) {
+                if (mListener != null) {
+                    mListener.onDisplayChanged();
                 }
+            }
 
-                @Override
-                public void onDisplayRemoved(int arg0) {}
-            };
-        }
+            @Override
+            public void onDisplayRemoved(int arg0) {
+                // empty
+            }
+        };
     }
 
     public void removeDisplayChangeListener() {
@@ -104,19 +95,15 @@ public class CameraRootView extends FrameLayout {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (ApiHelper.HAS_DISPLAY_LISTENER) {
-            ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE))
-            .registerDisplayListener((DisplayListener) mDisplayListener, null);
-        }
+        final DisplayManager displayManager = getContext().getSystemService(DisplayManager.class);
+        displayManager.registerDisplayListener((DisplayListener) mDisplayListener, null);
     }
 
     @Override
-    public void onDetachedFromWindow () {
+    public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (ApiHelper.HAS_DISPLAY_LISTENER) {
-            ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE))
-            .unregisterDisplayListener((DisplayListener) mDisplayListener);
-        }
+        final DisplayManager displayManager = getContext().getSystemService(DisplayManager.class);
+        displayManager.unregisterDisplayListener((DisplayListener) mDisplayListener);
     }
 /*
     @Override

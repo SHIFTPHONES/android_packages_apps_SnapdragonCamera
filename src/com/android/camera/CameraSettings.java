@@ -36,7 +36,6 @@ import android.media.EncoderCapabilities.VideoEncoderCap;
 import java.util.HashMap;
 import android.util.Log;
 
-import com.android.camera.util.ApiHelper;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.GcamHelper;
 import com.android.camera.util.PersistUtil;
@@ -315,13 +314,7 @@ public class CameraSettings {
         //video encoders
         VIDEO_ENCODER_TABLE.put(MediaRecorder.VideoEncoder.H263, "h263");
         VIDEO_ENCODER_TABLE.put(MediaRecorder.VideoEncoder.H264, "h264");
-        int h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                       "HEVC", null, MediaRecorder.VideoEncoder.DEFAULT);
-        if (h265 == MediaRecorder.VideoEncoder.DEFAULT) {
-            h265 = ApiHelper.getIntFieldIfExists(MediaRecorder.VideoEncoder.class,
-                       "H265", null, MediaRecorder.VideoEncoder.DEFAULT);
-        }
-        VIDEO_ENCODER_TABLE.put(h265, "h265");
+        VIDEO_ENCODER_TABLE.put(MediaRecorder.VideoEncoder.HEVC, "h265");
         VIDEO_ENCODER_TABLE.put(MediaRecorder.VideoEncoder.MPEG_4_SP, "m4v");
 
         //video qualities
@@ -1248,14 +1241,12 @@ public class CameraSettings {
         if (videoEffect != null) {
             filterUnsupportedOptions(group, videoEffect, null);
         }
-        if (cameraHdr != null && (!ApiHelper.HAS_CAMERA_HDR
-                || !CameraUtil.isCameraHdrSupported(mParameters))) {
+        if (cameraHdr != null && !CameraUtil.isCameraHdrSupported(mParameters)) {
             removePreference(group, cameraHdr.getKey());
         }
         int frontCameraId = CameraHolder.instance().getFrontCameraId();
         boolean isFrontCamera = (frontCameraId == mCameraId);
-        if (cameraHdrPlus != null && (!ApiHelper.HAS_CAMERA_HDR_PLUS ||
-                !GcamHelper.hasGcamCapture() || isFrontCamera)) {
+        if (cameraHdrPlus != null && (!GcamHelper.hasGcamCapture() || isFrontCamera)) {
             removePreference(group, cameraHdrPlus.getKey());
         }
         if (powerShutter != null && CameraUtil.hasCameraKey()) {

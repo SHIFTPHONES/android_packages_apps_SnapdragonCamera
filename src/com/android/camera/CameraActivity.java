@@ -18,8 +18,6 @@
 package com.android.camera;
 
 import android.hardware.camera2.CameraAccessException;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.view.Display;
 import android.graphics.Point;
 import android.Manifest;
@@ -36,7 +34,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -57,8 +54,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.media.ThumbnailUtils;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcAdapter.CreateBeamUrisCallback;
-import android.nfc.NfcEvent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -111,13 +106,11 @@ import com.android.camera.ui.FilmStripView;
 import com.android.camera.ui.FilmStripView.ImageData;
 import com.android.camera.ui.PanoCaptureProcessView;
 import com.android.camera.ui.RotateTextToast;
-import com.android.camera.util.ApiHelper;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.FeatureHelper;
 import com.android.camera.util.GcamHelper;
 import com.android.camera.util.IntentHelper;
 import com.android.camera.util.PersistUtil;
-import com.android.camera.util.PhotoSphereHelper;
 import com.android.camera.util.PhotoSphereHelper.PanoramaViewHelper;
 import com.android.camera.util.UsageStatistics;
 import org.codeaurora.snapcam.R;
@@ -736,19 +729,8 @@ public class CameraActivity extends Activity
             return;
         }
 
-        if (!ApiHelper.HAS_SET_BEAM_PUSH_URIS) {
-            // Disable beaming
-            adapter.setNdefPushMessage(null, CameraActivity.this);
-            return;
-        }
-
         adapter.setBeamPushUris(null, CameraActivity.this);
-        adapter.setBeamPushUrisCallback(new CreateBeamUrisCallback() {
-            @Override
-            public Uri[] createBeamUris(NfcEvent event) {
-                return mNfcPushUris;
-            }
-        }, CameraActivity.this);
+        adapter.setBeamPushUrisCallback(event -> mNfcPushUris, CameraActivity.this);
     }
 
     private void setNfcBeamPushUri(Uri uri) {
@@ -1633,10 +1615,7 @@ public class CameraActivity extends Activity
         if (mActionBar != null) {
             mActionBar.addOnMenuVisibilityListener(this);
         }
-
-        if (ApiHelper.HAS_ROTATION_ANIMATION) {
-            setRotationAnimation();
-        }
+        setRotationAnimation();
 
         mMainHandler = new MainHandler(getMainLooper());
 

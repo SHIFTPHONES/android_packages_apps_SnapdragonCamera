@@ -19,14 +19,12 @@ package com.android.camera;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaActionSound;
 import android.media.SoundPool;
 import android.os.Build;
 import android.util.Log;
 
 import org.codeaurora.snapcam.R;
-import com.android.camera.util.ApiHelper;
 
 /*
  * This class controls the sound playback according to the API level.
@@ -44,11 +42,7 @@ public class SoundClips {
     }
 
     public static Player getPlayer(Context context) {
-        if (ApiHelper.HAS_MEDIA_ACTION_SOUND) {
-            return new MediaActionSoundPlayer();
-        } else {
-            return new SoundPoolPlayer(context);
-        }
+        return new MediaActionSoundPlayer();
     }
 
     /**

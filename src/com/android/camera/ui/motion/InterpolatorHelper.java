@@ -18,10 +18,7 @@ package com.android.camera.ui.motion;
 
 import android.content.Context;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-
-import com.android.camera.util.ApiHelper;
 
 public class InterpolatorHelper {
     private static Interpolator LINEAR_OUT_SLOW_IN = null;
