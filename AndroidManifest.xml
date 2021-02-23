@@ -4,7 +4,7 @@
     package="org.codeaurora.snapcam">
 
     <uses-sdk
-        android:minSdkVersion="23"
+        android:minSdkVersion="28"
         android:targetSdkVersion="28" />
 
     <original-package android:name="org.cyanogenmod.snap" />
