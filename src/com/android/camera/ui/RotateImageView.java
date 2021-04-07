@@ -45,12 +45,12 @@ public class RotateImageView extends TwoStateImageView implements Rotatable {
     private int mStartDegree = 0;
     private int mTargetDegree = 0;
 
-    private boolean mClockwise = false, mEnableAnimation = true;
+    private boolean mClockwise = false;
+    private boolean mEnableAnimation = true;
 
     private long mAnimationStartTime = 0;
     private long mAnimationEndTime = 0;
-    private boolean mNaturalPortrait = CameraUtil.isDefaultToPortrait(
-                                              (Activity) getContext());
+    private final boolean mNaturalPortrait = CameraUtil.isDefaultToPortrait((Activity) getContext());
 
     public RotateImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -99,7 +99,7 @@ public class RotateImageView extends TwoStateImageView implements Rotatable {
 
             mClockwise = diff >= 0;
             mAnimationEndTime = mAnimationStartTime
-                    + Math.abs(diff) * 1000 / ANIMATION_SPEED;
+                    + Math.abs(diff) * 1000L / ANIMATION_SPEED;
         } else {
             mCurrentDegree = mTargetDegree;
         }
@@ -154,22 +154,19 @@ public class RotateImageView extends TwoStateImageView implements Rotatable {
                 ratio = Math.min((float) height / w, (float) width / h);
             canvas.scale(ratio, ratio, width / 2.0f, height / 2.0f);
         }
-        canvas.translate(left + width / 2, top + height / 2);
+        canvas.translate(left + width / 2f, top + height / 2f);
         canvas.rotate(-mCurrentDegree);
-        canvas.translate(-w / 2, -h / 2);
+        canvas.translate(-w / 2f, -h / 2f);
         drawable.draw(canvas);
         canvas.restoreToCount(saveCount);
     }
 
-    private Bitmap mThumb;
     private Drawable[] mThumbs;
-    private TransitionDrawable mThumbTransition;
 
     public void setBitmap(Bitmap bitmap) {
         // Make sure uri and original are consistently both null or both
         // non-null.
         if (bitmap == null) {
-            mThumb = null;
             mThumbs = null;
             setImageDrawable(null);
             setVisibility(GONE);
@@ -181,9 +178,8 @@ public class RotateImageView extends TwoStateImageView implements Rotatable {
                 - getPaddingLeft() - getPaddingRight();
         final int miniThumbHeight = param.height
                 - getPaddingTop() - getPaddingBottom();
-        mThumb = ThumbnailUtils.extractThumbnail(
+        final Bitmap mThumb = ThumbnailUtils.extractThumbnail(
                 bitmap, miniThumbWidth, miniThumbHeight);
-        Drawable drawable;
         if (mThumbs == null || !mEnableAnimation) {
             mThumbs = new Drawable[2];
             mThumbs[1] = new BitmapDrawable(getContext().getResources(), mThumb);
@@ -191,7 +187,8 @@ public class RotateImageView extends TwoStateImageView implements Rotatable {
         } else {
             mThumbs[0] = mThumbs[1];
             mThumbs[1] = new BitmapDrawable(getContext().getResources(), mThumb);
-            mThumbTransition = new TransitionDrawable(mThumbs);
+
+            final TransitionDrawable mThumbTransition = new TransitionDrawable(mThumbs);
             setImageDrawable(mThumbTransition);
             mThumbTransition.startTransition(500);
         }

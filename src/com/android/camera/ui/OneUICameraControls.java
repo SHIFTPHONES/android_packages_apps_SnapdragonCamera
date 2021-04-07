@@ -305,9 +305,9 @@ public class OneUICameraControls extends RotatableLayout {
         int w = v.getMeasuredWidth();
         int h = v.getMeasuredHeight();
         if (top) {
-            v.setY((mTop - h) / 2);
+            v.setY((mTop - h) / 2f);
         } else {
-            v.setY(mHeight - mBottom + (mBottom - h) / 2);
+            v.setY(mHeight - mBottom + (mBottom - h) / 2f);
         }
         float bW;
         if (top) {
