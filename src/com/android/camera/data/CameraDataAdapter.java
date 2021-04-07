@@ -29,7 +29,6 @@ import android.view.View;
 
 import com.android.camera.SDCard;
 import com.android.camera.Storage;
-import com.android.camera.app.PlaceholderManager;
 import com.android.camera.ui.FilmStripView.ImageData;
 
 import java.util.ArrayList;
@@ -309,11 +308,7 @@ public class CameraDataAdapter implements LocalDataAdapter {
                 while (true) {
                     LocalData data = LocalMediaData.PhotoData.buildFromCursor(c);
                     if (data != null) {
-                        if (data.getMimeType().equals(PlaceholderManager.PLACEHOLDER_MIME_TYPE)) {
-                            l.add(new InProgressDataWrapper(data, true));
-                        } else {
-                            l.add(data);
-                        }
+                        l.add(data);
                     } else {
                         Log.e(TAG, "Error loading data:"
                                 + c.getString(LocalMediaData.PhotoData.COL_DATA));

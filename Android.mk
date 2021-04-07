@@ -14,7 +14,6 @@ LOCAL_STATIC_JAVA_LIBRARIES += zxing-core
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_SRC_FILES += $(call all-java-files-under, src_pd)
-LOCAL_SRC_FILES += $(call all-java-files-under, src_pd_gcam)
 LOCAL_SRC_FILES += $(call all-java-files-under, src_wrapper)
 LOCAL_SRC_FILES += $(call all-java-files-under, quickReader/src)
 LOCAL_SRC_FILES += $(call all-renderscript-files-under, rs)

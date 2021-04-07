@@ -31,7 +31,6 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 import com.android.camera.util.CameraUtil;
-import com.android.camera.util.GcamHelper;
 import com.android.camera.util.MultiMap;
 import com.android.camera.util.PersistUtil;
 
@@ -1124,7 +1123,7 @@ public class CameraSettings {
         }
         int frontCameraId = CameraHolder.instance().getFrontCameraId();
         boolean isFrontCamera = (frontCameraId == mCameraId);
-        if (cameraHdrPlus != null && (!GcamHelper.hasGcamCapture() || isFrontCamera)) {
+        if (cameraHdrPlus != null && isFrontCamera) {
             removePreference(group, cameraHdrPlus.getKey());
         }
         if (powerShutter != null && CameraUtil.hasCameraKey()) {

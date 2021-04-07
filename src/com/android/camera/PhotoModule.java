@@ -80,7 +80,6 @@ import com.android.camera.ui.CountDownView.OnCountDownFinishedListener;
 import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.CameraUtil;
-import com.android.camera.util.GcamHelper;
 import com.android.camera.util.PersistUtil;
 import com.android.camera.util.UsageStatistics;
 import org.codeaurora.snapcam.R;
@@ -532,11 +531,6 @@ public class PhotoModule
                     setCameraParametersWhenIdle(UPDATE_PARAM_PREFERENCE);
                     break;
                }
-
-                case SWITCH_TO_GCAM_MODULE: {
-                    mActivity.onModuleSelected(ModuleSwitcher.GCAM_MODULE_INDEX);
-                    break;
-                }
 
                 case ON_PREVIEW_STARTED: {
                     onPreviewStarted();
@@ -4167,38 +4161,32 @@ public class PhotoModule
                 mActivity.getString(R.string.pref_camera_hdr_plus_default));
         boolean hdrOn = onValue.equals(hdr);
         boolean hdrPlusOn = onValue.equals(hdrPlus);
-        boolean doGcamModeSwitch = false;
 
-        if (hdrPlusOn && GcamHelper.hasGcamCapture()) {
-            // Kick off mode switch to gcam.
-            doGcamModeSwitch = true;
-        } else {
-            if (hdrOn) {
-                mSceneMode = CameraUtil.SCENE_MODE_HDR;
-                if (!(Parameters.SCENE_MODE_AUTO).equals(mParameters.getSceneMode())
-                    && !(Parameters.SCENE_MODE_HDR).equals(mParameters.getSceneMode())) {
-                    mParameters.setSceneMode(Parameters.SCENE_MODE_AUTO);
-                    mCameraDevice.setParameters(mParameters);
-                    mParameters = mCameraDevice.getParameters();
-                }
-                if (mLgeHdrMode) {
-                    mParameters.set(CameraSettings.KEY_SNAPCAM_HDR_MODE,
-                            CameraSettings.LGE_HDR_MODE_ON);
-                    try {
-                        // Force enable ZSL mode for LG HDR
-                        mUI.setPreference(CameraSettings.KEY_ZSL, Parameters.ZSL_ON);
-                    } catch (NullPointerException e) {
-                    }
-                }
-            } else {
-                if (mLgeHdrMode) {
-                    mParameters.set(CameraSettings.KEY_SNAPCAM_HDR_MODE,
-                            CameraSettings.LGE_HDR_MODE_OFF);
-                }
-                mSceneMode = mPreferences.getString(
-                        CameraSettings.KEY_SCENE_MODE,
-                        mActivity.getString(R.string.pref_camera_scenemode_default));
+        if (hdrOn) {
+            mSceneMode = CameraUtil.SCENE_MODE_HDR;
+            if (!(Parameters.SCENE_MODE_AUTO).equals(mParameters.getSceneMode())
+                && !(Parameters.SCENE_MODE_HDR).equals(mParameters.getSceneMode())) {
+                mParameters.setSceneMode(Parameters.SCENE_MODE_AUTO);
+                mCameraDevice.setParameters(mParameters);
+                mParameters = mCameraDevice.getParameters();
             }
+            if (mLgeHdrMode) {
+                mParameters.set(CameraSettings.KEY_SNAPCAM_HDR_MODE,
+                        CameraSettings.LGE_HDR_MODE_ON);
+                try {
+                    // Force enable ZSL mode for LG HDR
+                    mUI.setPreference(CameraSettings.KEY_ZSL, Parameters.ZSL_ON);
+                } catch (NullPointerException e) {
+                }
+            }
+        } else {
+            if (mLgeHdrMode) {
+                mParameters.set(CameraSettings.KEY_SNAPCAM_HDR_MODE,
+                        CameraSettings.LGE_HDR_MODE_OFF);
+            }
+            mSceneMode = mPreferences.getString(
+                    CameraSettings.KEY_SCENE_MODE,
+                    mActivity.getString(R.string.pref_camera_scenemode_default));
         }
 
         String refocusOn = mActivity.getString(R.string
@@ -4376,7 +4364,7 @@ public class PhotoModule
 
         //QCom related parameters updated here.
         qcomUpdateCameraParametersPreference();
-        return doGcamModeSwitch;
+        return false;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -4398,8 +4386,6 @@ public class PhotoModule
             return;
         }
         synchronized (mCameraDevice) {
-            boolean doModeSwitch = false;
-
             if ((updateSet & UPDATE_PARAM_INITIALIZE) != 0) {
                 updateCameraParametersInitialize();
             }
@@ -4409,17 +4395,12 @@ public class PhotoModule
             }
 
             if ((updateSet & UPDATE_PARAM_PREFERENCE) != 0) {
-                doModeSwitch = updateCameraParametersPreference();
+                updateCameraParametersPreference();
             }
 
             CameraUtil.dumpParameters(mParameters);
             mCameraDevice.setParameters(mParameters);
             mFocusManager.setParameters(mParameters);
-
-            // Switch to gcam module if HDR+ was selected
-            if (doModeSwitch && !mIsImageCaptureIntent) {
-                mHandler.sendEmptyMessage(SWITCH_TO_GCAM_MODULE);
-            }
         }
     }
 

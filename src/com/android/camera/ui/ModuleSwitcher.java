@@ -62,7 +62,6 @@ public class ModuleSwitcher extends RotateImageView
             R.drawable.ic_switch_pan,
             R.drawable.ic_cam_switcher_qr,
             R.drawable.ic_switch_photosphere,
-            R.drawable.ic_switch_gcam,
     };
 
     public interface ModuleSwitchListener {
@@ -111,18 +110,12 @@ public class ModuleSwitcher extends RotateImageView
             --numDrawIds;
         }
 
-        // Always decrement one because of GCam.
-        --numDrawIds;
-
         int[] drawids = new int[numDrawIds];
         int[] moduleids = new int[numDrawIds];
         int ix = 0;
         for (int i = 0; i < DRAW_IDS.length; i++) {
             if (i == LIGHTCYCLE_MODULE_INDEX) {
                 continue; // not enabled, so don't add to UI
-            }
-            if (i == GCAM_MODULE_INDEX) {
-                continue; // don't add to UI
             }
             moduleids[ix] = i;
             drawids[ix++] = DRAW_IDS[i];
@@ -137,11 +130,7 @@ public class ModuleSwitcher extends RotateImageView
 
     public void setCurrentIndex(int i) {
         mCurrentIndex = i;
-        if (i == GCAM_MODULE_INDEX) {
-          setImageResource(R.drawable.ic_switch_camera);
-        } else {
-          setImageResource(mDrawIds[i]);
-        }
+        setImageResource(mDrawIds[i]);
     }
 
     public void setSwitchListener(ModuleSwitchListener l) {

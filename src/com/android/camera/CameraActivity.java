@@ -82,14 +82,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ShareActionProvider;
 
-import com.android.camera.app.AppManagerFactory;
-import com.android.camera.app.PlaceholderManager;
 import com.android.camera.crop.CropActivity;
 import com.android.camera.data.CameraDataAdapter;
 import com.android.camera.data.CameraPreviewData;
 import com.android.camera.data.FixedFirstDataAdapter;
 import com.android.camera.data.FixedLastDataAdapter;
-import com.android.camera.data.InProgressDataWrapper;
 import com.android.camera.data.LocalData;
 import com.android.camera.data.LocalDataAdapter;
 import com.android.camera.data.LocalMediaObserver;
@@ -102,7 +99,6 @@ import com.android.camera.ui.FilmStripView.ImageData;
 import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.FeatureHelper;
-import com.android.camera.util.GcamHelper;
 import com.android.camera.util.IntentHelper;
 import com.android.camera.util.PersistUtil;
 import com.android.camera.util.UsageStatistics;
@@ -194,7 +190,6 @@ public class CameraActivity extends Activity
     private LocalDataAdapter mWrappedDataAdapter;
 
     private Context mContext;
-    private PlaceholderManager mPlaceholderManager;
     private int mCurrentModuleIndex;
     private CameraModule mCurrentModule;
     private PhotoModule mPhotoModule;
@@ -1154,41 +1149,6 @@ public class CameraActivity extends Activity
             item.setVisible(visible);
     }
 
-    private ImageTaskManager.TaskListener mPlaceholderListener =
-            new ImageTaskManager.TaskListener() {
-
-                @Override
-                public void onTaskQueued(String filePath, final Uri imageUri) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyNewMedia(imageUri);
-                            int dataID = mDataAdapter.findDataByContentUri(imageUri);
-                            if (dataID != -1) {
-                                LocalData d = mDataAdapter.getLocalData(dataID);
-                                InProgressDataWrapper newData = new InProgressDataWrapper(d, true);
-                                mDataAdapter.updateData(dataID, newData);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onTaskDone(String filePath, final Uri imageUri) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDataAdapter.refresh(getContentResolver(), imageUri);
-                        }
-                    });
-                }
-
-                @Override
-                public void onTaskProgress(String filePath, Uri imageUri, int progress) {
-                    // Do nothing
-                }
-    };
-
     public MediaSaveService getMediaSaveService() {
         return mMediaSaveService;
     }
@@ -1207,8 +1167,6 @@ public class CameraActivity extends Activity
             CameraUtil.broadcastNewPicture(this, uri);
             mDataAdapter.addNewPhoto(cr, uri);
         } else if (mimeType.startsWith("application/stitching-preview")) {
-            mDataAdapter.addNewPhoto(cr, uri);
-        } else if (mimeType.startsWith(PlaceholderManager.PLACEHOLDER_MIME_TYPE)) {
             mDataAdapter.addNewPhoto(cr, uri);
         } else {
             android.util.Log.w(TAG, "Unknown new media with MIME type:"
@@ -1436,7 +1394,6 @@ public class CameraActivity extends Activity
 
         mCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null, null, null, null);
-        GcamHelper.init(getContentResolver());
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
@@ -1452,14 +1409,8 @@ public class CameraActivity extends Activity
                 || MediaStore.ACTION_VIDEO_CAPTURE.equals(getIntent().getAction())) {
             moduleIndex = ModuleSwitcher.VIDEO_MODULE_INDEX;
         } else if (MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA.equals(getIntent().getAction())
-                || MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE.equals(getIntent()
-                .getAction())) {
+                || MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE.equals(getIntent().getAction())) {
             moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            if (prefs.getInt(CameraSettings.KEY_STARTUP_MODULE_INDEX, -1)
-                    == ModuleSwitcher.GCAM_MODULE_INDEX && GcamHelper.hasGcamCapture()) {
-                moduleIndex = ModuleSwitcher.GCAM_MODULE_INDEX;
-            }
         } else if (MediaStore.ACTION_IMAGE_CAPTURE.equals(getIntent().getAction())
                 || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(getIntent().getAction())) {
             moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
@@ -1468,8 +1419,7 @@ public class CameraActivity extends Activity
             // read the module index from the last time the user changed modes
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             moduleIndex = prefs.getInt(CameraSettings.KEY_STARTUP_MODULE_INDEX, -1);
-            if ((moduleIndex == ModuleSwitcher.GCAM_MODULE_INDEX &&
-                    !GcamHelper.hasGcamCapture()) || moduleIndex < 0) {
+            if (moduleIndex < 0) {
                 moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
             }
         }
@@ -1503,9 +1453,6 @@ public class CameraActivity extends Activity
         mAboveFilmstripControlLayout =
                 (FrameLayout) findViewById(R.id.camera_above_filmstrip_layout);
         mAboveFilmstripControlLayout.setFitsSystemWindows(true);
-        mPlaceholderManager = AppManagerFactory.getInstance(this)
-                .getGcamProcessingManager();
-        mPlaceholderManager.addTaskListener(mPlaceholderListener);
         mBottomProgress = (ProgressBar) findViewById(R.id.pano_stitching_progress_bar);
         mCameraPreviewData = new CameraPreviewData(rootLayout,
                 FilmStripView.ImageData.SIZE_FULL,
@@ -2109,7 +2056,6 @@ public class CameraActivity extends Activity
                 break;
 
             case ModuleSwitcher.LIGHTCYCLE_MODULE_INDEX: //Unused module for now
-            case ModuleSwitcher.GCAM_MODULE_INDEX:  //Unused module for now
             case ModuleSwitcher.PHOTO_MODULE_INDEX:
             default:
                 // Fall back to photo mode.
