@@ -84,7 +84,6 @@ import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.android.camera.app.AppManagerFactory;
-import com.android.camera.app.PanoramaStitchingManager;
 import com.android.camera.app.PlaceholderManager;
 import com.android.camera.crop.CropActivity;
 import com.android.camera.data.CameraDataAdapter;
@@ -98,7 +97,6 @@ import com.android.camera.data.LocalMediaObserver;
 import com.android.camera.data.MediaDetails;
 import com.android.camera.data.SimpleViewData;
 import com.android.camera.exif.ExifInterface;
-import com.android.camera.tinyplanet.TinyPlanetFragment;
 import com.android.camera.ui.DetailsDialog;
 import com.android.camera.ui.FilmStripView;
 import com.android.camera.ui.FilmStripView.ImageData;
@@ -110,7 +108,6 @@ import com.android.camera.util.FeatureHelper;
 import com.android.camera.util.GcamHelper;
 import com.android.camera.util.IntentHelper;
 import com.android.camera.util.PersistUtil;
-import com.android.camera.util.PhotoSphereHelper.PanoramaViewHelper;
 import com.android.camera.util.UsageStatistics;
 
 import org.codeaurora.snapcam.R;
@@ -200,7 +197,6 @@ public class CameraActivity extends Activity
     private LocalDataAdapter mWrappedDataAdapter;
 
     private Context mContext;
-    private PanoramaStitchingManager mPanoramaManager;
     private PlaceholderManager mPlaceholderManager;
     private int mCurrentModuleIndex;
     private CameraModule mCurrentModule;
@@ -217,7 +213,6 @@ public class CameraActivity extends Activity
     private View mCameraCaptureModuleRootView;
     private FilmStripView mFilmStripView;
     private ProgressBar mBottomProgress;
-    private View mPanoStitchingPanel;
     private int mResultCodeForTesting;
     private Intent mResultDataForTesting;
     private OnScreenHint mStorageHint;
@@ -232,7 +227,6 @@ public class CameraActivity extends Activity
     private int mLastRawOrientation;
     private MyOrientationEventListener mOrientationListener;
     private Handler mMainHandler;
-    private PanoramaViewHelper mPanoramaViewHelper;
     private CameraPreviewData mCameraPreviewData;
     private ActionBar mActionBar;
     private OnActionBarVisibilityListener mOnActionBarVisibilityListener = null;
@@ -501,12 +495,7 @@ public class CameraActivity extends Activity
                     boolean isPreview = isCameraPreview(dataID);
                     boolean isFullScreen = mFilmStripView.inFullScreen();
                     if (isFullScreen && isPreview && CameraActivity.this.hasWindowFocus()){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateStorageSpaceAndHint();
-                            }
-                        });
+                        runOnUiThread(() -> updateStorageSpaceAndHint());
                     }
                     // Delay hiding action bar if there is any user interaction
                     if (mMainHandler.hasMessages(HIDE_ACTION_BAR)) {
@@ -517,49 +506,30 @@ public class CameraActivity extends Activity
                     // TODO: This callback is UI event callback, should always
                     // happen on UI thread. Find the reason for this
                     // runOnUiThread() and fix it.
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            LocalData currentData = mDataAdapter.getLocalData(dataID);
-                            if (currentData == null) {
-                                Log.w(TAG, "Current data ID not found.");
-                                hidePanoStitchingProgress();
-                                return;
+                    runOnUiThread(() -> {
+                        LocalData currentData = mDataAdapter.getLocalData(dataID);
+                        if (currentData == null) {
+                            Log.w(TAG, "Current data ID not found.");
+                            return;
+                        }
+                        boolean isCameraID = currentData.getLocalDataType() ==
+                                LocalData.LOCAL_CAMERA_PREVIEW;
+                        if (!focused) {
+                            if (isCameraID) {
+                                mCurrentModule.onPreviewFocusChanged(false);
+                                CameraActivity.this.setSystemBarsVisibility(true);
                             }
-                            boolean isCameraID = currentData.getLocalDataType() ==
-                                    LocalData.LOCAL_CAMERA_PREVIEW;
-                            if (!focused) {
-                                if (isCameraID) {
-                                    mCurrentModule.onPreviewFocusChanged(false);
-                                    CameraActivity.this.setSystemBarsVisibility(true);
+                        } else {
+                            if (isCameraID) {
+                                // Don't show the action bar in Camera
+                                // preview.
+                                CameraActivity.this.setSystemBarsVisibility(false);
+
+                                if (mPendingDeletion) {
+                                    performDeletion();
                                 }
-                                hidePanoStitchingProgress();
                             } else {
-                                if (isCameraID) {
-                                    // Don't show the action bar in Camera
-                                    // preview.
-                                    CameraActivity.this.setSystemBarsVisibility(false);
-
-                                    if (mPendingDeletion) {
-                                        performDeletion();
-                                    }
-                                } else {
-                                    updateActionBarMenu(dataID);
-                                }
-
-                                Uri contentUri = currentData.getContentUri();
-                                if (contentUri == null) {
-                                    hidePanoStitchingProgress();
-                                    return;
-                                }
-                                int panoStitchingProgress = mPanoramaManager.getTaskProgress(
-                                        contentUri);
-                                if (panoStitchingProgress < 0) {
-                                    hidePanoStitchingProgress();
-                                    return;
-                                }
-                                showPanoStitchingProgress();
-                                updateStitchingProgress(panoStitchingProgress);
+                                updateActionBarMenu(dataID);
                             }
                         }
                     });
@@ -707,18 +677,6 @@ public class CameraActivity extends Activity
                 mMainHandler.sendEmptyMessageDelayed(HIDE_ACTION_BAR, SHOW_ACTION_BAR_TIMEOUT_MS);
             }
         }
-    }
-
-    private void hidePanoStitchingProgress() {
-        mPanoStitchingPanel.setVisibility(View.GONE);
-    }
-
-    private void showPanoStitchingProgress() {
-        mPanoStitchingPanel.setVisibility(View.VISIBLE);
-    }
-
-    private void updateStitchingProgress(int progress) {
-        mBottomProgress.setProgress(progress);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -1134,17 +1092,6 @@ public class CameraActivity extends Activity
             case LocalData.LOCAL_VIDEO:
                 supported |= SUPPORT_DELETE | SUPPORT_INFO | SUPPORT_SHARE;
                 break;
-            case LocalData.LOCAL_PHOTO_SPHERE:
-                supported |= SUPPORT_DELETE | SUPPORT_ROTATE | SUPPORT_INFO
-                        | SUPPORT_CROP | SUPPORT_SETAS | SUPPORT_EDIT
-                        | SUPPORT_SHARE | SUPPORT_SHOW_ON_MAP;
-                break;
-            case LocalData.LOCAL_360_PHOTO_SPHERE:
-                supported |= SUPPORT_DELETE | SUPPORT_ROTATE | SUPPORT_INFO
-                        | SUPPORT_CROP | SUPPORT_SETAS | SUPPORT_EDIT
-                        | SUPPORT_SHARE | SUPPORT_SHARE_PANORAMA360
-                        | SUPPORT_SHOW_ON_MAP;
-                break;
             default:
                 break;
         }
@@ -1247,64 +1194,6 @@ public class CameraActivity extends Activity
                     // Do nothing
                 }
     };
-
-    private ImageTaskManager.TaskListener mStitchingListener =
-            new ImageTaskManager.TaskListener() {
-                @Override
-                public void onTaskQueued(String filePath, final Uri imageUri) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyNewMedia(imageUri);
-                            int dataID = mDataAdapter.findDataByContentUri(imageUri);
-                            if (dataID != -1) {
-                                // Don't allow special UI actions (swipe to
-                                // delete, for example) on in-progress data.
-                                LocalData d = mDataAdapter.getLocalData(dataID);
-                                InProgressDataWrapper newData = new InProgressDataWrapper(d);
-                                mDataAdapter.updateData(dataID, newData);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onTaskDone(String filePath, final Uri imageUri) {
-                    Log.v(TAG, "onTaskDone:" + filePath);
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            int doneID = mDataAdapter.findDataByContentUri(imageUri);
-                            int currentDataId = mFilmStripView.getCurrentId();
-
-                            if (currentDataId == doneID) {
-                                hidePanoStitchingProgress();
-                                updateStitchingProgress(0);
-                            }
-
-                            mDataAdapter.refresh(getContentResolver(), imageUri);
-                        }
-                    });
-                }
-
-                @Override
-                public void onTaskProgress(
-                        String filePath, final Uri imageUri, final int progress) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            int currentDataId = mFilmStripView.getCurrentId();
-                            if (currentDataId == -1) {
-                                return;
-                            }
-                            if (imageUri.equals(
-                                    mDataAdapter.getLocalData(currentDataId).getContentUri())) {
-                                updateStitchingProgress(progress);
-                            }
-                        }
-                    });
-                }
-            };
 
     public MediaSaveService getMediaSaveService() {
         return mMediaSaveService;
@@ -1621,13 +1510,9 @@ public class CameraActivity extends Activity
         mAboveFilmstripControlLayout =
                 (FrameLayout) findViewById(R.id.camera_above_filmstrip_layout);
         mAboveFilmstripControlLayout.setFitsSystemWindows(true);
-        mPanoramaManager = AppManagerFactory.getInstance(this)
-                .getPanoramaStitchingManager();
         mPlaceholderManager = AppManagerFactory.getInstance(this)
                 .getGcamProcessingManager();
-        mPanoramaManager.addTaskListener(mStitchingListener);
         mPlaceholderManager.addTaskListener(mPlaceholderListener);
-        mPanoStitchingPanel = findViewById(R.id.pano_stitching_progress_panel);
         mBottomProgress = (ProgressBar) findViewById(R.id.pano_stitching_progress_bar);
         mCameraPreviewData = new CameraPreviewData(rootLayout,
                 FilmStripView.ImageData.SIZE_FULL,
@@ -1640,9 +1525,6 @@ public class CameraActivity extends Activity
 
         mFilmStripView.setViewGap(
                 getResources().getDimensionPixelSize(R.dimen.camera_film_strip_gap));
-        mPanoramaViewHelper = new PanoramaViewHelper(this);
-        mPanoramaViewHelper.onCreate();
-        mFilmStripView.setPanoramaViewHelper(mPanoramaViewHelper);
         // Set up the camera preview first so the preview shows up ASAP.
         mFilmStripView.setListener(mFilmStripListener);
 
@@ -1904,7 +1786,6 @@ public class CameraActivity extends Activity
             return;
         }
         bindMediaSaveService();
-        mPanoramaViewHelper.onStart();
     }
 
     @Override
@@ -1913,7 +1794,6 @@ public class CameraActivity extends Activity
         if (mSecureCamera && !hasCriticalPermissions()) {
             return;
         }
-        mPanoramaViewHelper.onStop();
         unbindMediaSaveService();
     }
 
@@ -2297,22 +2177,6 @@ public class CameraActivity extends Activity
             }
             mIsEditActivityInProgress = true;
         }
-    }
-
-    /**
-     * Launch the tiny planet editor.
-     *
-     * @param data the data must be a 360 degree stereographically mapped
-     *            panoramic image. It will not be modified, instead a new item
-     *            with the result will be added to the filmstrip.
-     */
-    public void launchTinyPlanetEditor(LocalData data) {
-        TinyPlanetFragment fragment = new TinyPlanetFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(TinyPlanetFragment.ARGUMENT_URI, data.getContentUri().toString());
-        bundle.putString(TinyPlanetFragment.ARGUMENT_TITLE, data.getTitle());
-        fragment.setArguments(bundle);
-        fragment.show(getFragmentManager(), "tiny_planet");
     }
 
     private void openModule(CameraModule module) {

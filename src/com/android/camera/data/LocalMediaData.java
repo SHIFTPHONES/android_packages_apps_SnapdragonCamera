@@ -40,7 +40,6 @@ import android.widget.ImageView;
 
 import com.android.camera.ui.FilmStripView;
 import com.android.camera.util.CameraUtil;
-import com.android.camera.util.PhotoSphereHelper;
 import org.codeaurora.snapcam.R;
 
 import java.io.File;
@@ -67,12 +66,6 @@ public abstract class LocalMediaData implements LocalData {
     protected final long mSizeInBytes;
     protected final double mLatitude;
     protected final double mLongitude;
-
-    /** The panorama metadata information of this media data. */
-    protected PhotoSphereHelper.PanoramaMetadata mPanoramaMetadata;
-
-    /** Used to load photo sphere metadata from image files. */
-    protected PanoramaMetadataLoader mPanoramaMetadataLoader = null;
 
     /**
      * Used for thumbnail loading optimization. True if this data has a
@@ -156,39 +149,6 @@ public abstract class LocalMediaData implements LocalData {
     public boolean delete(Context ctx) {
         File f = new File(mPath);
         return f.delete();
-    }
-
-    @Override
-    public void viewPhotoSphere(PhotoSphereHelper.PanoramaViewHelper helper) {
-        helper.showPanorama(getContentUri());
-    }
-
-    @Override
-    public void isPhotoSphere(Context context, final PanoramaSupportCallback callback) {
-        // If we already have metadata, use it.
-        if (mPanoramaMetadata != null) {
-            callback.panoramaInfoAvailable(mPanoramaMetadata.mUsePanoramaViewer,
-                    mPanoramaMetadata.mIsPanorama360);
-        }
-
-        // Otherwise prepare a loader, if we don't have one already.
-        if (mPanoramaMetadataLoader == null) {
-            mPanoramaMetadataLoader = new PanoramaMetadataLoader(getContentUri());
-        }
-
-        // Load the metadata asynchronously.
-        mPanoramaMetadataLoader.getPanoramaMetadata(context,
-                new PanoramaMetadataLoader.PanoramaMetadataCallback() {
-                    @Override
-                    public void onPanoramaMetadataLoaded(PhotoSphereHelper.PanoramaMetadata metadata) {
-                        // Store the metadata and remove the loader to free up
-                        // space.
-                        mPanoramaMetadata = metadata;
-                        mPanoramaMetadataLoader = null;
-                        callback.panoramaInfoAvailable(metadata.mUsePanoramaViewer,
-                                metadata.mIsPanorama360);
-                    }
-                });
     }
 
     @Override
@@ -441,13 +401,6 @@ public abstract class LocalMediaData implements LocalData {
 
         @Override
         public int getLocalDataType() {
-            if (mPanoramaMetadata != null) {
-                if (mPanoramaMetadata.mIsPanorama360) {
-                    return LOCAL_360_PHOTO_SPHERE;
-                } else if (mPanoramaMetadata.mUsePanoramaViewer) {
-                    return LOCAL_PHOTO_SPHERE;
-                }
-            }
             return LOCAL_IMAGE;
         }
 

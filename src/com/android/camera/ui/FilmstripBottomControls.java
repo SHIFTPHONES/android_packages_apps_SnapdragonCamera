@@ -37,26 +37,15 @@ public class FilmstripBottomControls extends RelativeLayout
      * controls.
      */
     public static interface BottomControlsListener {
-        /**
-         * Called when the user pressed the "view photosphere" button.
-         */
-        public void onViewPhotoSphere();
 
         /**
          * Called when the user pressed the "edit" button.
          */
         public void onEdit();
-
-        /**
-         * Called when the user pressed the "tiny planet" button.
-         */
-        public void onTinyPlanet();
     }
 
     private BottomControlsListener mListener;
     private ImageButton mEditButton;
-    private ImageButton mViewPhotoSphereButton;
-    private ImageButton mTinyPlanetButton;
 
     public FilmstripBottomControls(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -65,36 +54,10 @@ public class FilmstripBottomControls extends RelativeLayout
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mEditButton = (ImageButton)
-                findViewById(R.id.filmstrip_bottom_control_edit);
-        mEditButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mListener != null) {
-                    mListener.onEdit();
-                }
-            }
-        });
-
-        mViewPhotoSphereButton = (ImageButton)
-                findViewById(R.id.filmstrip_bottom_control_panorama);
-        mViewPhotoSphereButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mListener != null) {
-                    mListener.onViewPhotoSphere();
-                }
-            }
-        });
-
-        mTinyPlanetButton = (ImageButton)
-                findViewById(R.id.filmstrip_bottom_control_tiny_planet);
-        mTinyPlanetButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mListener != null) {
-                    mListener.onTinyPlanet();
-                }
+        mEditButton = findViewById(R.id.filmstrip_bottom_control_edit);
+        mEditButton.setOnClickListener(view -> {
+            if (mListener != null) {
+                mListener.onEdit();
             }
         });
     }
@@ -114,30 +77,10 @@ public class FilmstripBottomControls extends RelativeLayout
     }
 
     /**
-     * Sets the visibility of the view-photosphere button.
-     */
-    public void setViewPhotoSphereButtonVisibility(boolean visible) {
-        setVisibility(mViewPhotoSphereButton, visible);
-    }
-
-    /**
-     * Sets the visibility of the tiny-planet button.
-     */
-    public void setTinyPlanetButtonVisibility(final boolean visible) {
-        setVisibility(mTinyPlanetButton, visible);
-    }
-
-    /**
      * Sets the visibility of the given view.
      */
     private static void setVisibility(final View view, final boolean visible) {
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                view.setVisibility(visible ? View.VISIBLE
-                        : View.INVISIBLE);
-            }
-        });
+        view.post(() -> view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE));
     }
 
     @Override

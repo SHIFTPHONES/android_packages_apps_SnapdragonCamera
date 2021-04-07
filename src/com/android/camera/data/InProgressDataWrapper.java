@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.android.camera.util.PhotoSphereHelper;
 import org.codeaurora.snapcam.R;
 
 /**
@@ -184,16 +183,6 @@ public class InProgressDataWrapper implements LocalData {
     @Override
     public void recycle() {
         mLocalData.recycle();
-    }
-
-    @Override
-    public void isPhotoSphere(Context context, PanoramaSupportCallback callback) {
-        mLocalData.isPhotoSphere(context, callback);
-    }
-
-    @Override
-    public void viewPhotoSphere(PhotoSphereHelper.PanoramaViewHelper helper) {
-        mLocalData.viewPhotoSphere(helper);
     }
 
     @Override

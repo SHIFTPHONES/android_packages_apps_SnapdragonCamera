@@ -42,12 +42,7 @@ import com.android.camera.VideoMenu;
 import com.android.camera.PreviewGestures;
 import com.android.camera.CameraActivity;
 import com.android.camera.data.LocalData;
-import com.android.camera.ui.FilmStripView.ImageData.PanoramaSupportCallback;
 import com.android.camera.ui.FilmstripBottomControls.BottomControlsListener;
-import com.android.camera.ui.RenderOverlay;
-import com.android.camera.util.CameraUtil;
-import com.android.camera.util.PhotoSphereHelper.PanoramaViewHelper;
-import com.android.camera.util.UsageStatistics;
 import org.codeaurora.snapcam.R;
 
 import java.util.Arrays;
@@ -91,7 +86,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
     private TimeInterpolator mViewAnimInterpolator;
 
     private FilmstripBottomControls mBottomControls;
-    private PanoramaViewHelper mPanoramaViewHelper;
     private long mLastItemId = -1;
 
     // This is true if and only if the user is scrolling,
@@ -113,22 +107,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
      * Common interface for all images in the filmstrip.
      */
     public interface ImageData {
-
-        /**
-         * Interface that is used to tell the caller whether an image is a photo
-         * sphere.
-         */
-        public static interface PanoramaSupportCallback {
-            /**
-             * Called then photo sphere info has been loaded.
-             *
-             * @param isPanorama whether the image is a valid photo sphere
-             * @param isPanorama360 whether the photo sphere is a full 360
-             *            degree horizontal panorama
-             */
-            void panoramaInfoAvailable(boolean isPanorama,
-                    boolean isPanorama360);
-        }
 
         // View types.
         public static final int VIEW_TYPE_NONE = 0;
@@ -215,18 +193,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
          * hierarchy.
          */
         public void recycle();
-
-        /**
-         * Asynchronously checks if the image is a photo sphere. Notified the
-         * callback when the results are available.
-         */
-        public void isPhotoSphere(Context context, PanoramaSupportCallback callback);
-
-        /**
-         * If the item is a valid photo sphere panorama, this method will launch
-         * the viewer.
-         */
-        public void viewPhotoSphere(PanoramaViewHelper helper);
 
         /** Whether this item is a photo. */
         public boolean isPhoto();
@@ -745,13 +711,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
     }
 
     /**
-     * Sets the helper that's to be used to open photo sphere panoramas.
-     */
-    public void setPanoramaViewHelper(PanoramaViewHelper helper) {
-        mPanoramaViewHelper = helper;
-    }
-
-    /**
      * Checks if the data is at the center.
      *
      * @param id The id of the data to check.
@@ -1050,18 +1009,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
         bringChildToFront(mZoomView);
     }
 
-    /**
-     * If the current photo is a photo sphere, this will launch the Photo Sphere
-     * panorama viewer.
-     */
-    @Override
-    public void onViewPhotoSphere() {
-        ViewItem curr = mViewItem[mCurrentItem];
-        if (curr != null) {
-            mDataAdapter.getImageData(curr.getId()).viewPhotoSphere(mPanoramaViewHelper);
-        }
-    }
-
     @Override
     public void onEdit() {
         ImageData data = mDataAdapter.getImageData(getCurrentId());
@@ -1069,15 +1016,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
             return;
         }
         mActivity.launchEditor((LocalData) data);
-    }
-
-    @Override
-    public void onTinyPlanet() {
-        ImageData data = mDataAdapter.getImageData(getCurrentId());
-        if (data == null || !(data instanceof LocalData)) {
-            return;
-        }
-        mActivity.launchTinyPlanetEditor((LocalData) data);
     }
 
     /**
@@ -1131,32 +1069,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
 
         // We can only edit photos, not videos.
         mBottomControls.setEditButtonVisibility(data.isPhoto());
-
-        // If this is a photo sphere, show the button to view it. If it's a full
-        // 360 photo sphere, show the tiny planet button.
-        if (data.getViewType() == ImageData.VIEW_TYPE_STICKY) {
-            // This is a workaround to prevent an unnecessary update of
-            // PhotoSphere metadata which fires a data focus change callback
-            // at a weird timing.
-            return;
-        }
-        // TODO: Remove this from FilmstripView as it breaks the design.
-        data.isPhotoSphere(mActivity, new PanoramaSupportCallback() {
-            @Override
-            public void panoramaInfoAvailable(final boolean isPanorama,
-                    boolean isPanorama360) {
-                // Make sure the returned data is for the current image.
-                if (requestId == getCurrentId()) {
-                    if (mListener != null) {
-                        // TODO: Remove this hack since there is no data focus
-                        // change actually.
-                        mListener.onDataFocusChanged(requestId, true);
-                    }
-                    mBottomControls.setViewPhotoSphereButtonVisibility(isPanorama);
-                    mBottomControls.setTinyPlanetButtonVisibility(isPanorama360);
-                }
-            }
-        });
     }
 
     /**

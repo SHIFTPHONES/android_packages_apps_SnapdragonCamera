@@ -58,9 +58,9 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 # leave them out of the APK
 
 ifneq (,$(TARGET_BUILD_APPS))
-  LOCAL_JNI_SHARED_LIBRARIES := libjni_snapmosaic libjni_snaptinyplanet libjni_snapimageutil
+  LOCAL_JNI_SHARED_LIBRARIES := libjni_snapmosaic libjni_snapimageutil
 else
-  LOCAL_REQUIRED_MODULES := libjni_snapmosaic libjni_snaptinyplanet libjni_snapimageutil
+  LOCAL_REQUIRED_MODULES := libjni_snapmosaic libjni_snapimageutil
 endif
 
 LOCAL_REQUIRED_MODULES += privapp_whitelist_org.codeaurora.snapcam.xml

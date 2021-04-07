@@ -25,7 +25,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.android.camera.ui.FilmStripView;
-import com.android.camera.util.PhotoSphereHelper;
 
 /**
  * A LocalData that does nothing but only shows a view.
@@ -132,17 +131,6 @@ public class SimpleViewData implements LocalData {
 
     @Override
     public void recycle() {
-        // do nothing.
-    }
-
-    @Override
-    public void isPhotoSphere(Context context, PanoramaSupportCallback callback) {
-        // Not a photo sphere panorama.
-        callback.panoramaInfoAvailable(false, false);
-    }
-
-    @Override
-    public void viewPhotoSphere(PhotoSphereHelper.PanoramaViewHelper helper) {
         // do nothing.
     }
 

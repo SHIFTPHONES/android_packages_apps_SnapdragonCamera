@@ -62,11 +62,11 @@ public interface LocalData extends FilmStripView.ImageData {
     /**
      * Constant for denoting a still image, with valid PhotoSphere metadata.
      */
-    public static final int LOCAL_PHOTO_SPHERE     = 5;
+    //public static final int LOCAL_PHOTO_SPHERE     = 5;
     /**
      * Constant for denoting a still image, with valid 360 PhotoSphere metadata.
      */
-    public static final int LOCAL_360_PHOTO_SPHERE = 6;
+    //public static final int LOCAL_360_PHOTO_SPHERE = 6;
     /**
      * Constant for denoting an in-progress item which should not be touched
      * before the related task is done. Data of this type should not support

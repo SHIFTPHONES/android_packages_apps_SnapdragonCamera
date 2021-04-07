@@ -28,7 +28,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
@@ -36,8 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.ImageView;
 
 import com.android.camera.util.CameraUtil;
-import com.android.camera.util.GcamHelper;
-import com.android.camera.util.PhotoSphereHelper;
 import com.android.camera.util.UsageStatistics;
 import org.codeaurora.snapcam.R;
 
@@ -111,7 +108,7 @@ public class ModuleSwitcher extends RotateImageView
     public void initializeDrawables(Context context) {
         int numDrawIds = DRAW_IDS.length;
 
-        if (!PhotoSphereHelper.hasLightCycleCapture(context)) {
+        if (true /*!PhotoSphereHelper.hasLightCycleCapture(context)*/) {
             --numDrawIds;
         }
 
@@ -122,7 +119,7 @@ public class ModuleSwitcher extends RotateImageView
         int[] moduleids = new int[numDrawIds];
         int ix = 0;
         for (int i = 0; i < DRAW_IDS.length; i++) {
-            if (i == LIGHTCYCLE_MODULE_INDEX && !PhotoSphereHelper.hasLightCycleCapture(context)) {
+            if (i == LIGHTCYCLE_MODULE_INDEX) {
                 continue; // not enabled, so don't add to UI
             }
             if (i == GCAM_MODULE_INDEX) {
