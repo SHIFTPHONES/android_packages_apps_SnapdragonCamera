@@ -89,7 +89,6 @@ import com.android.camera.data.FixedFirstDataAdapter;
 import com.android.camera.data.FixedLastDataAdapter;
 import com.android.camera.data.LocalData;
 import com.android.camera.data.LocalDataAdapter;
-import com.android.camera.data.LocalMediaObserver;
 import com.android.camera.data.MediaDetails;
 import com.android.camera.data.SimpleViewData;
 import com.android.camera.exif.ExifInterface;
