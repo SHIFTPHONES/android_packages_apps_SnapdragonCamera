@@ -2055,7 +2055,6 @@ public class CameraActivity extends Activity
                 mCameraCaptureModuleRootView.setVisibility(View.VISIBLE);
                 break;
 
-            case ModuleSwitcher.LIGHTCYCLE_MODULE_INDEX: //Unused module for now
             case ModuleSwitcher.PHOTO_MODULE_INDEX:
             default:
                 // Fall back to photo mode.

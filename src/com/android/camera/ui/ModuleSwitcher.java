@@ -46,12 +46,9 @@ public class ModuleSwitcher extends RotateImageView
     private static final int SWITCHER_POPUP_ANIM_DURATION = 200;
 
     public static final int PHOTO_MODULE_INDEX = 0;
-    public static final int VIDEO_MODULE_INDEX = 1;
-    public static final int WIDE_ANGLE_PANO_MODULE_INDEX = 2;
-    public static final int QR_MODULE_INDEX = 3;
-    public static final int LIGHTCYCLE_MODULE_INDEX = 4;
-    public static final int GCAM_MODULE_INDEX = 5;
-    public static final int CAPTURE_MODULE_INDEX = 6;
+    public static final int VIDEO_MODULE_INDEX = PHOTO_MODULE_INDEX + 1;
+    public static final int QR_MODULE_INDEX = VIDEO_MODULE_INDEX + 1;
+    public static final int CAPTURE_MODULE_INDEX = QR_MODULE_INDEX + 1;
 
     private boolean mTouchEnabled = true;
     private boolean mIsVisible = true;
@@ -59,9 +56,7 @@ public class ModuleSwitcher extends RotateImageView
     private static final int[] DRAW_IDS = {
             R.drawable.ic_switch_camera,
             R.drawable.ic_switch_video,
-            R.drawable.ic_switch_pan,
             R.drawable.ic_cam_switcher_qr,
-            R.drawable.ic_switch_photosphere,
     };
 
     public interface ModuleSwitchListener {
@@ -106,17 +101,10 @@ public class ModuleSwitcher extends RotateImageView
     public void initializeDrawables(Context context) {
         int numDrawIds = DRAW_IDS.length;
 
-        if (true /*!PhotoSphereHelper.hasLightCycleCapture(context)*/) {
-            --numDrawIds;
-        }
-
         int[] drawids = new int[numDrawIds];
         int[] moduleids = new int[numDrawIds];
         int ix = 0;
         for (int i = 0; i < DRAW_IDS.length; i++) {
-            if (i == LIGHTCYCLE_MODULE_INDEX) {
-                continue; // not enabled, so don't add to UI
-            }
             moduleids[ix] = i;
             drawids[ix++] = DRAW_IDS[i];
         }
