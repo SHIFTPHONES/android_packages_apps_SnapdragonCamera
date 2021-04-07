@@ -56,12 +56,14 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 # the libraries in the APK, otherwise just put them in /system/lib and
 # leave them out of the APK
 
-ifneq (,$(TARGET_BUILD_APPS))
-  LOCAL_JNI_SHARED_LIBRARIES := libjni_snapimageutil
-else
-  LOCAL_REQUIRED_MODULES := libjni_snapimageutil
+# only include jni libraries on user builds to allow easier development
+ifeq ($(TARGET_BUILD_VARIANT),user)
+    ifneq (,$(TARGET_BUILD_APPS))
+        LOCAL_JNI_SHARED_LIBRARIES := libjni_snapimageutil
+    else
+        LOCAL_REQUIRED_MODULES := libjni_snapimageutil
+    endif
 endif
-
 LOCAL_REQUIRED_MODULES += privapp_whitelist_org.codeaurora.snapcam.xml
 
 include $(BUILD_PACKAGE)
