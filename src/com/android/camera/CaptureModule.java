@@ -3729,15 +3729,6 @@ public class CaptureModule implements CameraModule, PhotoController,
         if (Integer.parseInt(scene) != SettingsManager.SCENE_MODE_UBIFOCUS_INT) {
             setRefocusLastTaken(false);
         }
-        if(isPanoSetting(scene)) {
-            if (mIntentMode != CaptureModule.INTENT_MODE_NORMAL) {
-                mSettingsManager.setValue(
-                        SettingsManager.KEY_SCENE_MODE, ""+SettingsManager.SCENE_MODE_AUTO_INT);
-                showToast("Pano Capture is not supported in this mode");
-            } else {
-                mActivity.onModuleSelected(ModuleSwitcher.PANOCAPTURE_MODULE_INDEX);
-            }
-        }
 
         applyShiftLowLightShot();
     }
@@ -6974,17 +6965,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                 e.printStackTrace();
             }
         }
-    }
-
-    private boolean isPanoSetting(String value) {
-        try {
-            int mode = Integer.parseInt(value);
-            if(mode == SettingsManager.SCENE_MODE_PANORAMA_INT) {
-                return true;
-            }
-        } catch(Exception e) {
-        }
-        return false;
     }
 
     private boolean isCaptureBrustMode() {

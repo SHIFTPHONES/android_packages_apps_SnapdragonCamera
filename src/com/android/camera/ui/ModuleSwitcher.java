@@ -52,7 +52,6 @@ public class ModuleSwitcher extends RotateImageView
     public static final int LIGHTCYCLE_MODULE_INDEX = 4;
     public static final int GCAM_MODULE_INDEX = 5;
     public static final int CAPTURE_MODULE_INDEX = 6;
-    public static final int PANOCAPTURE_MODULE_INDEX = 7;
 
     private boolean mTouchEnabled = true;
     private boolean mIsVisible = true;
@@ -140,8 +139,6 @@ public class ModuleSwitcher extends RotateImageView
         mCurrentIndex = i;
         if (i == GCAM_MODULE_INDEX) {
           setImageResource(R.drawable.ic_switch_camera);
-        } if (i== PANOCAPTURE_MODULE_INDEX) {
-            return;
         } else {
           setImageResource(mDrawIds[i]);
         }
