@@ -202,14 +202,12 @@ public class CameraActivity extends Activity
     private CameraModule mCurrentModule;
     private PhotoModule mPhotoModule;
     private VideoModule mVideoModule;
-    private WideAnglePanoramaModule mPanoModule;
     private CaptureModule mCaptureModule;
     private PanoCaptureModule mPano2Module;
     private FrameLayout mAboveFilmstripControlLayout;
     private FrameLayout mCameraRootFrame;
     private View mCameraPhotoModuleRootView;
     private View mCameraVideoModuleRootView;
-    private View mCameraPanoModuleRootView;
     private View mCameraCaptureModuleRootView;
     private FilmStripView mFilmStripView;
     private ProgressBar mBottomProgress;
@@ -1451,7 +1449,6 @@ public class CameraActivity extends Activity
         mCameraRootFrame = (FrameLayout)rootLayout.findViewById(R.id.camera_root_frame);
         mCameraPhotoModuleRootView = rootLayout.findViewById(R.id.camera_photo_root);
         mCameraVideoModuleRootView = rootLayout.findViewById(R.id.camera_video_root);
-        mCameraPanoModuleRootView = rootLayout.findViewById(R.id.camera_pano_root);
         mCameraCaptureModuleRootView = rootLayout.findViewById(R.id.camera_capture_root);
 
         int moduleIndex = -1;
@@ -2090,7 +2087,6 @@ public class CameraActivity extends Activity
     private void setModuleFromIndex(int moduleIndex) {
         mCameraPhotoModuleRootView.setVisibility(View.GONE);
         mCameraVideoModuleRootView.setVisibility(View.GONE);
-        mCameraPanoModuleRootView.setVisibility(View.GONE);
         mCameraCaptureModuleRootView.setVisibility(View.GONE);
         mCurrentModuleIndex = moduleIndex;
         switch (moduleIndex) {
@@ -2103,15 +2099,6 @@ public class CameraActivity extends Activity
                 }
                 mCurrentModule = mVideoModule;
                 mCameraVideoModuleRootView.setVisibility(View.VISIBLE);
-                break;
-
-            case ModuleSwitcher.WIDE_ANGLE_PANO_MODULE_INDEX:
-                if(mPanoModule == null) {
-                    mPanoModule = new WideAnglePanoramaModule();
-                    mPanoModule.init(this, mCameraPanoModuleRootView);
-                }
-                mCurrentModule = mPanoModule;
-                mCameraPanoModuleRootView.setVisibility(View.VISIBLE);
                 break;
 
             case ModuleSwitcher.CAPTURE_MODULE_INDEX:
