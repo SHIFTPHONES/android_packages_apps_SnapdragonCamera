@@ -1330,12 +1330,11 @@ public class PostProcessor{
     }
 
     public int getJpegQualityValue() {
-        int quality = 55;
-        if(SettingsManager.getInstance() != null && SettingsManager.getInstance().getValue(SettingsManager.KEY_JPEG_QUALITY) != null) {
+        if (SettingsManager.getInstance() != null) {
             String value = SettingsManager.getInstance().getValue(SettingsManager.KEY_JPEG_QUALITY);
-            int jpegQuality = mController.getQualityNumber(value);
+            return CaptureModule.getQualityNumber(value);
         }
-        return quality;
+        return 85;
     }
 
     private class BitmapOutputStream extends ByteArrayOutputStream {
