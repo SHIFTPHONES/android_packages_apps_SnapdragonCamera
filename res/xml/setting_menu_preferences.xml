@@ -263,14 +263,24 @@
         android:key="developer"
         android:title="@string/pref_camera2_preferences_category_developer">
 
+        <MultiSelectListPreference
+            android:key="pref_camera2_stats_visualizer_key"
+            android:defaultValue="@array/pref_camera2_stats_visualizer_default"
+            android:title="@string/pref_camera2_stats_visualizer_title"
+            android:entries="@array/pref_camera2_stats_visualizer_entries"
+            android:entryValues="@array/pref_camera2_stats_visualizer_entryvalues"
+            android:icon="@drawable/bg_custom_empty"
+            android:summary="Choose stats to display"/>
+
         <ListPreference
-            android:defaultValue="@string/pref_camera2_instant_aec_default"
-            android:entries="@array/pref_camera2_instant_aec_entries"
-            android:entryValues="@array/pref_camera2_instant_aec_entryvalues"
-            android:key="pref_camera2_instant_aec_key"
+            android:defaultValue="@string/pref_camera2_sharpness_control_default"
+            android:entries="@array/pref_camera2_sharpness_control_entries"
+            android:entryValues="@array/pref_camera2_multilevel_sharpness_entryvalues"
+            android:key="pref_camera2_sharpness_control_key"
             android:icon="@drawable/bg_custom_empty"
             android:summary="%s"
-            android:title="@string/pref_camera2_instant_aec_title" />
+            android:title="@string/pref_camera2_sharpness_control_title" />
+
         <ListPreference
             android:defaultValue="@string/pref_camera2_saturation_level_default"
             android:entries="@array/pref_camera2_saturation_level_entries"
@@ -279,6 +289,41 @@
             android:icon="@drawable/bg_custom_empty"
             android:summary="%s"
             android:title="@string/pref_camera2_saturation_level_title" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_camera2_exposure_metering_default"
+            android:entries="@array/pref_camera2_exposure_metering_entries"
+            android:entryValues="@array/pref_camera2_exposure_metering_entryvalues"
+            android:key="pref_camera2_exposure_metering_key"
+            android:icon="@drawable/bg_custom_empty"
+            android:summary="%s"
+            android:title="@string/pref_camera2_exposure_metering_title" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_camera2_afmode_default"
+            android:entries="@array/pref_camera2_afmode_entries"
+            android:entryValues="@array/pref_camera2_afmode_entryvalues"
+            android:key="pref_camera2_afmode_key"
+            android:icon="@drawable/bg_custom_empty"
+            android:summary="%s"
+            android:title="@string/pref_camera2_afmode_title" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_camera2_switch_camera_default"
+            android:key="pref_camera2_switch_camera_key"
+            android:icon="@drawable/bg_custom_empty"
+            android:summary="%s"
+            android:title="@string/pref_camera2_switch_camera_title"/>
+
+        <ListPreference
+            android:defaultValue="@string/pref_camera2_instant_aec_default"
+            android:entries="@array/pref_camera2_instant_aec_entries"
+            android:entryValues="@array/pref_camera2_instant_aec_entryvalues"
+            android:key="pref_camera2_instant_aec_key"
+            android:icon="@drawable/bg_custom_empty"
+            android:summary="%s"
+            android:title="@string/pref_camera2_instant_aec_title" />
+
         <ListPreference
             android:defaultValue="@string/pref_camera2_anti_banding_level_default"
             android:entries="@array/pref_camera2_anti_banding_level_entries"
@@ -368,40 +413,6 @@
             android:title="@string/pref_camera2_bsgc_title" />
 
         <ListPreference
-            android:defaultValue="@string/pref_camera2_sharpness_control_default"
-            android:entries="@array/pref_camera2_sharpness_control_entries"
-            android:entryValues="@array/pref_camera2_multilevel_sharpness_entryvalues"
-            android:key="pref_camera2_sharpness_control_key"
-            android:icon="@drawable/bg_custom_empty"
-            android:summary="%s"
-            android:title="@string/pref_camera2_sharpness_control_title" />
-
-        <ListPreference
-            android:defaultValue="@string/pref_camera2_afmode_default"
-            android:entries="@array/pref_camera2_afmode_entries"
-            android:entryValues="@array/pref_camera2_afmode_entryvalues"
-            android:key="pref_camera2_afmode_key"
-            android:icon="@drawable/bg_custom_empty"
-            android:summary="%s"
-            android:title="@string/pref_camera2_afmode_title" />
-
-        <ListPreference
-            android:defaultValue="@string/pref_camera2_exposure_metering_default"
-            android:entries="@array/pref_camera2_exposure_metering_entries"
-            android:entryValues="@array/pref_camera2_exposure_metering_entryvalues"
-            android:key="pref_camera2_exposure_metering_key"
-            android:icon="@drawable/bg_custom_empty"
-            android:summary="%s"
-            android:title="@string/pref_camera2_exposure_metering_title" />
-
-        <ListPreference
-            android:defaultValue="@string/pref_camera2_switch_camera_default"
-            android:key="pref_camera2_switch_camera_key"
-            android:icon="@drawable/bg_custom_empty"
-            android:summary="%s"
-            android:title="@string/pref_camera2_switch_camera_title"/>
-
-        <ListPreference
             android:key="pref_camera2_eis_key"
             android:defaultValue="@string/pref_camera2_eis_default"
             android:title="@string/pref_camera2_eis_title"
@@ -427,15 +438,6 @@
             android:entryValues="@array/pref_camera2_video_hdr_entryvalues"
             android:icon="@drawable/bg_custom_empty"
             android:summary="%s"/>
-
-        <MultiSelectListPreference
-            android:key="pref_camera2_stats_visualizer_key"
-            android:defaultValue="@array/pref_camera2_stats_visualizer_default"
-            android:title="@string/pref_camera2_stats_visualizer_title"
-            android:entries="@array/pref_camera2_stats_visualizer_entries"
-            android:entryValues="@array/pref_camera2_stats_visualizer_entryvalues"
-            android:icon="@drawable/bg_custom_empty"
-            android:summary="Choose stats to display"/>
 
         <ListPreference
             android:key="pref_camera2_capture_mfnr_key"
