@@ -39,7 +39,6 @@ import android.widget.Scroller;
 import com.android.camera.CameraActivity;
 import com.android.camera.PhotoMenu;
 import com.android.camera.PreviewGestures;
-import com.android.camera.VideoMenu;
 import com.android.camera.data.LocalData;
 import com.android.camera.ui.FilmstripBottomControls.BottomControlsListener;
 
@@ -1742,7 +1741,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
         if (mSendToPreviewMenu || mSendToMenu || mPreviewGestures == null)
             return true;
         PhotoMenu pMenu = mPreviewGestures.getPhotoMenu();
-        VideoMenu vMenu = mPreviewGestures.getVideoMenu();
 
         if (pMenu != null) {
             if (pMenu.isMenuBeingShown()) {
@@ -1756,24 +1754,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
 
             if (pMenu.isPreviewMenuBeingShown()) {
                 if (pMenu.isOverPreviewMenu(ev)) {
-                    mSendToPreviewMenu = true;
-                    return true;
-                }
-            }
-        }
-
-        if (vMenu != null) {
-            if (vMenu.isMenuBeingShown()) {
-                if (vMenu.isMenuBeingAnimated()) {
-                    if (vMenu.isOverMenu(ev)) {
-                        mSendToMenu = true;
-                        return true;
-                    }
-                }
-            }
-
-            if (vMenu.isPreviewMenuBeingShown()) {
-                if (vMenu.isOverPreviewMenu(ev)) {
                     mSendToPreviewMenu = true;
                     return true;
                 }
@@ -1797,7 +1777,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
                 mReset = true;
         }
         PhotoMenu pMenu = mPreviewGestures.getPhotoMenu();
-        VideoMenu vMenu = mPreviewGestures.getVideoMenu();
         if (pMenu != null) {
             if (mSendToPreviewMenu)
                 return pMenu.sendTouchToPreviewMenu(ev);
@@ -1809,20 +1788,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
 
             if (pMenu.isPreviewMenuBeingShown()) {
                 return pMenu.sendTouchToPreviewMenu(ev);
-            }
-        }
-
-        if (vMenu != null) {
-            if (mSendToPreviewMenu)
-                return vMenu.sendTouchToPreviewMenu(ev);
-            if (mSendToMenu)
-                return vMenu.sendTouchToMenu(ev);
-            if (vMenu.isMenuBeingShown()) {
-                return vMenu.sendTouchToMenu(ev);
-            }
-
-            if (vMenu.isPreviewMenuBeingShown()) {
-                return vMenu.sendTouchToPreviewMenu(ev);
             }
         }
         return false;

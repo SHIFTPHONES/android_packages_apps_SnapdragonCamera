@@ -180,7 +180,6 @@ public class CameraActivity extends Activity
     private int mCurrentModuleIndex;
     private CameraModule mCurrentModule;
     private PhotoModule mPhotoModule;
-    private VideoModule mVideoModule;
     private CaptureModule mCaptureModule;
     private FrameLayout mAboveFilmstripControlLayout;
     private View mCameraCaptureModuleRootView;
@@ -726,9 +725,7 @@ public class CameraActivity extends Activity
     public void updateThumbnail(boolean videoOnly) {
         // Only handle OnDataInserted if it's video.
         // Photos have their own way of updating thumbnail.
-        if (!videoOnly
-                || (mCurrentModule instanceof VideoModule)
-                || (mCurrentModule instanceof CaptureModule)) {
+        if (!videoOnly || (mCurrentModule instanceof CaptureModule)) {
             (new UpdateThumbnailTask(null, true)).execute();
         }
     }

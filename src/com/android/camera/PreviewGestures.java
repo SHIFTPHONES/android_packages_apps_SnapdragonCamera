@@ -58,7 +58,6 @@ public class PreviewGestures
     private GestureDetector mGestureDetector;
     private CaptureUI mCaptureUI;
     private PhotoMenu mPhotoMenu;
-    private VideoMenu mVideoMenu;
     private boolean waitUntilNextDown;
     private boolean setToFalse;
 
@@ -94,8 +93,6 @@ public class PreviewGestures
             int orientation = 0;
             if (mPhotoMenu != null)
                 orientation = mPhotoMenu.getOrientation();
-            else if (mVideoMenu != null)
-                orientation = mVideoMenu.getOrientation();
             else if (mCaptureUI != null)
                 orientation = mCaptureUI.getOrientation();
 
@@ -103,8 +100,6 @@ public class PreviewGestures
                 waitUntilNextDown = true;
                 if (mPhotoMenu != null && !mPhotoMenu.isMenuBeingShown())
                     mPhotoMenu.openFirstLevel();
-                else if (mVideoMenu != null && !mVideoMenu.isMenuBeingShown())
-                    mVideoMenu.openFirstLevel();
                 else if (mCaptureUI != null)
                     mCaptureUI.openSettingsMenu();
                 return true;
@@ -170,16 +165,8 @@ public class PreviewGestures
         mPhotoMenu = menu;
     }
 
-    public void setVideoMenu(VideoMenu menu) {
-        mVideoMenu = menu;
-    }
-
     public PhotoMenu getPhotoMenu() {
         return mPhotoMenu;
-    }
-
-    public VideoMenu getVideoMenu() {
-        return mVideoMenu;
     }
 
     public boolean dispatchTouch(MotionEvent m) {
@@ -233,22 +220,6 @@ public class PreviewGestures
             if (mPhotoMenu.isPreviewMenuBeingShown()) {
                 waitUntilNextDown = true;
                 mPhotoMenu.animateSlideOutPreviewMenu();
-                return true;
-            }
-        }
-
-        if (mVideoMenu != null) {
-            if (mVideoMenu.isMenuBeingShown()) {
-                if (!mVideoMenu.isMenuBeingAnimated()) {
-                    waitUntilNextDown = true;
-                    mVideoMenu.closeView();
-                }
-                return true;
-            }
-
-            if (mVideoMenu.isPreviewMenuBeingShown()) {
-                waitUntilNextDown = true;
-                mVideoMenu.animateSlideOutPreviewMenu();
                 return true;
             }
         }
