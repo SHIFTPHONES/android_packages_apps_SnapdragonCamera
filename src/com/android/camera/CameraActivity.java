@@ -96,7 +96,6 @@ import com.android.camera.ui.ModuleSwitcher;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.FeatureHelper;
 import com.android.camera.util.IntentHelper;
-import com.android.camera.util.PersistUtil;
 import com.android.camera.util.UsageStatistics;
 
 import org.codeaurora.snapcam.R;
@@ -137,8 +136,6 @@ public class CameraActivity extends Activity
 
     // This string is used for judge start activity from screenoff or not
     public static final String GESTURE_CAMERA_NAME = "com.android.camera.CameraGestureActivity";
-
-    private static final String AUTO_TEST_INTENT ="com.android.camera.autotest";
 
     /**
      * Request code from an activity we started that indicated that we do not
@@ -245,8 +242,6 @@ public class CameraActivity extends Activity
     // Keep track of data request here to avoid creating useless UpdateThumbnailTask.
     private boolean mDataRequested;
     private Cursor mCursor;
-
-    private boolean mAutoTestEnabled = false;
 
     private WakeLock mWakeLock;
     private static final int REFOCUS_ACTIVITY_CODE = 1;
@@ -1304,24 +1299,6 @@ public class CameraActivity extends Activity
         }
     }
 
-    private BroadcastReceiver mAutoTestReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("KEY") && intent.hasExtra("VALUE")) {
-                String key = intent.getExtras().getString("KEY");
-                String value = intent.getExtras().getString("VALUE");
-                if (mCurrentModule != null) {
-                    mCurrentModule.setPreferenceForTest(key,value);
-                }
-            }
-        }
-    };
-
-    private  void registerAutoTestReceiver() {
-        IntentFilter filter = new IntentFilter(AUTO_TEST_INTENT);
-        registerReceiver(mAutoTestReceiver, filter);
-    }
-
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -1498,12 +1475,6 @@ public class CameraActivity extends Activity
         SETTING_LIST_WIDTH_1 = lower / 2 + offset;
         SETTING_LIST_WIDTH_2 = lower / 2 - offset;
         registerSDcardMountedReceiver();
-
-        mAutoTestEnabled = PersistUtil.isAutoTestEnabled();
-
-        if (mAutoTestEnabled) {
-            registerAutoTestReceiver();
-        }
     }
 
     private void setRotationAnimation() {
@@ -1727,9 +1698,6 @@ public class CameraActivity extends Activity
         }
         if (mDataAdapter != null) {
             mDataAdapter.stopLoading();
-        }
-        if (mAutoTestEnabled) {
-            unregisterReceiver(mAutoTestReceiver);
         }
         if(mCurrentModule != null){
             mCurrentModule.onDestroy();
