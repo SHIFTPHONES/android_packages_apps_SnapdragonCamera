@@ -123,6 +123,10 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     private SelfieFlashView mSelfieView;
     private float mScreenBrightness = 0.0f;
 
+    public interface SurfaceTextureSizeChangedListener {
+        void onSurfaceTextureSizeChanged(int uncroppedWidth, int uncroppedHeight);
+    }
+
     private SurfaceHolder.Callback callbackMono = new SurfaceHolder.Callback() {
         // SurfaceHolder callbacks
         @Override

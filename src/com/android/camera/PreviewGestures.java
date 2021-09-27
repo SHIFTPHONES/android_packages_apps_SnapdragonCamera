@@ -57,7 +57,6 @@ public class PreviewGestures
     private boolean mZoomOnly;
     private GestureDetector mGestureDetector;
     private CaptureUI mCaptureUI;
-    private PhotoMenu mPhotoMenu;
     private boolean waitUntilNextDown;
     private boolean setToFalse;
 
@@ -91,16 +90,12 @@ public class PreviewGestures
             int deltaY = (int) (e1.getY() - e2.getY());
 
             int orientation = 0;
-            if (mPhotoMenu != null)
-                orientation = mPhotoMenu.getOrientation();
-            else if (mCaptureUI != null)
+            if (mCaptureUI != null)
                 orientation = mCaptureUI.getOrientation();
 
             if (isLeftSwipe(orientation, deltaX, deltaY)) {
                 waitUntilNextDown = true;
-                if (mPhotoMenu != null && !mPhotoMenu.isMenuBeingShown())
-                    mPhotoMenu.openFirstLevel();
-                else if (mCaptureUI != null)
+                if (mCaptureUI != null)
                     mCaptureUI.openSettingsMenu();
                 return true;
             }
@@ -161,14 +156,6 @@ public class PreviewGestures
         mCaptureUI = ui;
     }
 
-    public void setPhotoMenu(PhotoMenu menu) {
-        mPhotoMenu = menu;
-    }
-
-    public PhotoMenu getPhotoMenu() {
-        return mPhotoMenu;
-    }
-
     public boolean dispatchTouch(MotionEvent m) {
         if (setToFalse) {
             waitUntilNextDown = false;
@@ -205,21 +192,6 @@ public class PreviewGestures
             if (mCaptureUI.isPreviewMenuBeingShown()) {
                 waitUntilNextDown = true;
                 mCaptureUI.removeFilterMenu(true);
-                return true;
-            }
-        }
-
-        if (mPhotoMenu != null) {
-            if (mPhotoMenu.isMenuBeingShown()) {
-                if (!mPhotoMenu.isMenuBeingAnimated()) {
-                    waitUntilNextDown = true;
-                    mPhotoMenu.closeView();
-                }
-                return true;
-            }
-            if (mPhotoMenu.isPreviewMenuBeingShown()) {
-                waitUntilNextDown = true;
-                mPhotoMenu.animateSlideOutPreviewMenu();
                 return true;
             }
         }

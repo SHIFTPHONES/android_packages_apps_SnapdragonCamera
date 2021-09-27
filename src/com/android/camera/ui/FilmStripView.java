@@ -37,7 +37,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Scroller;
 
 import com.android.camera.CameraActivity;
-import com.android.camera.PhotoMenu;
 import com.android.camera.PreviewGestures;
 import com.android.camera.data.LocalData;
 import com.android.camera.ui.FilmstripBottomControls.BottomControlsListener;
@@ -1738,28 +1737,7 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
     }
 
     public boolean checkSendToModeView(MotionEvent ev) {
-        if (mSendToPreviewMenu || mSendToMenu || mPreviewGestures == null)
-            return true;
-        PhotoMenu pMenu = mPreviewGestures.getPhotoMenu();
-
-        if (pMenu != null) {
-            if (pMenu.isMenuBeingShown()) {
-                if (pMenu.isMenuBeingAnimated()) {
-                    if (pMenu.isOverMenu(ev)) {
-                        mSendToMenu = true;
-                        return true;
-                    }
-                }
-            }
-
-            if (pMenu.isPreviewMenuBeingShown()) {
-                if (pMenu.isOverPreviewMenu(ev)) {
-                    mSendToPreviewMenu = true;
-                    return true;
-                }
-            }
-        }
-        return false;
+        return mSendToPreviewMenu || mSendToMenu || mPreviewGestures == null;
     }
 
     public boolean sendToModeView(MotionEvent ev) {
@@ -1775,20 +1753,6 @@ public class FilmStripView extends ViewGroup implements BottomControlsListener {
             if (MotionEvent.ACTION_UP == ev.getActionMasked()
                     || MotionEvent.ACTION_CANCEL == ev.getActionMasked())
                 mReset = true;
-        }
-        PhotoMenu pMenu = mPreviewGestures.getPhotoMenu();
-        if (pMenu != null) {
-            if (mSendToPreviewMenu)
-                return pMenu.sendTouchToPreviewMenu(ev);
-            if (mSendToMenu)
-                return pMenu.sendTouchToMenu(ev);
-            if (pMenu.isMenuBeingShown()) {
-                return pMenu.sendTouchToMenu(ev);
-            }
-
-            if (pMenu.isPreviewMenuBeingShown()) {
-                return pMenu.sendTouchToPreviewMenu(ev);
-            }
         }
         return false;
     }

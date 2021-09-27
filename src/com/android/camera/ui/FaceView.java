@@ -31,15 +31,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.android.camera.PhotoUI;
+import com.android.camera.CaptureUI;
 import com.android.camera.util.CameraUtil;
 
 import org.codeaurora.snapcam.R;
 import org.codeaurora.snapcam.wrapper.ExtendedFaceWrapper;
 
-public class FaceView extends View
-    implements FocusIndicator, Rotatable,
-    PhotoUI.SurfaceTextureSizeChangedListener {
+public class FaceView extends View implements FocusIndicator, Rotatable,
+        CaptureUI.SurfaceTextureSizeChangedListener {
     protected static final String TAG = "CAM FaceView";
     protected final boolean LOGV = false;
     // The value for android.hardware.Camera.setDisplayOrientation.

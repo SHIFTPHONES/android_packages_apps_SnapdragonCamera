@@ -179,7 +179,6 @@ public class CameraActivity extends Activity
 
     private int mCurrentModuleIndex;
     private CameraModule mCurrentModule;
-    private PhotoModule mPhotoModule;
     private CaptureModule mCaptureModule;
     private FrameLayout mAboveFilmstripControlLayout;
     private View mCameraCaptureModuleRootView;
@@ -518,15 +517,6 @@ public class CameraActivity extends Activity
         if (img == null)
             return;
         Uri uri = img.getContentUri();
-        if (mCurrentModule instanceof PhotoModule) {
-            if (((PhotoModule) mCurrentModule).isRefocus()) {
-                Intent intent = new Intent();
-                intent.setClass(this, RefocusActivity.class);
-                intent.setData(uri);
-                startActivity(intent);
-                return;
-            }
-        }
         if (mCurrentModule instanceof CaptureModule) {
             if (((CaptureModule) mCurrentModule).isRefocus()) {
                 Intent intent = new Intent();
