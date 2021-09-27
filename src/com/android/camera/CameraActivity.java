@@ -19,7 +19,6 @@ package com.android.camera;
 
 import android.Manifest;
 import android.animation.Animator;
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -52,9 +51,7 @@ import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -226,8 +223,6 @@ public class CameraActivity extends Activity
     private FrameLayout mPreviewContentLayout;
     private boolean mPaused = true;
     private boolean mForceReleaseCamera = false;
-
-    private Uri[] mNfcPushUris = new Uri[1];
 
     private ShareActionProvider mStandardShareActionProvider;
     private Intent mStandardShareIntent;
@@ -665,21 +660,6 @@ public class CameraActivity extends Activity
                 mMainHandler.sendEmptyMessageDelayed(HIDE_ACTION_BAR, SHOW_ACTION_BAR_TIMEOUT_MS);
             }
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void setupNfcBeamPush() {
-        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(CameraActivity.this);
-        if (adapter == null) {
-            return;
-        }
-
-        adapter.setBeamPushUris(null, CameraActivity.this);
-        adapter.setBeamPushUrisCallback(event -> mNfcPushUris, CameraActivity.this);
-    }
-
-    private void setNfcBeamPushUri(Uri uri) {
-        mNfcPushUris[0] = uri;
     }
 
     public LocalDataAdapter getDataAdapter() {
@@ -1134,7 +1114,6 @@ public class CameraActivity extends Activity
                 }
             }
             setStandardShareIntent(currentData.getContentUri(), currentData.getMimeType());
-            setNfcBeamPushUri(currentData.getContentUri());
         }
 
         boolean itemHasLocation = currentData.getLatLong() != null;
@@ -1503,8 +1482,6 @@ public class CameraActivity extends Activity
             mDataAdapter.flush();
             mFilmStripView.setDataAdapter(mDataAdapter);
         }
-
-        setupNfcBeamPush();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mDeveloperMenuEnabled = prefs.getBoolean(CameraSettings.KEY_DEVELOPER_MENU, false);
