@@ -28,19 +28,16 @@
  */
 package org.codeaurora.snapcam.filter;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import android.graphics.Rect;
+import android.hardware.camera2.CaptureResult;
 import android.media.Image;
 import android.media.Image.Plane;
 import android.util.Log;
 
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
-
 import org.codeaurora.snapcam.filter.ClearSightNativeEngine.CamSystemCalibrationData;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class DDMNativeEngine {
     private static final String TAG = "DDMNativeEngine";

@@ -46,21 +46,17 @@ import android.view.Surface;
 import android.widget.Toast;
 
 import com.android.camera.CaptureModule;
-import com.android.camera.PhotoModule;
-import com.android.camera.SettingsManager;
 import com.android.camera.deepportrait.DPImage;
 import com.android.camera.deepportrait.GLCameraPreview;
 import com.android.camera.imageprocessor.filter.BeautificationFilter;
 import com.android.camera.imageprocessor.filter.DeepPortraitFilter;
 import com.android.camera.imageprocessor.filter.ImageFilter;
 import com.android.camera.imageprocessor.filter.TrackingFocusFrameListener;
-import com.android.camera.ui.RotateTextToast;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import org.codeaurora.snapcam.R;
 
 public class FrameProcessor {
     private static final String TAG = "FrameProcessor";

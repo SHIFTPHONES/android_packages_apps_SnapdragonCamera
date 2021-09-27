@@ -29,7 +29,6 @@
 
 package com.android.camera.deepportrait;
 
-import java.nio.ByteBuffer;
 import android.opengl.GLES30;
 
 public class CamRenderTexture

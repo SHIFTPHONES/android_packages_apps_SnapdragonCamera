@@ -29,8 +29,6 @@
 
 package com.android.camera;
 
-import android.hardware.camera2.params.Face;
-
 public class ExtendedFace {
     private int mSmileDegree = 0;
     private int mSmileConfidence = 0;

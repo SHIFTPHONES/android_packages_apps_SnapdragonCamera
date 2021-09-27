@@ -29,16 +29,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.android.camera.imageprocessor;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
@@ -54,6 +51,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Size;
 import android.widget.Toast;
 
 import com.android.camera.CameraActivity;
@@ -69,28 +67,25 @@ import com.android.camera.imageprocessor.filter.BestpictureFilter;
 import com.android.camera.imageprocessor.filter.BlurbusterFilter;
 import com.android.camera.imageprocessor.filter.ChromaflashFilter;
 import com.android.camera.imageprocessor.filter.DeepPortraitFilter;
+import com.android.camera.imageprocessor.filter.DeepZoomFilter;
+import com.android.camera.imageprocessor.filter.ImageFilter;
 import com.android.camera.imageprocessor.filter.OptizoomFilter;
 import com.android.camera.imageprocessor.filter.SharpshooterFilter;
 import com.android.camera.imageprocessor.filter.StillmoreFilter;
 import com.android.camera.imageprocessor.filter.UbifocusFilter;
-import com.android.camera.imageprocessor.filter.DeepZoomFilter;
 import com.android.camera.ui.RotateTextToast;
+import com.android.camera.util.CameraUtil;
+import com.android.camera.util.PersistUtil;
+import com.android.camera.util.VendorTagUtil;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import android.util.Size;
 import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
-
-import com.android.camera.imageprocessor.filter.ImageFilter;
-import com.android.camera.util.CameraUtil;
-import com.android.camera.util.PersistUtil;
-import com.android.camera.util.VendorTagUtil;
 
 public class PostProcessor{
 

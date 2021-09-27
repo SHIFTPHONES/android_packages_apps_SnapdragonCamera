@@ -31,23 +31,18 @@ package org.codeaurora.snapcam.filter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.hardware.Camera.Size;
 import android.util.Base64;
 import android.util.Log;
-
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-
-import java.io.OutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
 
 import com.adobe.xmp.XMPException;
 import com.adobe.xmp.XMPMeta;
 import com.adobe.xmp.XMPMetaFactory;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class GDepth{
     private final static String TAG = "Flow_GDepth";

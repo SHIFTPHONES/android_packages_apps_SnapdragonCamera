@@ -20,9 +20,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.android.camera.SDCard;
+import com.android.camera.SettingsManager;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.UsageStatistics;
-import com.android.camera.SettingsManager;
 
 public class CameraApp extends Application {
     private static Application mApp = null;

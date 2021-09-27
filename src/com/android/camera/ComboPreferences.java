@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.android.camera.util.UsageStatistics;
-
 public class ComboPreferences implements
         SharedPreferences,
         OnSharedPreferenceChangeListener {

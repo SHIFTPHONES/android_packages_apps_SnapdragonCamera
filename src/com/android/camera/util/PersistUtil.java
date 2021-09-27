@@ -30,8 +30,6 @@ package com.android.camera.util;
 
 import android.graphics.Point;
 import android.os.SystemProperties;
-import android.text.TextUtils;
-import android.util.Log;
 
 public class PersistUtil {
 

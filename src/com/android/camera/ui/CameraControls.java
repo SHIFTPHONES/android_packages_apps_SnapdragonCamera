@@ -21,29 +21,25 @@ import android.animation.Animator.AnimatorListener;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import java.util.ArrayList;
 
-import org.codeaurora.snapcam.R;
-import com.android.camera.ui.ModuleSwitcher;
-import com.android.camera.ui.RotateImageView;
 import com.android.camera.ShutterButton;
 import com.android.camera.Storage;
-import com.android.camera.util.CameraUtil;
 import com.android.camera.TsMakeupManager;
+import com.android.camera.util.CameraUtil;
+
+import org.codeaurora.snapcam.R;
+
+import java.util.ArrayList;
 
 public class CameraControls extends RotatableLayout {
 

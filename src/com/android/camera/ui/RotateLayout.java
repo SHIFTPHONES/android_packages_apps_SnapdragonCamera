@@ -21,7 +21,6 @@ import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.FrameLayout;
 
 // A RotateLayout is designed to display a single item and provides the

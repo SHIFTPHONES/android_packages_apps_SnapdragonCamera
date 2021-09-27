@@ -21,9 +21,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.Camera.CameraInfo;
 import android.util.Log;
+
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
 
 // We want to disable camera-related activities if there is no camera. This

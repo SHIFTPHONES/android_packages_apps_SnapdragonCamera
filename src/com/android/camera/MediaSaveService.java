@@ -16,12 +16,6 @@
 
 package com.android.camera;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteOrder;
-
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -37,8 +31,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore.Video;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.adobe.xmp.XMPException;
+import com.adobe.xmp.XMPMeta;
 import com.android.camera.exif.ExifInterface;
 import com.android.camera.mpo.MpoData;
 import com.android.camera.mpo.MpoImageData;
@@ -50,10 +45,10 @@ import com.android.camera.util.XmpUtil;
 import org.codeaurora.snapcam.filter.GDepth;
 import org.codeaurora.snapcam.filter.GImage;
 
-import com.adobe.xmp.XMPException;
-import com.adobe.xmp.XMPMeta;
-
-import androidx.heifwriter.HeifWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.ByteOrder;
 
 
 /*

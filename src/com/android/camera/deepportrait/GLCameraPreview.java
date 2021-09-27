@@ -19,18 +19,15 @@
  
 package com.android.camera.deepportrait;
 
-import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.opengles.GL10;
-import android.opengl.GLES30;
-import android.util.Log;
 
 public class GLCameraPreview extends GLSurfaceView
 {

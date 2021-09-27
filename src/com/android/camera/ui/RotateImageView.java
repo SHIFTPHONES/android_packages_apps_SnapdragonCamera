@@ -29,6 +29,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
 import com.android.camera.util.CameraUtil;
 
 /**

@@ -20,7 +20,6 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import com.android.camera.async.MainThread;
-import com.android.camera.ui.motion.LinearScale;
 
 /**
  * The focus controller interacts with the focus ring UI element.

@@ -28,20 +28,15 @@
  */
 package com.android.camera;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -51,7 +46,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -59,13 +53,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.android.camera.exif.ExifInterface;
-
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class RefocusActivity extends Activity {
     private static final String TAG = "RefocusActivity";

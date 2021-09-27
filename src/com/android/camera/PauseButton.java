@@ -31,10 +31,7 @@ package com.android.camera;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
-import android.view.MotionEvent;
 import android.view.View;
-import android.util.Log;
 
 import com.android.camera.ui.RotateImageView;
 

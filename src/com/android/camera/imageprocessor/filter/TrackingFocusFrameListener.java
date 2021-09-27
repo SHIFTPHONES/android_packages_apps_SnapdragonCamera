@@ -31,20 +31,15 @@ package com.android.camera.imageprocessor.filter;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.Face;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Size;
 
 import com.android.camera.CaptureModule;
-import com.android.camera.ui.FilmstripBottomControls;
 import com.android.camera.ui.TrackingFocusRenderer;
 
 import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.List;
 
 public class TrackingFocusFrameListener implements ImageFilter {

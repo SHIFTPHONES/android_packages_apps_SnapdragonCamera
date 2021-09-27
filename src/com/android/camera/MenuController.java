@@ -19,19 +19,17 @@
 
 package com.android.camera;
 
+import android.app.Activity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.android.camera.CameraPreference.OnPreferenceChangedListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import android.app.Activity;
-import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-
-import com.android.camera.CameraPreference.OnPreferenceChangedListener;
-import com.android.camera.ui.RotateImageView;
 
 public class MenuController {
 

@@ -29,11 +29,10 @@
 
 package  org.codeaurora.snapcam.filter;
 
-import com.adobe.xmp.XMPException;
-import com.adobe.xmp.XMPMeta;
-import com.adobe.xmp.XMPMetaFactory;
-
 import android.util.Base64;
+
+import com.adobe.xmp.XMPException;
+import com.adobe.xmp.XMPMetaFactory;
 
 public class GImage{
     public final static String NAMESPACE_URL = "http://ns.google.com/photos/1.0/image/";

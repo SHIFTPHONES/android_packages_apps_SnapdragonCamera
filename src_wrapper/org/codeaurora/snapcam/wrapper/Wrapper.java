@@ -29,13 +29,10 @@
 
 package org.codeaurora.snapcam.wrapper;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import android.os.SystemProperties;
 import android.util.Log;
+
+import java.lang.reflect.Field;
 
 public class Wrapper{
     protected final static boolean DEBUG =

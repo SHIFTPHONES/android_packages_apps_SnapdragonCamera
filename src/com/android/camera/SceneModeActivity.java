@@ -46,13 +46,12 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.codeaurora.snapcam.R;
-
 import com.android.camera.ui.DotsView;
 import com.android.camera.ui.DotsViewItem;
 import com.android.camera.ui.RotateImageView;
 import com.android.camera.util.CameraUtil;
 
+import org.codeaurora.snapcam.R;
 import org.lineageos.quickreader.ScannerActivity;
 
 import java.util.ArrayList;

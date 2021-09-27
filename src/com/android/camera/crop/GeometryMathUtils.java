@@ -16,28 +16,8 @@
 
 package com.android.camera.crop;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-
-/*
-import com.android.gallery3d.filtershow.cache.BitmapCache;
-import com.android.gallery3d.filtershow.cache.ImageLoader;
-import com.android.gallery3d.filtershow.filters.FilterCropRepresentation;
-import com.android.gallery3d.filtershow.filters.FilterMirrorRepresentation;
-import com.android.gallery3d.filtershow.filters.FilterMirrorRepresentation.Mirror;
-import com.android.gallery3d.filtershow.filters.FilterRepresentation;
-import com.android.gallery3d.filtershow.filters.FilterRotateRepresentation;
-import com.android.gallery3d.filtershow.filters.FilterRotateRepresentation.Rotation;
-import com.android.gallery3d.filtershow.filters.FilterStraightenRepresentation;
-import com.android.gallery3d.filtershow.pipeline.ImagePreset;
-*/
-
-import java.util.Collection;
-import java.util.Iterator;
 
 public final class GeometryMathUtils {
     private static final String TAG = "GeometryMathUtils";

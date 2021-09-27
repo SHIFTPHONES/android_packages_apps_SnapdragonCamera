@@ -29,8 +29,9 @@
 
 
 package com.android.camera.deepportrait;
+
 import android.media.Image;
-import android.media.Image.Plane;
+
 import java.nio.ByteBuffer;
 
 public class DPImage

@@ -19,15 +19,15 @@
 
 package com.android.camera.mpo;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import android.util.Log;
 
 import com.android.camera.exif.ExifInterface;
 import com.android.camera.util.CameraUtil;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class MpoInterface {
     private static final String TAG = "MpoInterface";

@@ -30,17 +30,14 @@ package com.android.camera.imageprocessor.filter;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CaptureRequest;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Size;
 
 import com.android.camera.CaptureModule;
 import com.android.camera.deepportrait.CamGLRenderer;

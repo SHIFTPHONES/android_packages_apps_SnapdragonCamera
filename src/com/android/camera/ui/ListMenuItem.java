@@ -22,12 +22,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ImageView;
 
-import com.android.camera.ListPreference;
 import com.android.camera.IconListPreference;
+import com.android.camera.ListPreference;
+
 import org.codeaurora.snapcam.R;
 
 /**

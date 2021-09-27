@@ -29,25 +29,12 @@
 
 package org.codeaurora.snapcam.wrapper;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.AutoFocusMoveCallback;
-import android.hardware.Camera.ErrorCallback;
-import android.hardware.Camera.FaceDetectionListener;
-import android.hardware.Camera.OnZoomChangeListener;
-import android.hardware.Camera.Parameters;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.PreviewCallback;
-import android.hardware.Camera.ShutterCallback;
-import android.util.Log;
-import android.view.SurfaceHolder;
-
-import android.hardware.Camera.CameraMetaDataCallback;
 import android.hardware.Camera.CameraDataCallback;
+import android.hardware.Camera.CameraMetaDataCallback;
+import android.util.Log;
+
+import java.lang.reflect.Method;
 
 public class CameraWrapper extends Wrapper{
 

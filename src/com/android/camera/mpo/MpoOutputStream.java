@@ -19,6 +19,13 @@
 
 package com.android.camera.mpo;
 
+import android.util.Log;
+
+import com.android.camera.exif.JpegHeader;
+import com.android.camera.exif.OrderedDataOutputStream;
+import com.android.camera.mpo.MpoTag.MpEntry;
+import com.android.camera.util.PersistUtil;
+
 import java.io.BufferedOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -26,13 +33,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
-
-import android.util.Log;
-
-import com.android.camera.exif.JpegHeader;
-import com.android.camera.exif.OrderedDataOutputStream;
-import com.android.camera.mpo.MpoTag.MpEntry;
-import com.android.camera.util.PersistUtil;
 
 class MpoOutputStream extends FilterOutputStream {
     private static final String TAG = "MpoOutputStream";

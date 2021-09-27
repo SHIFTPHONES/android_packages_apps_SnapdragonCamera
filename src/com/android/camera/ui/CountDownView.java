@@ -16,12 +16,9 @@
 
 package com.android.camera.ui;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +31,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.codeaurora.snapcam.R;
+
+import java.util.Locale;
 
 public class CountDownView extends FrameLayout {
 

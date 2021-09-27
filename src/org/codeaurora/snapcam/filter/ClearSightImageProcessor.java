@@ -29,21 +29,6 @@
 
 package org.codeaurora.snapcam.filter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.codeaurora.snapcam.filter.ClearSightNativeEngine.CamSystemCalibrationData;
-import org.codeaurora.snapcam.filter.ClearSightNativeEngine.ClearsightImage;
-import org.codeaurora.snapcam.filter.DDMNativeEngine;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -71,24 +56,36 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.os.SystemProperties;
 import android.util.Log;
-import android.util.SparseLongArray;
 import android.util.Size;
+import android.util.SparseLongArray;
 import android.view.Surface;
 
-import com.android.camera.CaptureModule;
 import com.android.camera.Exif;
-import com.android.camera.exif.ExifInterface;
 import com.android.camera.MediaSaveService;
 import com.android.camera.MediaSaveService.OnMediaSavedListener;
 import com.android.camera.PhotoModule.NamedImages;
 import com.android.camera.PhotoModule.NamedImages.NamedEntity;
 import com.android.camera.SettingsManager;
 import com.android.camera.Storage;
+import com.android.camera.exif.ExifInterface;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.PersistUtil;
 import com.android.camera.util.VendorTagUtil;
+
+import org.codeaurora.snapcam.filter.ClearSightNativeEngine.CamSystemCalibrationData;
+import org.codeaurora.snapcam.filter.ClearSightNativeEngine.ClearsightImage;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClearSightImageProcessor {
     private static final String TAG = "ClearSightImageProcessor";

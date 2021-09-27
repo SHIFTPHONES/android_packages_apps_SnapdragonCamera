@@ -17,30 +17,27 @@
 
 package com.android.camera;
 
-import static com.android.camera.util.CameraUtil.Assert;
-
 import android.content.Context;
-import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraMetadata;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.android.camera.app.CameraApp;
 import com.android.camera.CameraManager.CameraProxy;
+import com.android.camera.app.CameraApp;
 
 import org.codeaurora.snapcam.R;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static com.android.camera.util.CameraUtil.Assert;
 
 /**
  * The class is used to hold an {@code android.hardware.Camera} instance.

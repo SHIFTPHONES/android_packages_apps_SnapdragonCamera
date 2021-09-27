@@ -29,13 +29,7 @@
 
 package org.codeaurora.snapcam.wrapper;
 
-import java.util.List;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
-import android.util.Log;
 
 public class CamcorderProfileWrapper extends Wrapper{
     public static final int QUALITY_VGA = getFieldValue(

@@ -29,19 +29,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.android.camera.imageprocessor.filter;
 
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.Face;
-import android.media.audiofx.BassBoost;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Size;
 
 import com.android.camera.CaptureModule;
 import com.android.camera.SettingsManager;
-import com.android.camera.ui.FilmstripBottomControls;
-import com.android.camera.ui.ListMenu;
 
 import java.nio.ByteBuffer;
 import java.util.List;

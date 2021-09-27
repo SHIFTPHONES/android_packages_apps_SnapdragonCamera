@@ -35,11 +35,6 @@ import android.util.Log;
 
 import com.android.camera.CaptureModule;
 import com.android.camera.util.PersistUtil;
-import android.os.SystemProperties;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 public class ZSLQueue {
     private int mCircularBufferSize;

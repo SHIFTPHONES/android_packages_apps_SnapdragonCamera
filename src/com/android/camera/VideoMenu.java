@@ -20,39 +20,37 @@ package com.android.camera;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.text.TextUtils;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.camera.ui.CameraControls;
-import com.android.camera.ui.ListSubMenu;
 import com.android.camera.ui.ListMenu;
-import com.android.camera.ui.TimeIntervalPopup;
-import com.android.camera.ui.RotateImageView;
-import com.android.camera.ui.RotateTextToast;
-import org.codeaurora.snapcam.R;
-import android.widget.HorizontalScrollView;
-import android.widget.Toast;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.Display;
+import com.android.camera.ui.ListSubMenu;
 import com.android.camera.ui.RotateLayout;
+import com.android.camera.ui.RotateTextToast;
+import com.android.camera.ui.TimeIntervalPopup;
 import com.android.camera.util.CameraUtil;
-import android.text.TextUtils;
+
+import org.codeaurora.snapcam.R;
+
 import java.util.Locale;
 
 public class VideoMenu extends MenuController

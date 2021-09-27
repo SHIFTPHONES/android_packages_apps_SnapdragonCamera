@@ -33,12 +33,11 @@ import android.os.Message;
 import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 
 import com.android.camera.CameraActivity;
 import com.android.camera.drawable.TextDrawable;
 import com.android.camera.ui.ProgressRenderer.VisibilityListener;
+
 import org.codeaurora.snapcam.R;
 
 import java.util.ArrayList;

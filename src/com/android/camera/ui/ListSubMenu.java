@@ -19,11 +19,6 @@
 
 package com.android.camera.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -31,13 +26,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.android.camera.IconListPreference;
 import com.android.camera.ListPreference;
+
 import org.codeaurora.snapcam.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // A popup window that shows one camera setting. The title is the name of the
 // setting (ex: white-balance). The entries are the supported values (ex:

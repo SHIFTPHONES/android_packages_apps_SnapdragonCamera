@@ -34,7 +34,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
 
 

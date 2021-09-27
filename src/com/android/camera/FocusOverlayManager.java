@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import org.codeaurora.snapcam.R;
 
 import com.android.camera.app.CameraApp;
 import com.android.camera.ui.focus.CameraCoordinateTransformer;
@@ -34,6 +33,8 @@ import com.android.camera.ui.focus.FocusRing;
 import com.android.camera.ui.motion.LinearScale;
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.UsageStatistics;
+
+import org.codeaurora.snapcam.R;
 
 import java.util.ArrayList;
 import java.util.List;

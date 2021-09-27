@@ -16,9 +16,9 @@
 
 package com.android.camera.async;
 
-import java.util.concurrent.Executor;
-
 import android.os.Handler;
+
+import java.util.concurrent.Executor;
 
 /**
  * An {@link Executor} which posts to a {@link Handler}.

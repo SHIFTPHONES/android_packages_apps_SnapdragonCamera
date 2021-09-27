@@ -16,8 +16,6 @@
 
 package com.android.camera.ui;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -28,7 +26,10 @@ import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
 
 import com.android.camera.ListPreference;
+
 import org.codeaurora.snapcam.R;
+
+import java.util.Locale;
 
 /**
  * This is a popup window that allows users to specify a countdown timer

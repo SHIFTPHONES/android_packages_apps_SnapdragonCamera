@@ -19,8 +19,8 @@ package com.android.camera.exif;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.camera2.CaptureResult;
-import android.util.SparseIntArray;
 import android.os.Build;
+import android.util.SparseIntArray;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

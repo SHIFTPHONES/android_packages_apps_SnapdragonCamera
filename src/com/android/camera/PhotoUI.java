@@ -17,21 +17,13 @@
 
 package com.android.camera;
 
-import java.util.List;
-
-import org.codeaurora.snapcam.R;
-
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.Face;
@@ -77,6 +69,10 @@ import com.android.camera.ui.SelfieFlashView;
 import com.android.camera.ui.ZoomRenderer;
 import com.android.camera.ui.focus.FocusRing;
 import com.android.camera.util.CameraUtil;
+
+import org.codeaurora.snapcam.R;
+
+import java.util.List;
 
 public class PhotoUI implements PieListener,
         PreviewGestures.SingleTapListener,

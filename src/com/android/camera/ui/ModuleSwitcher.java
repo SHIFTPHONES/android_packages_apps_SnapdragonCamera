@@ -31,11 +31,12 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.UsageStatistics;
+
 import org.codeaurora.snapcam.R;
 
 public class ModuleSwitcher extends RotateImageView

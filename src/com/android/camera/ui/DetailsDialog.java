@@ -31,10 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.camera.data.MediaDetails;
+
 import org.codeaurora.snapcam.R;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map.Entry;

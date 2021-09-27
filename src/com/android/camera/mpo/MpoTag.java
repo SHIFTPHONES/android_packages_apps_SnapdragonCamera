@@ -29,14 +29,14 @@
 
 package com.android.camera.mpo;
 
+import android.util.Log;
+
+import com.android.camera.exif.ExifTag;
+
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.util.Log;
-
-import com.android.camera.exif.ExifTag;
 
 public class MpoTag extends ExifTag {
     private static final String TAG = "MpoTag";

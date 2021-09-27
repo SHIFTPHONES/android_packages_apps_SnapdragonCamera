@@ -19,9 +19,9 @@ package com.android.camera.ui;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.hardware.Camera.Face;
@@ -33,6 +33,7 @@ import android.view.View;
 
 import com.android.camera.PhotoUI;
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
 import org.codeaurora.snapcam.wrapper.ExtendedFaceWrapper;
 

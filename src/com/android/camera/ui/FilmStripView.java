@@ -22,7 +22,6 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -37,12 +36,13 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Scroller;
 
-import com.android.camera.PhotoMenu;
-import com.android.camera.VideoMenu;
-import com.android.camera.PreviewGestures;
 import com.android.camera.CameraActivity;
+import com.android.camera.PhotoMenu;
+import com.android.camera.PreviewGestures;
+import com.android.camera.VideoMenu;
 import com.android.camera.data.LocalData;
 import com.android.camera.ui.FilmstripBottomControls.BottomControlsListener;
+
 import org.codeaurora.snapcam.R;
 
 import java.util.Arrays;

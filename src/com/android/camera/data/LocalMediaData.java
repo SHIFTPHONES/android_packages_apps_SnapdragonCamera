@@ -40,6 +40,7 @@ import android.widget.ImageView;
 
 import com.android.camera.ui.FilmStripView;
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
 
 import java.io.File;

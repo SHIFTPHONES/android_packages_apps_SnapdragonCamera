@@ -16,10 +16,6 @@
 
 package com.android.camera;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -29,7 +25,12 @@ import android.util.TypedValue;
 
 import com.android.camera.util.CameraUtil;
 import com.android.camera.util.UsageStatistics;
+
 import org.codeaurora.snapcam.R;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A type of <code>CameraPreference</code> whose number of possible values

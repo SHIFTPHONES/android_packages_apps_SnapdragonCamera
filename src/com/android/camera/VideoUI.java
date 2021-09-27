@@ -16,17 +16,13 @@
 
 package com.android.camera;
 
-import java.util.List;
-
-import org.codeaurora.snapcam.R;
-
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
-import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Face;
+import android.hardware.Camera.Parameters;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -44,7 +40,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.view.View.OnLayoutChangeListener;
 
 import com.android.camera.CameraManager.CameraProxy;
 import com.android.camera.CameraPreference.OnPreferenceChangedListener;
@@ -63,6 +58,10 @@ import com.android.camera.ui.RotateTextToast;
 import com.android.camera.ui.ZoomRenderer;
 import com.android.camera.ui.focus.FocusRing;
 import com.android.camera.util.CameraUtil;
+
+import org.codeaurora.snapcam.R;
+
+import java.util.List;
 
 public class VideoUI implements PieRenderer.PieListener,
         PreviewGestures.SingleTapListener,

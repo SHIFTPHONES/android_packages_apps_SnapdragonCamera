@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.camera.ListPreference;
+
 import org.codeaurora.snapcam.R;
 
 /**

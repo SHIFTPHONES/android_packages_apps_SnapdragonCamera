@@ -40,9 +40,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -50,7 +50,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.support.v4.app.FragmentActivity;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -60,8 +59,8 @@ import com.android.camera.exif.ExifInterface;
 import com.android.camera.ui.BestPictureActionDialogLayout;
 import com.android.camera.ui.DotsView;
 import com.android.camera.ui.DotsViewItem;
-import com.android.camera.ui.RotateTextToast;
 import com.android.camera.ui.RotateImageView;
+import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.CameraUtil;
 
 import org.codeaurora.snapcam.R;
@@ -70,7 +69,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
 import static android.app.Activity.RESULT_OK;
 

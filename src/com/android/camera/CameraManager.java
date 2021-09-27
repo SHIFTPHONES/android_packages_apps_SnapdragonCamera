@@ -19,14 +19,14 @@ package com.android.camera;
 import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.hardware.Camera.CameraDataCallback;
+import android.hardware.Camera.CameraMetaDataCallback;
 import android.hardware.Camera.ErrorCallback;
 import android.hardware.Camera.OnZoomChangeListener;
 import android.hardware.Camera.Parameters;
 import android.os.Build;
 import android.os.Handler;
 import android.view.SurfaceHolder;
-import android.hardware.Camera.CameraDataCallback;
-import android.hardware.Camera.CameraMetaDataCallback;
 /**
  * An interface which provides possible camera device operations.
  *

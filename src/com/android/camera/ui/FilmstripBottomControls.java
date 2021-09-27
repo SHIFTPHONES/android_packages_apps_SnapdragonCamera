@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.android.camera.CameraActivity;
+
 import org.codeaurora.snapcam.R;
 
 /**

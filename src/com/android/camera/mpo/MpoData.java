@@ -29,10 +29,10 @@
 
 package com.android.camera.mpo;
 
+import com.android.camera.mpo.MpoTag.MpEntry;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.android.camera.mpo.MpoTag.MpEntry;
 
 public class MpoData {
 

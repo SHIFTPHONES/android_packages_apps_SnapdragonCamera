@@ -28,9 +28,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.android.camera.imageprocessor.filter;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -42,7 +39,6 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.os.Handler;
 import android.util.Log;
-import android.util.Range;
 
 import com.android.camera.CameraActivity;
 import com.android.camera.CaptureModule;
@@ -51,10 +47,8 @@ import com.android.camera.util.CameraUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UbifocusFilter implements ImageFilter {

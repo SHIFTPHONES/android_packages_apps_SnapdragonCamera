@@ -16,16 +16,14 @@
 
 package com.android.camera;
 
-import static com.android.camera.util.CameraUtil.Assert;
-
-import java.io.IOException;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.AutoFocusMoveCallback;
+import android.hardware.Camera.CameraDataCallback;
+import android.hardware.Camera.CameraMetaDataCallback;
 import android.hardware.Camera.ErrorCallback;
 import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.Camera.OnZoomChangeListener;
@@ -34,21 +32,23 @@ import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Build;
+import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.hardware.Camera.CameraDataCallback;
-import android.hardware.Camera.CameraMetaDataCallback;
+
 import com.android.camera.app.CameraApp;
 
-import android.os.ConditionVariable;
+import org.codeaurora.snapcam.R;
+import org.codeaurora.snapcam.wrapper.CameraWrapper;
+
+import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.codeaurora.snapcam.wrapper.CameraWrapper;
-import org.codeaurora.snapcam.R;
+import static com.android.camera.util.CameraUtil.Assert;
 
 /**
  * A class to implement {@link CameraManager} of the Android camera framework.

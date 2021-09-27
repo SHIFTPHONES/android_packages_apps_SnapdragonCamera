@@ -16,8 +16,6 @@
 
 package com.android.camera.ui;
 
-import java.util.HashSet;
-
 import android.app.Activity;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -27,7 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.camera.util.CameraUtil;
+
 import org.codeaurora.snapcam.R;
+
+import java.util.HashSet;
 
 public class RotateTextToast {
     private static final int LONG_DELAY = 3500;
