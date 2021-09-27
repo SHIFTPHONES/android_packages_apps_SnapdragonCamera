@@ -45,7 +45,7 @@ import com.android.camera.BestpictureActivity;
 import com.android.camera.CameraActivity;
 import com.android.camera.CaptureModule;
 import com.android.camera.MediaSaveService;
-import com.android.camera.PhotoModule;
+import com.android.camera.NamedImages;
 import com.android.camera.imageprocessor.PostProcessor;
 import com.android.camera.util.CameraUtil;
 
@@ -74,7 +74,7 @@ public class BestpictureFilter implements ImageFilter {
             "android.media.action.STILL_IMAGE_CAMERA_SECURE";
     private final static int TIME_DELAY = 50;
     private int mSavedCount = 0;
-    private PhotoModule.NamedImages mNamedImages;
+    private NamedImages mNamedImages;
     private ByteBuffer mBY;
     private ByteBuffer mBVU;
     private Object mClosingLock = new Object();
@@ -93,7 +93,7 @@ public class BestpictureFilter implements ImageFilter {
         mModule = module;
         mActivity = activity;
         mProcessor = processor;
-        mNamedImages = new PhotoModule.NamedImages();
+        mNamedImages = new NamedImages();
     }
 
     @Override
@@ -148,7 +148,7 @@ public class BestpictureFilter implements ImageFilter {
             byte[] bytes = getYUVBytes(bY, bVU, imageNum);
             long captureStartTime = System.currentTimeMillis();
             mNamedImages.nameNewImage(captureStartTime);
-            PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+            NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
             String title = (name == null) ? null : name.title;
             long date = (name == null) ? -1 : name.date;
             mActivity.getMediaSaveService().addImage(

@@ -97,8 +97,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.camera.PhotoModule.NamedImages;
-import com.android.camera.PhotoModule.NamedImages.NamedEntity;
+import com.android.camera.NamedImages;
+import com.android.camera.NamedImages.NamedEntity;
 import com.android.camera.deepportrait.CamGLRenderObserver;
 import com.android.camera.deepportrait.CamGLRenderer;
 import com.android.camera.deepportrait.DPImage;

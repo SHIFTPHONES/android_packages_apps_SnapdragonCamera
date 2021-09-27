@@ -58,7 +58,7 @@ import com.android.camera.CameraActivity;
 import com.android.camera.CaptureModule;
 import com.android.camera.Exif;
 import com.android.camera.MediaSaveService;
-import com.android.camera.PhotoModule;
+import com.android.camera.NamedImages;
 import com.android.camera.SettingsManager;
 import com.android.camera.deepportrait.DPImage;
 import com.android.camera.exif.ExifInterface;
@@ -119,7 +119,7 @@ public class PostProcessor{
     private Object lock = new Object();
     private ImageFilter.ResultImage mDefaultResultImage;  //This is used only no filter is chosen.
     private Image[] mImages;
-    private PhotoModule.NamedImages mNamedImages;
+    private NamedImages mNamedImages;
     private WatchdogThread mWatchdog;
     private int mOrientation = 0;
     private ImageWriter mImageWriter;
@@ -619,7 +619,7 @@ public class PostProcessor{
             mController.enableShutterButtonOnMainThread(mController.getMainCameraId());
             long captureStartTime = System.currentTimeMillis();
             mNamedImages.nameNewImage(captureStartTime);
-            PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+            NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
             String title = (name == null) ? null : name.title;
             long date = (name == null) ? -1 : name.date;
             processImage(title, date, mController.getMediaSavedListener(), mActivity.getContentResolver());
@@ -632,7 +632,7 @@ public class PostProcessor{
         buffer.get(data);
         long captureStartTime = System.currentTimeMillis();
         mNamedImages.nameNewImage(captureStartTime);
-        PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+        NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
         String title = (name == null) ? null : name.title;
         mActivity.getMediaSaveService().addRawImage(data, title, "raw");
         image.close();
@@ -649,7 +649,7 @@ public class PostProcessor{
         mController = module;
         mActivity = activity;
         checkAndEnableZSL(mController.getMainCameraId());
-        mNamedImages = new PhotoModule.NamedImages();
+        mNamedImages = new NamedImages();
     }
 
     public boolean isItBusy() {
@@ -1268,7 +1268,7 @@ public class PostProcessor{
                 public void run() {
                     long captureStartTime = System.currentTimeMillis();
                     mNamedImages.nameNewImage(captureStartTime);
-                    PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+                    NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
                     String title = (name == null) ? null : name.title;
                     long date = (name == null) ? -1 : name.date;
                     image.getPlanes()[0].getBuffer().rewind();

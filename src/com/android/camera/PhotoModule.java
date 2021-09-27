@@ -81,7 +81,7 @@ import com.android.camera.CameraManager.CameraAFMoveCallback;
 import com.android.camera.CameraManager.CameraPictureCallback;
 import com.android.camera.CameraManager.CameraProxy;
 import com.android.camera.CameraManager.CameraShutterCallback;
-import com.android.camera.PhotoModule.NamedImages.NamedEntity;
+import com.android.camera.NamedImages.NamedEntity;
 import com.android.camera.TsMakeupManager.MakeupLevelListener;
 import com.android.camera.app.CameraApp;
 import com.android.camera.exif.ExifInterface;
@@ -106,7 +106,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 public class PhotoModule
         implements CameraModule,
@@ -1690,45 +1689,6 @@ public class PhotoModule
         }
     }
 
-    /**
-     * This class is just a thread-safe queue for name,date holder objects.
-     */
-    public static class NamedImages {
-        private Vector<NamedEntity> mQueue;
-
-        public NamedImages() {
-            mQueue = new Vector<NamedEntity>();
-        }
-
-        public void nameNewImage(long date) {
-            NamedEntity r = new NamedEntity();
-            r.title = CameraUtil.createJpegName(date);
-            r.date = date;
-            mQueue.add(r);
-        }
-
-        public void nameNewImage(long date, boolean refocus) {
-            NamedEntity r = new NamedEntity();
-            r.title = CameraUtil.createJpegName(date, refocus);
-            r.date = date;
-            mQueue.add(r);
-        }
-
-        public NamedEntity getNextNameEntity() {
-            synchronized(mQueue) {
-                if (!mQueue.isEmpty()) {
-                    return mQueue.remove(0);
-                }
-            }
-            return null;
-        }
-
-        public static class NamedEntity {
-            public String title;
-            public long date;
-        }
-    }
-
     private void setCameraState(int state) {
         mCameraState = state;
         switch (state) {
@@ -1885,14 +1845,14 @@ public class PhotoModule
             }
         }
 
-        mNamedImages.nameNewImage(mCaptureStartTime, mRefocus);
+        final NamedEntity newNamedEntity = mNamedImages.nameNewImage(mCaptureStartTime, mRefocus);
 
         if (mSnapshotMode != CameraInfoWrapper.CAMERA_SUPPORT_MODE_ZSL) {
             mFaceDetectionStarted = false;
         }
         UsageStatistics.onEvent(UsageStatistics.COMPONENT_CAMERA,
                 UsageStatistics.ACTION_CAPTURE_DONE, "Photo", 0,
-                UsageStatistics.hashFileName(mNamedImages.mQueue.lastElement().title + ".jpg"));
+                UsageStatistics.hashFileName(newNamedEntity.title + ".jpg"));
         return true;
     }
 

@@ -95,7 +95,7 @@ public class BestpictureActivity extends FragmentActivity {
     private DotsView mDotsView;
     private ImageItems mImageItems;
     private ImageLoadingThread mLoadingThread;
-    private PhotoModule.NamedImages mNamedImages;
+    private NamedImages mNamedImages;
     private Uri mPlaceHolderUri;
     private Dialog mDialog;
     private AlertDialog.Builder mBuilder;
@@ -186,7 +186,7 @@ public class BestpictureActivity extends FragmentActivity {
         display.getSize(size);
         mWidth = size.x/4;
         mHeight = size.y/4;
-        mNamedImages = new PhotoModule.NamedImages();
+        mNamedImages = new NamedImages();
 
         mImageItems = new ImageItems(mActivity);
         mDotsView = (DotsView) findViewById(R.id.dots_view);
@@ -612,7 +612,7 @@ public class BestpictureActivity extends FragmentActivity {
     private void saveForground(String path) {
         long captureStartTime = System.currentTimeMillis();
         mNamedImages.nameNewImage(captureStartTime);
-        PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+        NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
         String title = (name == null) ? null : name.title;
         String outPath = mPlaceHolderUri.getPath();
         try {
@@ -633,7 +633,7 @@ public class BestpictureActivity extends FragmentActivity {
         protected Void doInBackground(String... path) {
             long captureStartTime = System.currentTimeMillis();
             mNamedImages.nameNewImage(captureStartTime);
-            PhotoModule.NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
+            NamedImages.NamedEntity name = mNamedImages.getNextNameEntity();
             String title = (name == null) ? null : name.title;
             String outPath = Storage.generateFilepath(title, "jpeg");
             try {
