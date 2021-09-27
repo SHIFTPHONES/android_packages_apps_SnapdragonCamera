@@ -172,9 +172,6 @@ public class CameraActivity extends Activity
     private static boolean PIE_MENU_ENABLED = false;
     private boolean mDeveloperMenuEnabled = false;
 
-    private boolean mCamera2supported = false;
-    private boolean mCamera2enabled = false;
-
     /** This data adapter is used by FilmStripView. */
     private LocalDataAdapter mDataAdapter;
     /** This data adapter represents the real local camera data. */
@@ -1315,13 +1312,10 @@ public class CameraActivity extends Activity
         }
 
         // Check if the device supports Camera API 2
-        mCamera2supported = CameraUtil.isCamera2Supported(this);
-        Log.d(TAG, "Camera API 2 supported: " + mCamera2supported);
-
-        mCamera2enabled = mCamera2supported && getResources().getBoolean(R.bool.support_camera_api_v2);
-        Log.d(TAG, "Camera API 2 enabled: " + mCamera2enabled);
-
-        CameraHolder.setCamera2Mode(this, mCamera2enabled);
+        if (!CameraUtil.isCamera2Supported(this)) {
+            throw new RuntimeException("Camera2 support is mandatory");
+        }
+        CameraHolder.setCamera2Mode(this, true);
 
         mOrientationListener = new MyOrientationEventListener(this);
         setContentView(R.layout.camera_filmstrip);
@@ -1854,8 +1848,7 @@ public class CameraActivity extends Activity
             return;
         }
 
-        mForceReleaseCamera = moduleIndex == ModuleSwitcher.CAPTURE_MODULE_INDEX ||
-                (mCamera2enabled && moduleIndex == ModuleSwitcher.PHOTO_MODULE_INDEX);
+        mForceReleaseCamera = moduleIndex == ModuleSwitcher.CAPTURE_MODULE_INDEX;
         if (mForceReleaseCamera) {
             moduleIndex = ModuleSwitcher.CAPTURE_MODULE_INDEX;
         }
