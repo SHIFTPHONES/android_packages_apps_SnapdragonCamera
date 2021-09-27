@@ -107,6 +107,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.android.camera.MediaSaveService.PIXEL_FORMAT_JPEG;
+
 public class PhotoModule
         implements CameraModule,
         PhotoController,
@@ -223,7 +225,6 @@ public class PhotoModule
     private static final String KEY_PICTURE_FORMAT = "picture-format";
     private SeekBar mBlurDegreeProgressBar;
     private static final String KEY_QC_RAW_PICUTRE_SIZE = "raw-size";
-    public static final String PIXEL_FORMAT_JPEG = "jpeg";
 
     private static final int MIN_SCE_FACTOR = -10;
     private static final int MAX_SCE_FACTOR = +10;

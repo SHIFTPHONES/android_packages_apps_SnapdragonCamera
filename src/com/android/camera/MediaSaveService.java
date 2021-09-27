@@ -57,6 +57,8 @@ import java.nio.ByteOrder;
 public class MediaSaveService extends Service {
     public static final String VIDEO_BASE_URI = "content://media/external/video/media";
 
+    public static final String PIXEL_FORMAT_JPEG = "jpeg";
+
     // The memory limit for unsaved image is 50MB.
     private static final int SAVE_TASK_MEMORY_LIMIT_IN_MB =
                                    PersistUtil.getSaveTaskMemoryLimitInMb();
@@ -201,14 +203,13 @@ public class MediaSaveService extends Service {
                          OnMediaSavedListener l, ContentResolver resolver) {
         // When dimensions are unknown, pass 0 as width and height,
         // and decode image for width and height later in a background thread
-        addImage(data, title, date, loc, 0, 0, orientation, exif, l, resolver,
-                 PhotoModule.PIXEL_FORMAT_JPEG);
+        addImage(data, title, date, loc, 0, 0, orientation, exif, l, resolver, PIXEL_FORMAT_JPEG);
     }
     public void addImage(final byte[] data, String title, Location loc,
             int width, int height, int orientation, ExifInterface exif,
             OnMediaSavedListener l, ContentResolver resolver) {
         addImage(data, title, System.currentTimeMillis(), loc, width, height,
-                orientation, exif, l, resolver,PhotoModule.PIXEL_FORMAT_JPEG);
+                orientation, exif, l, resolver, PIXEL_FORMAT_JPEG);
     }
 
     public void addVideo(String path, long duration, ContentValues values,
