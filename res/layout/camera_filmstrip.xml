@@ -32,37 +32,6 @@
         android:layout_height="match_parent" >
 
         <include layout="@layout/filmstrip_bottom_controls" />
-
-        <LinearLayout
-            android:id="@+id/pano_stitching_progress_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:paddingBottom="52dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="5dp"
-            android:visibility="gone"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/pano_stitching_progress_text"
-                android:text="@string/rendering_photo_sphere"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="visible"
-                android:layout_gravity="right"/>
-
-            <ProgressBar
-                android:id="@+id/pano_stitching_progress_bar"
-                style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible"
-                android:layout_gravity="bottom|center_horizontal" />
-        </LinearLayout>
     </FrameLayout>
     <!--/com.android.camera.ui.FitSystemUiFrameLayout-->
 

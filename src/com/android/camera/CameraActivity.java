@@ -19,6 +19,7 @@ package com.android.camera;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -76,7 +77,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.ShareActionProvider;
 
 import com.android.camera.crop.CropActivity;
@@ -143,8 +143,6 @@ public class CameraActivity extends Activity
      */
     public static final int REQ_CODE_DONT_SWITCH_TO_PREVIEW = 142;
 
-    public static final int REQ_CODE_GCAM_DEBUG_POSTCAPTURE = 999;
-
     private static final int HIDE_ACTION_BAR = 1;
     private static final long SHOW_ACTION_BAR_TIMEOUT_MS = 3000;
 
@@ -182,21 +180,14 @@ public class CameraActivity extends Activity
     /** This data adapter represents the real local camera data. */
     private LocalDataAdapter mWrappedDataAdapter;
 
-    private Context mContext;
     private int mCurrentModuleIndex;
     private CameraModule mCurrentModule;
     private PhotoModule mPhotoModule;
     private VideoModule mVideoModule;
     private CaptureModule mCaptureModule;
     private FrameLayout mAboveFilmstripControlLayout;
-    private FrameLayout mCameraRootFrame;
-    private View mCameraPhotoModuleRootView;
-    private View mCameraVideoModuleRootView;
     private View mCameraCaptureModuleRootView;
     private FilmStripView mFilmStripView;
-    private ProgressBar mBottomProgress;
-    private int mResultCodeForTesting;
-    private Intent mResultDataForTesting;
     private OnScreenHint mStorageHint;
     private final Object mStorageSpaceLock = new Object();
     private long mStorageSpaceBytes = Storage.LOW_STORAGE_THRESHOLD_BYTES;
@@ -216,17 +207,11 @@ public class CameraActivity extends Activity
     private ViewGroup mUndoDeletionBar;
     private boolean mIsUndoingDeletion = false;
     private boolean mIsEditActivityInProgress = false;
-    private View mPreviewCover;
-    private FrameLayout mPreviewContentLayout;
     private boolean mPaused = true;
     private boolean mForceReleaseCamera = false;
 
     private ShareActionProvider mStandardShareActionProvider;
     private Intent mStandardShareIntent;
-    private ShareActionProvider mPanoramaShareActionProvider;
-    private Intent mPanoramaShareIntent;
-
-    private final int DEFAULT_SYSTEM_UI_VISIBILITY = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 
     private boolean mPendingDeletion = false;
 
@@ -238,9 +223,6 @@ public class CameraActivity extends Activity
     private ImageView mThumbnail;
     private UpdateThumbnailTask mUpdateThumbnailTask;
     private CircularDrawable mThumbnailDrawable;
-    // FilmStripView.setDataAdapter fires 2 onDataLoaded calls before any data is actually loaded
-    // Keep track of data request here to avoid creating useless UpdateThumbnailTask.
-    private boolean mDataRequested;
     private Cursor mCursor;
 
     private WakeLock mWakeLock;
@@ -268,7 +250,7 @@ public class CameraActivity extends Activity
     }
 
     private MediaSaveService mMediaSaveService;
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder b) {
             mMediaSaveService = ((MediaSaveService.LocalBinder) b).getService();
@@ -284,7 +266,7 @@ public class CameraActivity extends Activity
         }
     };
 
-    private CameraOpenErrorCallback mCameraOpenErrorCallback =
+    private final CameraOpenErrorCallback mCameraOpenErrorCallback =
             new CameraOpenErrorCallback() {
                 @Override
                 public void onCameraDisabled(int cameraId) {
@@ -626,11 +608,10 @@ public class CameraActivity extends Activity
 
         View decorView = getWindow().getDecorView();
         int currentSystemUIVisibility = decorView.getSystemUiVisibility();
-        int systemUIVisibility = DEFAULT_SYSTEM_UI_VISIBILITY;
         int systemUINotVisible = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN |
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-        int newSystemUIVisibility = systemUIVisibility
+        int newSystemUIVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | (visible ? View.SYSTEM_UI_FLAG_VISIBLE : systemUINotVisible);
 
         if (newSystemUIVisibility != currentSystemUIVisibility) {
@@ -747,9 +728,10 @@ public class CameraActivity extends Activity
 
     public void updateThumbnail(boolean videoOnly) {
         // Only handle OnDataInserted if it's video.
-        // Photo and Panorama have their own way of updating thumbnail.
-        if (!videoOnly || (mCurrentModule instanceof VideoModule) ||
-                ((mCurrentModule instanceof CaptureModule) && videoOnly)) {
+        // Photos have their own way of updating thumbnail.
+        if (!videoOnly
+                || (mCurrentModule instanceof VideoModule)
+                || (mCurrentModule instanceof CaptureModule)) {
             (new UpdateThumbnailTask(null, true)).execute();
         }
     }
@@ -995,17 +977,6 @@ public class CameraActivity extends Activity
         return null;
     }
 
-    private void setPanoramaShareIntent(Uri contentUri) {
-        if (mPanoramaShareIntent == null) {
-            mPanoramaShareIntent = new Intent(Intent.ACTION_SEND);
-        }
-        mPanoramaShareIntent.setType("application/vnd.google.panorama360+jpg");
-        mPanoramaShareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-        if (mPanoramaShareActionProvider != null) {
-            mPanoramaShareActionProvider.setShareIntent(mPanoramaShareIntent);
-        }
-    }
-
     @Override
     public void onMenuVisibilityChanged(boolean isVisible) {
         // If menu is showing, we need to make sure action bar does not go away.
@@ -1082,31 +1053,13 @@ public class CameraActivity extends Activity
                 (supported & SUPPORT_TRIM) != 0);
 
         boolean standardShare = (supported & SUPPORT_SHARE) != 0;
-        boolean panoramaShare = (supported & SUPPORT_SHARE_PANORAMA360) != 0;
         setMenuItemVisible(mActionBarMenu, R.id.action_share, standardShare);
-        setMenuItemVisible(mActionBarMenu, R.id.action_share_panorama, panoramaShare);
 
-        if (panoramaShare) {
-            // For 360 PhotoSphere, relegate standard share to the overflow menu
+        if (standardShare) {
             MenuItem item = mActionBarMenu.findItem(R.id.action_share);
             if (item != null) {
-                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-                item.setTitle(getResources().getString(R.string.share_as_photo));
-            }
-            // And, promote "share as panorama" to action bar
-            item = mActionBarMenu.findItem(R.id.action_share_panorama);
-            if (item != null) {
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-            }
-            setPanoramaShareIntent(currentData.getContentUri());
-        }
-        if (standardShare) {
-            if (!panoramaShare) {
-                MenuItem item = mActionBarMenu.findItem(R.id.action_share);
-                if (item != null) {
-                    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                    item.setTitle(getResources().getString(R.string.share));
-                }
+                item.setTitle(getResources().getString(R.string.share));
             }
             setStandardShareIntent(currentData.getContentUri(), currentData.getMimeType());
         }
@@ -1185,17 +1138,7 @@ public class CameraActivity extends Activity
         if (mStandardShareIntent != null) {
             mStandardShareActionProvider.setShareIntent(mStandardShareIntent);
         }
-
-        // Configure the panorama share action provider
-        item = menu.findItem(R.id.action_share_panorama);
-        mPanoramaShareActionProvider = (ShareActionProvider) item.getActionProvider();
-        mPanoramaShareActionProvider.setShareHistoryFileName("panorama_share_history.xml");
-        if (mPanoramaShareIntent != null) {
-            mPanoramaShareActionProvider.setShareIntent(mPanoramaShareIntent);
-        }
-
         mStandardShareActionProvider.setOnShareTargetSelectedListener(this);
-        mPanoramaShareActionProvider.setOnShareTargetSelectedListener(this);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -1290,13 +1233,9 @@ public class CameraActivity extends Activity
     }
 
     public boolean isCaptureIntent() {
-        if (MediaStore.ACTION_VIDEO_CAPTURE.equals(getIntent().getAction())
+        return MediaStore.ACTION_VIDEO_CAPTURE.equals(getIntent().getAction())
                 || MediaStore.ACTION_IMAGE_CAPTURE.equals(getIntent().getAction())
-                || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(getIntent().getAction())) {
-            return true;
-        } else {
-            return false;
-        }
+                || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(getIntent().getAction());
     }
 
     @Override
@@ -1309,8 +1248,6 @@ public class CameraActivity extends Activity
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        mContext = getApplicationContext();
 
         // Check if this is in the secure camera mode.
         Intent intent = getIntent();
@@ -1354,43 +1291,37 @@ public class CameraActivity extends Activity
 
         LayoutInflater inflater = getLayoutInflater();
         View rootLayout = inflater.inflate(R.layout.camera, null, false);
-        mCameraRootFrame = (FrameLayout)rootLayout.findViewById(R.id.camera_root_frame);
-        mCameraPhotoModuleRootView = rootLayout.findViewById(R.id.camera_photo_root);
-        mCameraVideoModuleRootView = rootLayout.findViewById(R.id.camera_video_root);
         mCameraCaptureModuleRootView = rootLayout.findViewById(R.id.camera_capture_root);
 
         int moduleIndex = -1;
-        if (MediaStore.INTENT_ACTION_VIDEO_CAMERA.equals(getIntent().getAction())
-                || MediaStore.ACTION_VIDEO_CAPTURE.equals(getIntent().getAction())) {
-            moduleIndex = ModuleSwitcher.VIDEO_MODULE_INDEX;
-        } else if (MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA.equals(getIntent().getAction())
-                || MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE.equals(getIntent().getAction())) {
-            moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
-        } else if (MediaStore.ACTION_IMAGE_CAPTURE.equals(getIntent().getAction())
-                || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(getIntent().getAction())) {
-            moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
-        } else {
-            // If the activity has not been started using an explicit intent,
-            // read the module index from the last time the user changed modes
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            moduleIndex = prefs.getInt(CameraSettings.KEY_STARTUP_MODULE_INDEX, -1);
-            if (moduleIndex < 0) {
-                moduleIndex = ModuleSwitcher.PHOTO_MODULE_INDEX;
-            }
+        final String intentAction = getIntent().getAction();
+        switch (intentAction) {
+            case MediaStore.INTENT_ACTION_VIDEO_CAMERA:
+            case MediaStore.ACTION_VIDEO_CAPTURE:
+            case MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA:
+            case MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE:
+            case MediaStore.ACTION_IMAGE_CAPTURE:
+            case MediaStore.ACTION_IMAGE_CAPTURE_SECURE:
+                moduleIndex = ModuleSwitcher.CAPTURE_MODULE_INDEX;
+                break;
+            default:
+                // If the activity has not been started using an explicit intent,
+                // read the module index from the last time the user changed modes
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                moduleIndex = prefs.getInt(CameraSettings.KEY_STARTUP_MODULE_INDEX, -1);
+                if (moduleIndex < 0) {
+                    moduleIndex = ModuleSwitcher.CAPTURE_MODULE_INDEX;
+                }
         }
 
         // Check if the device supports Camera API 2
-        mCamera2supported = CameraUtil.isCamera2Supported(mContext);
+        mCamera2supported = CameraUtil.isCamera2Supported(this);
         Log.d(TAG, "Camera API 2 supported: " + mCamera2supported);
 
-        mCamera2enabled = mCamera2supported &&
-                mContext.getResources().getBoolean(R.bool.support_camera_api_v2);
+        mCamera2enabled = mCamera2supported && getResources().getBoolean(R.bool.support_camera_api_v2);
         Log.d(TAG, "Camera API 2 enabled: " + mCamera2enabled);
 
         CameraHolder.setCamera2Mode(this, mCamera2enabled);
-        if (mCamera2enabled && (moduleIndex == ModuleSwitcher.PHOTO_MODULE_INDEX ||
-                moduleIndex == ModuleSwitcher.VIDEO_MODULE_INDEX))
-            moduleIndex = ModuleSwitcher.CAPTURE_MODULE_INDEX;
 
         mOrientationListener = new MyOrientationEventListener(this);
         setContentView(R.layout.camera_filmstrip);
@@ -1408,7 +1339,6 @@ public class CameraActivity extends Activity
         mAboveFilmstripControlLayout =
                 (FrameLayout) findViewById(R.id.camera_above_filmstrip_layout);
         mAboveFilmstripControlLayout.setFitsSystemWindows(true);
-        mBottomProgress = (ProgressBar) findViewById(R.id.pano_stitching_progress_bar);
         mCameraPreviewData = new CameraPreviewData(rootLayout,
                 FilmStripView.ImageData.SIZE_FULL,
                 FilmStripView.ImageData.SIZE_FULL);
@@ -1428,7 +1358,6 @@ public class CameraActivity extends Activity
             mFilmStripView.setDataAdapter(mDataAdapter);
             if (!isCaptureIntent()) {
                 mDataAdapter.requestLoad(getContentResolver());
-                mDataRequested = true;
             }
         } else {
             // Put a lock placeholder as the last image by setting its date to
@@ -1478,11 +1407,9 @@ public class CameraActivity extends Activity
     }
 
     private void setRotationAnimation() {
-        int rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_ROTATE;
-        rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_CROSSFADE;
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
-        winParams.rotationAnimation = rotationAnimation;
+        winParams.rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_CROSSFADE;
         win.setAttributes(winParams);
     }
 
@@ -1500,7 +1427,7 @@ public class CameraActivity extends Activity
         if (mFilmStripView.checkSendToModeView(ev)) {
             result = mFilmStripView.sendToModeView(ev);
         }
-        if (result == false)
+        if (!result)
             result = super.dispatchTouchEvent(ev);
         if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
             // Real deletion is postponed until the next user interaction after
@@ -1577,8 +1504,6 @@ public class CameraActivity extends Activity
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED) {
             hasCriticalPermission = true;
-        } else {
-            hasCriticalPermission = false;
         }
         return hasCriticalPermission;
     }
@@ -1870,22 +1795,11 @@ public class CameraActivity extends Activity
     }
 
     protected void setResultEx(int resultCode) {
-        mResultCodeForTesting = resultCode;
         setResult(resultCode);
     }
 
     protected void setResultEx(int resultCode, Intent data) {
-        mResultCodeForTesting = resultCode;
-        mResultDataForTesting = data;
         setResult(resultCode, data);
-    }
-
-    public int getResultCode() {
-        return mResultCodeForTesting;
-    }
-
-    public Intent getResultData() {
-        return mResultDataForTesting;
     }
 
     public boolean isSecureCamera() {
@@ -1905,7 +1819,7 @@ public class CameraActivity extends Activity
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-            String permissions[], int[] grantResults) {
+            String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -1972,24 +1886,13 @@ public class CameraActivity extends Activity
      * index an sets it as mCurrentModule.
      */
     private void setModuleFromIndex(int moduleIndex) {
-        mCameraPhotoModuleRootView.setVisibility(View.GONE);
-        mCameraVideoModuleRootView.setVisibility(View.GONE);
         mCameraCaptureModuleRootView.setVisibility(View.GONE);
         mCurrentModuleIndex = moduleIndex;
         switch (moduleIndex) {
-            case ModuleSwitcher.VIDEO_MODULE_INDEX:
-                if(mVideoModule == null) {
-                    mVideoModule = new VideoModule();
-                    mVideoModule.init(this, mCameraVideoModuleRootView);
-                } else {
-                    mVideoModule.reinit();
-                }
-                mCurrentModule = mVideoModule;
-                mCameraVideoModuleRootView.setVisibility(View.VISIBLE);
-                break;
-
             case ModuleSwitcher.CAPTURE_MODULE_INDEX:
-                if(mCaptureModule == null) {
+            default:
+                // Fall back to capture mode.
+                if (mCaptureModule == null) {
                     mCaptureModule = new CaptureModule();
                     mCaptureModule.init(this, mCameraCaptureModuleRootView);
                 } else {
@@ -1997,19 +1900,6 @@ public class CameraActivity extends Activity
                 }
                 mCurrentModule = mCaptureModule;
                 mCameraCaptureModuleRootView.setVisibility(View.VISIBLE);
-                break;
-
-            case ModuleSwitcher.PHOTO_MODULE_INDEX:
-            default:
-                // Fall back to photo mode.
-                if (mPhotoModule == null) {
-                    mPhotoModule = new PhotoModule();
-                    mPhotoModule.init(this, mCameraPhotoModuleRootView);
-                } else {
-                    mPhotoModule.reinit();
-                }
-                mCurrentModule = mPhotoModule;
-                mCameraPhotoModuleRootView.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -2054,6 +1944,7 @@ public class CameraActivity extends Activity
         mFilmStripListener.onCurrentDataCentered(currentId);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void showUndoDeletionBar() {
         if (mPendingDeletion) {
             performDeletion();
@@ -2065,28 +1956,22 @@ public class CameraActivity extends Activity
                     R.layout.undo_bar, mAboveFilmstripControlLayout, true);
             mUndoDeletionBar = (ViewGroup) v.findViewById(R.id.camera_undo_deletion_bar);
             View button = mUndoDeletionBar.findViewById(R.id.camera_undo_deletion_button);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mDataAdapter.undoDataRemoval();
-                    hideUndoDeletionBar(true);
-                }
+            button.setOnClickListener(view -> {
+                mDataAdapter.undoDataRemoval();
+                hideUndoDeletionBar(true);
             });
             // Setting undo bar clickable to avoid touch events going through
             // the bar to the buttons (eg. edit button, etc) underneath the bar.
             mUndoDeletionBar.setClickable(true);
             // When there is user interaction going on with the undo button, we
             // do not want to hide the undo bar.
-            button.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        mIsUndoingDeletion = true;
-                    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                        mIsUndoingDeletion =false;
-                    }
-                    return false;
+            button.setOnTouchListener((view, event) -> {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    mIsUndoingDeletion = true;
+                } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                    mIsUndoingDeletion =false;
                 }
+                return false;
             });
         }
         mUndoDeletionBar.setAlpha(0f);
@@ -2176,49 +2061,8 @@ public class CameraActivity extends Activity
         mInCameraApp = showControls;
     }
 
-    // Accessor methods for getting latency times used in performance testing
-    public long getAutoFocusTime() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mAutoFocusTime : -1;
-    }
-
-    public long getShutterLag() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mShutterLag : -1;
-    }
-
-    public long getShutterToPictureDisplayedTime() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mShutterToPictureDisplayedTime : -1;
-    }
-
-    public long getPictureDisplayedToJpegCallbackTime() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mPictureDisplayedToJpegCallbackTime : -1;
-    }
-
-    public long getJpegCallbackFinishTime() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mJpegCallbackFinishTime : -1;
-    }
-
-    public long getCaptureStartTime() {
-        return (mCurrentModule instanceof PhotoModule) ?
-                ((PhotoModule) mCurrentModule).mCaptureStartTime : -1;
-    }
-
-    public boolean isRecording() {
-        return (mCurrentModule instanceof VideoModule) ?
-                ((VideoModule) mCurrentModule).isRecording() : false;
-    }
-
     public CameraOpenErrorCallback getCameraOpenErrorCallback() {
         return mCameraOpenErrorCallback;
-    }
-
-    // For debugging purposes only.
-    public CameraModule getCurrentModule() {
-        return mCurrentModule;
     }
 
     private void showOpenCameraErrorDialog() {

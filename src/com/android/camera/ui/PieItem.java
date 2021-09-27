@@ -29,16 +29,17 @@ import java.util.List;
  */
 public class PieItem {
 
-    public static interface OnClickListener {
+    public interface OnClickListener {
         void onClick(PieItem item);
     }
+
+    private final List<PieItem> mItems = new ArrayList<>();
 
     private Drawable mDrawable;
     private int level;
 
     private boolean mSelected;
     private boolean mEnabled;
-    private List<PieItem> mItems;
     private Path mPath;
     private OnClickListener mOnClickListener;
     private float mAlpha;
@@ -67,7 +68,7 @@ public class PieItem {
     }
 
     public boolean hasItems() {
-        return mItems != null;
+        return !mItems.isEmpty();
     }
 
     public List<PieItem> getItems() {
@@ -75,14 +76,11 @@ public class PieItem {
     }
 
     public void addItem(PieItem item) {
-        if (mItems == null) {
-            mItems = new ArrayList<PieItem>();
-        }
         mItems.add(item);
     }
 
     public void clearItems() {
-        mItems = null;
+        mItems.clear();
     }
 
     public void setLevel(int level) {
