@@ -694,11 +694,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     public void initializeProMode(boolean promode) {
         mCameraControls.setProMode(promode);
         if (promode) {
-            mVideoButton.setVisibility(View.INVISIBLE);
             mFlashButton.setVisibility(View.INVISIBLE);
-        }
-        else if (mModule.getCurrentIntentMode() == CaptureModule.INTENT_MODE_NORMAL) {
-            mVideoButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1364,6 +1360,12 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     public void enableVideo(boolean enabled) {
         if (mVideoButton != null) {
             mVideoButton.setEnabled(enabled);
+        }
+    }
+
+    public void toggleVideoButtonVisibility(boolean visible) {
+        if (mVideoButton != null) {
+            mVideoButton.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 

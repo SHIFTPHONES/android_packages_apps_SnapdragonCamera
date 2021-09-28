@@ -3819,9 +3819,23 @@ public class CaptureModule implements CameraModule, PhotoController,
         mUI.enableShutter(true);
         setProModeVisible();
 
-        String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
-        if (Integer.parseInt(scene) != SettingsManager.SCENE_MODE_UBIFOCUS_INT) {
+        final String scene = mSettingsManager.getValue(SettingsManager.KEY_SCENE_MODE);
+        final int sceneModeInt = Integer.parseInt(scene);
+
+        if (sceneModeInt != SettingsManager.SCENE_MODE_UBIFOCUS_INT) {
             setRefocusLastTaken(false);
+        }
+
+        switch (sceneModeInt) {
+            case SettingsManager.SCENE_MODE_HDR_INT:
+            case SettingsManager.SCENE_MODE_SHIFT_BOKEH:
+            case SettingsManager.SCENE_MODE_SHIFT_LOW_LIGHT_SHOT:
+            case SettingsManager.SCENE_MODE_PROMODE_INT:
+                mUI.toggleVideoButtonVisibility(false);
+                break;
+            default:
+                mUI.toggleVideoButtonVisibility(true);
+                break;
         }
     }
 
