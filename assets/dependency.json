@@ -71,12 +71,6 @@
     "15": {
       "pref_camera2_coloreffect_key": "0"
     },
-    "18": {
-      "pref_camera2_coloreffect_key": "0",
-      "pref_camera2_zsl_key": "disable",
-      "pref_camera2_picture_format_key": "0",
-      "pref_camera2_flashmode_key": "off"
-    },
     "100": {
       "pref_camera2_longshot_key": "off",
       "pref_camera2_mono_only_key": "off",
@@ -120,6 +114,14 @@
     "110": {
       "pref_camera2_coloreffect_key": "0",
       "pref_camera2_longshot_key": "off"
+    },
+    "18": {
+      "_name": "SHIFT - HDR",
+      "pref_camera2_coloreffect_key": "0",
+      "pref_camera2_flashmode_key": "off",
+      "pref_camera2_longshot_key": "off",
+      "pref_camera2_picture_format_key": "0",
+      "pref_camera2_zsl_key": "disable"
     },
     "201": {
       "_name": "SHIFT - LOW LIGHT",
