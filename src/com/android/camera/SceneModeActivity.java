@@ -268,9 +268,8 @@ class MyPagerAdapter extends PagerAdapter {
                 mActivity.openQr();
             } else {
                 SettingsManager.getInstance().setValueIndex(SettingsManager.KEY_SCENE_MODE, index);
+                mActivity.finish();
             }
-
-            mActivity.finish();
         });
 
         return rootView;
