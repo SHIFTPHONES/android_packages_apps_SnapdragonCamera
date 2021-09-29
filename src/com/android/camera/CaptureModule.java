@@ -1402,16 +1402,16 @@ public class CaptureModule implements CameraModule, PhotoController,
         mBgStatsLabel = (TextView) mRootView.findViewById(R.id.bg_stats_graph_label);
         mBeStatsLabel = (TextView) mRootView.findViewById(R.id.be_stats_graph_label);
         mDrawAutoHDR2 = (DrawAutoHDR2 )mRootView.findViewById(R.id.autohdr_view);
-        mGraphViewR.setDataSection(0,256);
-        mGraphViewGB.setDataSection(256,512);
-        mGraphViewB.setDataSection(512,768);
         if (mGraphViewR != null){
+            mGraphViewR.setDataSection(0,256);
             mGraphViewR.setCaptureModuleObject(this);
         }
         if (mGraphViewGB != null){
+            mGraphViewGB.setDataSection(256,512);
             mGraphViewGB.setCaptureModuleObject(this);
         }
         if (mGraphViewB != null){
+            mGraphViewB.setDataSection(512,768);
             mGraphViewB.setCaptureModuleObject(this);
         }
         if (bgstats_view != null){
