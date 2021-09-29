@@ -336,8 +336,11 @@ class MyPagerAdapter extends PagerAdapter {
 
             final List<CharSequence> entryList = mActivity.getEntries();
             final List<Integer> thumbnailList = mActivity.getThumbnails();
-
             final int idx = position + mPage * mActivity.getElmentPerPage();
+
+            final int activeSceneModeIndex = SettingsManager.getInstance().getValueIndex(SettingsManager.KEY_SCENE_MODE);
+            final boolean isSceneActive = (activeSceneModeIndex == idx);
+            viewHolder.imageView.setBackgroundResource(isSceneActive ? R.drawable.bg_custom_icon_active : R.drawable.bg_custom_icon);
             viewHolder.imageView.setImageResource(thumbnailList.get(idx));
             viewHolder.textTitle.setText(entryList.get(position + mPage * mActivity.getElmentPerPage()));
 
