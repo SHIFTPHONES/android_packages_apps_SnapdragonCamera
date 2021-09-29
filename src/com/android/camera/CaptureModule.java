@@ -2083,8 +2083,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         Log.d(TAG, "parallelLockFocusExposure " + id);
 
         if (mState[id] == STATE_WAITING_TOUCH_FOCUS) {
-            String value = mSettingsManager.getValue(mCurrentSceneMode.mode == CameraMode.PRO_MODE ?
-                    SettingsManager.KEY_VIDEO_FLASH_MODE : SettingsManager.KEY_FLASH_MODE);
+            String value = mSettingsManager.getValue(SettingsManager.KEY_FLASH_MODE);
             if (value != null && value.equals("on")) {
                 mState[id] = STATE_WAITING_AE_PRECAPTURE;
             } else {
@@ -3129,15 +3128,19 @@ public class CaptureModule implements CameraModule, PhotoController,
             if (null != mCaptureSession[i]) {
                 if (mCamerasOpened) {
                     try {
+                        /*
                         if (mCurrentSession instanceof CameraConstrainedHighSpeedCaptureSession) {
                             List requestList = ((CameraConstrainedHighSpeedCaptureSession)
                                     mCurrentSession).createHighSpeedRequestList(
                                             mVideoRecordRequestBuilder.build());
                             mCurrentSession.captureBurst(requestList, null, mCameraHandler);
                         } else {
+                        */
                             mCaptureSession[i].capture(mPreviewRequestBuilder[i].build(), null,
                                     mCameraHandler);
+                        /*
                         }
+                        */
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     } catch (IllegalStateException e) {
@@ -3240,6 +3243,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         try {
             applySettingsForLockExposure(mPreviewRequestBuilder[id], id);
             mState[id] = STATE_WAITING_AE_LOCK;
+            /*
             if (isHighSpeedRateCapture()) {
                 List<CaptureRequest> slowMoRequests = mSuperSlomoCapture ?
                         createSSMBatchRequest(mVideoRecordRequestBuilder) :
@@ -3248,9 +3252,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                 mCaptureSession[id].setRepeatingBurst(slowMoRequests, mCaptureCallback,
                         mCameraHandler);
             } else {
+            */
                 mCaptureSession[id].setRepeatingRequest(mPreviewRequestBuilder[id].build(),
                         mCaptureCallback, mCameraHandler);
+            /*
             }
+            */
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
@@ -4495,7 +4502,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         int zoom = Integer.parseInt(zoomStr);
         if ( zoom !=0 ) {
             mZoomValue = (float)zoom;
-            mUI.updateZoomSeekBar(mZoomValue);
+            //mUI.updateZoomSeekBar(mZoomValue);
         }else{
             mZoomValue = 1.0f;
         }
@@ -6647,8 +6654,7 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     private void applyFlashForAFTrigger(CaptureRequest.Builder request, int id) {
         if (mSettingsManager.isFlashSupported(id)) {
-            String value = mSettingsManager.getValue(mCurrentSceneMode.mode == CameraMode.PRO_MODE ?
-                    SettingsManager.KEY_VIDEO_FLASH_MODE : SettingsManager.KEY_FLASH_MODE);
+            String value = mSettingsManager.getValue(SettingsManager.KEY_FLASH_MODE);
             String redeye = mSettingsManager.getValue(SettingsManager.KEY_REDEYE_REDUCTION);
             mIsAutoFlash = false;
             if (redeye != null && redeye.equals("on") && !mLongshotActive) {
