@@ -1234,11 +1234,11 @@ public class CameraActivity extends Activity
         }
 
         // Check if this is in the secure camera mode.
-        Intent intent = getIntent();
-        String action = intent.getAction();
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
         if (INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE.equals(action)
                 || ACTION_IMAGE_CAPTURE_SECURE.equals(action)
-                || intent.getComponent().getClassName().equals(GESTURE_CAMERA_NAME)) {
+                || GESTURE_CAMERA_NAME.equals(intent.getComponent().getClassName())) {
             mSecureCamera = true;
         } else {
             mSecureCamera = intent.getBooleanExtra(SECURE_CAMERA_EXTRA, false);
@@ -1278,7 +1278,7 @@ public class CameraActivity extends Activity
         mCameraCaptureModuleRootView = rootLayout.findViewById(R.id.camera_capture_root);
 
         int moduleIndex = -1;
-        final String intentAction = getIntent().getAction();
+        final String intentAction = (action != null ? action : "");
         switch (intentAction) {
             case MediaStore.INTENT_ACTION_VIDEO_CAMERA:
             case MediaStore.ACTION_VIDEO_CAPTURE:
