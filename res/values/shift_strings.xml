@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="toast_settings_restored">Restored default settings</string>
+
+    <string name="shift_pref_camera_scenemode_entry_camera">Camera</string>
+    <string name="shift_pref_camera_scenemode_entry_qr">QR Reader</string>
+    <string name="shift_pref_camera_scenemode_entry_hdr" translatable="false">HDR</string>
+    <string name="shift_pref_camera_scenemode_entry_low_light">Low Light</string>
+    <string name="shift_pref_camera_scenemode_entry_portrait">Portrait</string>
+    <string name="shift_pref_camera_scenemode_entry_promode">Pro Mode</string>
 </resources>
