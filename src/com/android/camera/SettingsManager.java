@@ -223,6 +223,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public static final String KEY_VIDEO_ENCODER_PROFILE = "pref_camera2_videoencoderprofile_key";
     public static final String MAUNAL_ABSOLUTE_ISO_VALUE = "absolute";
 
+    public static final String KEY_APP_VERSION ="pref_app_version_key";
+
     private static final String TAG = "SnapCam_SettingsManager";
 
     private static final ArrayList<Integer> SHIFT_SUPPORTED_SCENES = new ArrayList<>();
@@ -412,6 +414,10 @@ public class SettingsManager implements ListMenu.SettingsListener {
         Log.d(TAG, "SettingsManager init");
         final int cameraId = getInitialCameraId(mPreferences);
         reloadCharacteristics(cameraId);
+
+        // check if we need to force modify any settings
+        checkUpgrade();
+
         setLocalIdAndInitialize(cameraId);
         autoTestBroadcast(cameraId);
     }
@@ -419,6 +425,37 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public void reinit(int cameraId) {
         Log.d(TAG, "SettingsManager reinit " + cameraId);
         setLocalIdAndInitialize(cameraId);
+    }
+
+    private void checkUpgrade() {
+        final SharedPreferences sp = mContext.getSharedPreferences(
+                ComboPreferences.getGlobalSharedPreferencesName(mContext),
+                Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sp.edit();
+
+        final int appVersion = sp.getInt(KEY_APP_VERSION, -1);
+        int newAppVersion = appVersion;
+
+        // initial introduction
+        if (appVersion < 1) {
+            // force enable HAL ZSL
+            final String halZsl = mContext.getString(R.string.pref_camera2_zsl_entryvalue_hal_zsl);
+            final String[] preferencesNames = ComboPreferences.getSharedPreferencesNames(mContext);
+            for (String name : preferencesNames) {
+                final SharedPreferences.Editor comboEditor =
+                        mContext.getSharedPreferences(name, Context.MODE_PRIVATE).edit();
+                comboEditor.putString(KEY_ZSL, halZsl);
+                comboEditor.apply();
+            }
+
+            newAppVersion = 1;
+        }
+
+        // upgrade done, update app version
+        if (appVersion != newAppVersion) {
+            editor.putInt(KEY_APP_VERSION, newAppVersion);
+        }
+        editor.apply();
     }
 
     private void autoTestBroadcast(int cameraId) {
