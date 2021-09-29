@@ -410,9 +410,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public void init() {
         Log.d(TAG, "SettingsManager init");
         final int cameraId = getInitialCameraId(mPreferences);
+        reloadCharacteristics(cameraId);
         setLocalIdAndInitialize(cameraId);
         autoTestBroadcast(cameraId);
-        reloadCharacteristics(cameraId);
     }
 
     public void reinit(int cameraId) {
