@@ -984,6 +984,14 @@
     <string name="bestpicture_done">DONE</string>
     <string name="bestpicture_at_least_one_picture">At least one picture has to be chosen.</string>
 
+    <string name="pref_camera2_shutter_animation_default" translatable="false">on</string>
+    <string name="pref_camera2_shutter_animation_value_on" translatable="false">on</string>
+    <string name="pref_camera2_shutter_animation_value_off" translatable="false">off</string>
+
+    <string name="pref_camera2_shutter_animation_entry_on">On</string>
+    <string name="pref_camera2_shutter_animation_entry_off">Off</string>
+    <string name="pref_camera2_shutter_animation_title">Shutter animation</string>
+
     <string name="pref_camera2_shutter_sound_default" translatable="false">on</string>
     <string name="pref_camera2_shutter_sound_value_on" translatable="false">on</string>
     <string name="pref_camera2_shutter_sound_value_off" translatable="false">off</string>

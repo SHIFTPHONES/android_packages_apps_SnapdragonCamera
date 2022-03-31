@@ -2070,7 +2070,7 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     private boolean takeZSLPicture(int cameraId) {
         if(mPostProcessor.isZSLEnabled() && mPostProcessor.takeZSLPicture()) {
-            checkAndPlayShutterSound(getMainCameraId());
+            checkAndPlayShutterEffects(getMainCameraId());
             mUI.enableShutter(true);
             return true;
         }
@@ -2435,7 +2435,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         VendorTagUtil.setCdsMode(captureBuilder, 2); // CDS 0-OFF, 1-ON, 2-AUTO
         applySettingsForCapture(captureBuilder, id);
         applySettingsForLockExposure(captureBuilder, id);
-        checkAndPlayShutterSound(id);
+        checkAndPlayShutterEffects(id);
         if(mPaused || !mCamerasOpened) {
             //for avoid occurring crash when click back before capture finished.
             //CameraDevice was already closed
@@ -2447,7 +2447,7 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     private void captureStillPictureForFilter(CaptureRequest.Builder captureBuilder, int id) throws CameraAccessException{
         applySettingsForLockExposure(captureBuilder, id);
-        checkAndPlayShutterSound(id);
+        checkAndPlayShutterEffects(id);
         if(mPaused || !mCamerasOpened) {
             //for avoid occurring crash when click back before capture finished.
             //CameraDevice was already closed
@@ -2480,7 +2480,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 }
                 Log.d(TAG, "captureStillPictureForLongshot onCaptureCompleted: " + mNumFramesArrived.get() + " " + mShotNum);
                 if (mLongshotActive) {
-                    checkAndPlayShutterSound(getMainCameraId());
+                    checkAndPlayShutterEffects(getMainCameraId());
                 }
                 mLongshoting = false;
             }
@@ -2567,7 +2567,7 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     private void captureStillPictureForCommon(CaptureRequest.Builder captureBuilder, int id) throws CameraAccessException{
-        checkAndPlayShutterSound(id);
+        checkAndPlayShutterEffects(id);
         if(mLongshoting) mLongshoting = false;
         if(isMpoOn()) {
             mCaptureStartTime = System.currentTimeMillis();
@@ -2640,7 +2640,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 warningToast("Camera is not ready yet to take a video snapshot.");
                 return;
             }
-            checkAndPlayShutterSound(id);
+            checkAndPlayShutterEffects(id);
             CaptureRequest.Builder captureBuilder =
                     mCameraDevice[id].createCaptureRequest(CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
@@ -6803,11 +6803,16 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
     }
 
-    public void checkAndPlayShutterSound(int id) {
+    public void checkAndPlayShutterEffects(int id) {
         if (id == getMainCameraId()) {
             String value = mSettingsManager.getValue(SettingsManager.KEY_SHUTTER_SOUND);
-            if (value != null && value.equals("on") && mSoundPlayer != null) {
+            if (mSoundPlayer != null && "on".equals(value)) {
                 mSoundPlayer.play(SoundClips.SHUTTER_CLICK);
+            }
+
+            value = mSettingsManager.getValue(SettingsManager.KEY_SHUTTER_ANIMATION);
+            if ("on".equals(value)) {
+                mUI.triggerShutterEffect();
             }
         }
     }

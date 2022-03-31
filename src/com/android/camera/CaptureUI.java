@@ -20,6 +20,9 @@
 package com.android.camera;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -252,6 +255,32 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
                 mActivity.updateThumbnail(mThumbnail);
             }
         }
+    }
+
+    public void triggerShutterEffect() {
+        final AnimatorSet shutterSet = new AnimatorSet();
+
+        final ObjectAnimator showAnimator = ObjectAnimator.ofFloat(mPreviewCover, View.ALPHA, 0.0f, 1.0f);
+        showAnimator.setDuration(150L);
+        showAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                showPreviewCover();
+            }
+        });
+
+        final ObjectAnimator hideAnimator = ObjectAnimator.ofFloat(mPreviewCover, View.ALPHA, 1.0f, 0.0f);
+        hideAnimator.setDuration(100L);
+        hideAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                hidePreviewCover();
+            }
+        });
+
+        shutterSet.playSequentially(showAnimator, hideAnimator);
+        mPreviewCover.post(shutterSet::start);
     }
 
     public void initThumbnail() {

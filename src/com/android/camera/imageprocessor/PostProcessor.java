@@ -527,7 +527,7 @@ public class PostProcessor{
 
     private void reprocessImage(Image image, TotalCaptureResult metadata) {
         if(mController.isLongShotActive()) {
-            mController.checkAndPlayShutterSound(mController.getMainCameraId());
+            mController.checkAndPlayShutterEffects(mController.getMainCameraId());
         }
         synchronized (lock) {
             if(mCameraDevice == null || mCaptureSession == null || mImageReader == null) {
@@ -1107,7 +1107,7 @@ public class PostProcessor{
                                         mActivity.getContentResolver(), "jpeg");
                             }
                             if (mFilterIndex == FILTER_UBIFOCUS && numImage > 0) {
-                                mController.checkAndPlayShutterSound(mController.getMainCameraId());
+                                mController.checkAndPlayShutterEffects(mController.getMainCameraId());
                             }
                             mFilter.addImage(yBuf, vuBuf, numImage, null);
                             mImages[numImage] = image;

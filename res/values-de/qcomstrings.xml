@@ -311,6 +311,9 @@
     <string name="pref_camera_scenemode_entry_promode">Pro-Modus</string>
     <string name="bestpicture_done">FERTIG</string>
     <string name="bestpicture_at_least_one_picture">Es muss mindestens ein Bild ausgewählt werden.</string>
+    <string name="pref_camera2_shutter_animation_entry_on">An</string>
+    <string name="pref_camera2_shutter_animation_entry_off">Aus</string>
+    <string name="pref_camera2_shutter_animation_title">Auslöse-Animation</string>
     <string name="pref_camera2_shutter_sound_entry_on">An</string>
     <string name="pref_camera2_shutter_sound_entry_off">Aus</string>
     <string name="pref_camera2_shutter_sound_title">Auslöser-Ton</string>

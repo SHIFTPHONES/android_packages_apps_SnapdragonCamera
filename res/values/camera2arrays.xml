@@ -898,6 +898,16 @@ for time lapse recording -->
         <item>@string/pref_camera2_timer_value_10sec</item>
     </string-array>
 
+    <string-array name="pref_camera2_shutter_animation_entries" translatable="true">
+        <item>@string/pref_camera2_shutter_animation_entry_on</item>
+        <item>@string/pref_camera2_shutter_animation_entry_off</item>
+    </string-array>
+
+    <string-array name="pref_camera2_shutter_animation_entryvalues" translatable="false">
+        <item>@string/pref_camera2_shutter_animation_value_on</item>
+        <item>@string/pref_camera2_shutter_animation_value_off</item>
+    </string-array>
+
     <string-array name="pref_camera2_shutter_sound_entries" translatable="true">
         <item>@string/pref_camera2_shutter_sound_entry_on</item>
         <item>@string/pref_camera2_shutter_sound_entry_off</item>

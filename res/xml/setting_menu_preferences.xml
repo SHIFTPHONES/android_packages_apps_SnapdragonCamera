@@ -122,6 +122,12 @@
 
         <SwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_custom_shutter_animation"
+            android:key="pref_camera2_shutter_animation_key"
+            android:title="@string/pref_camera2_shutter_animation_title" />
+
+        <SwitchPreference
+            android:defaultValue="true"
             android:icon="@drawable/ic_custom_shutter_sound"
             android:key="pref_camera2_shutter_sound_key"
             android:title="@string/pref_camera2_shutter_sound_title" />
