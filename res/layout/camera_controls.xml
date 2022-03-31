@@ -86,6 +86,13 @@
         android:contentDescription="@string/switch_photo_filmstrip"
         android:scaleType="fitCenter" />
 
+    <ProgressBar
+        android:id="@+id/preview_thumb_progress"
+        android:layout_width="@dimen/capture_progress_size"
+        android:layout_height="@dimen/capture_progress_size"
+        android:indeterminate="true"
+        android:indeterminateTint="@android:color/white" />
+
     <com.android.camera.ui.RotateImageView
         android:id="@+id/front_back_switcher"
         style="@style/ToggleButton" />

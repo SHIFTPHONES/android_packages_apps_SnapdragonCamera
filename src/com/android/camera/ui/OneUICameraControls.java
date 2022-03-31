@@ -54,6 +54,7 @@ public class OneUICameraControls extends RotatableLayout {
     private View mFrontBackSwitcher;
     private View mTsMakeupSwitcher;
     private View mPreview;
+    private View mPreviewProgress;
     private View mSceneModeSwitcher;
     private View mMakeupSeekBar;
     private View mMakeupSeekBarLowText;
@@ -151,6 +152,7 @@ public class OneUICameraControls extends RotatableLayout {
         mFlashButton = findViewById(R.id.flash_button);
         mMute = findViewById(R.id.mute_button);
         mPreview = findViewById(R.id.preview_thumb);
+        mPreviewProgress = findViewById(R.id.preview_thumb_progress);
         mSceneModeSwitcher = findViewById(R.id.scene_mode_switcher);
         mRemainingPhotos = (LinearLayout) findViewById(R.id.remaining_photos);
         mRemainingPhotosText = (TextView) findViewById(R.id.remaining_photos_text);
@@ -349,6 +351,7 @@ public class OneUICameraControls extends RotatableLayout {
             } else {
                 setLocation(mShutter, false, 2);
                 setLocation(mPreview, false, 0);
+                setLocation(mPreviewProgress, false, 0);
                 setLocation(mVideoShutter, false, 3.15f);
             }
             setLocation(mExitBestPhotpMode ,false, 4);

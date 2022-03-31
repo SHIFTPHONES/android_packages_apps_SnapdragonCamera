@@ -62,6 +62,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -121,6 +122,7 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     private SettingsManager mSettingsManager;
     private TrackingFocusRenderer mTrackingFocusRenderer;
     private ImageView mThumbnail;
+    private ProgressBar mThumbnailProgress;
     private Camera2FaceView mFaceView;
     private Point mDisplaySize = new Point();
     private SelfieFlashView mSelfieView;
@@ -245,11 +247,15 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
         if((mSurfaceHolder != null && mSurfaceHolder.getSurface().isValid())) {
             mModule.onPreviewUIReady();
             if (mModule.getCurrentIntentMode() != CaptureModule.INTENT_MODE_NORMAL
-                    && mThumbnail != null){
+                    && mThumbnail != null) {
                 mThumbnail.setVisibility(View.INVISIBLE);
                 mThumbnail = null;
                 mActivity.updateThumbnail(mThumbnail);
             } else if (mModule.getCurrentIntentMode() == CaptureModule.INTENT_MODE_NORMAL){
+                if (mThumbnailProgress == null)
+                    mThumbnailProgress = (ProgressBar) mRootView.findViewById(R.id.preview_thumb_progress);
+                mActivity.setThumbnailProgress(mThumbnailProgress);
+
                 if (mThumbnail == null)
                     mThumbnail = (ImageView) mRootView.findViewById(R.id.preview_thumb);
                 mActivity.updateThumbnail(mThumbnail);
@@ -284,6 +290,10 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
     }
 
     public void initThumbnail() {
+        if (mThumbnailProgress == null)
+            mThumbnailProgress = (ProgressBar) mRootView.findViewById(R.id.preview_thumb_progress);
+        mActivity.setThumbnailProgress(mThumbnailProgress);
+
         if (mThumbnail == null)
             mThumbnail = (ImageView) mRootView.findViewById(R.id.preview_thumb);
         mActivity.updateThumbnail(mThumbnail);
@@ -1271,14 +1281,15 @@ public class CaptureUI implements PreviewGestures.SingleTapListener,
 
     public void initializeControlByIntent() {
         mThumbnail = (ImageView) mRootView.findViewById(R.id.preview_thumb);
-        mThumbnail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!CameraControls.isAnimating() && !mModule.isTakingPicture() &&
-                        !mModule.isRecordingVideo())
-                    mActivity.gotoGallery();
-            }
-        });
+        mThumbnailProgress = (ProgressBar) mRootView.findViewById(R.id.preview_thumb_progress);
+
+        final View.OnClickListener thumbnailClickListener = v -> {
+            if (!CameraControls.isAnimating() &&
+                    !mModule.isTakingPicture() &&
+                    !mModule.isRecordingVideo())
+                mActivity.gotoGallery();
+        };
+        mThumbnail.setOnClickListener(thumbnailClickListener);
         if (mModule.getCurrentIntentMode() != CaptureModule.INTENT_MODE_NORMAL) {
             mCameraControls.setIntentMode(mModule.getCurrentIntentMode());
         }

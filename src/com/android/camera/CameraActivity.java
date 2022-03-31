@@ -77,6 +77,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ShareActionProvider;
 
 import com.android.camera.crop.CropActivity;
@@ -216,6 +217,7 @@ public class CameraActivity extends Activity
     public static int SETTING_LIST_WIDTH_2 = 250;
 
     private ImageView mThumbnail;
+    private ProgressBar mThumbnailProgress;
     private UpdateThumbnailTask mUpdateThumbnailTask;
     private CircularDrawable mThumbnailDrawable;
     private Bitmap mThumbnailBitmap;
@@ -661,6 +663,18 @@ public class CameraActivity extends Activity
         return ori;
     }
 
+    public void stopThumbnailAnimation() {
+        if (mThumbnailProgress != null) {
+            mThumbnailProgress.post(() -> mThumbnailProgress.setVisibility(View.GONE));
+        }
+    }
+
+    public void startThumbnailAnimation() {
+        if (mThumbnailProgress != null) {
+            mThumbnailProgress.post(() -> mThumbnailProgress.setVisibility(View.VISIBLE));
+        }
+    }
+
     public void updateThumbnail(final byte[] jpegData) {
         if (mUpdateThumbnailTask != null) mUpdateThumbnailTask.cancel(true);
         mUpdateThumbnailTask = new UpdateThumbnailTask(jpegData, true);
@@ -675,7 +689,9 @@ public class CameraActivity extends Activity
         mThumbnailBitmap = bitmap;
         mThumbnailDrawable = new CircularDrawable(bitmap);
         if (mThumbnail != null) {
+            stopThumbnailAnimation();
             mThumbnail.setImageDrawable(mThumbnailDrawable);
+
             if (!isSecureCamera()) {
                 mThumbnail.setVisibility(View.VISIBLE);
             } else {
@@ -698,6 +714,7 @@ public class CameraActivity extends Activity
         mThumbnail = thumbnail;
         if (mThumbnail == null) return;
         if (mThumbnailDrawable != null) {
+            stopThumbnailAnimation();
             mThumbnail.setImageDrawable(mThumbnailDrawable);
             if (!isSecureCamera() && !isCaptureIntent()) {
                 mThumbnail.setVisibility(View.VISIBLE);
@@ -723,6 +740,10 @@ public class CameraActivity extends Activity
         if (!videoOnly || (mCurrentModule instanceof CaptureModule)) {
             (new UpdateThumbnailTask(null, true)).execute();
         }
+    }
+
+    public void setThumbnailProgress(ProgressBar thumbnailProgress) {
+        mThumbnailProgress = thumbnailProgress;
     }
 
     private class UpdateThumbnailTask extends AsyncTask<Void, Void, Bitmap> {
@@ -770,6 +791,7 @@ public class CameraActivity extends Activity
                     mThumbnail.setImageDrawable(null);
                     mThumbnail.setVisibility(View.GONE);
                 }
+                stopThumbnailAnimation();
             } else {
                 updateThumbnail(bitmap);
             }

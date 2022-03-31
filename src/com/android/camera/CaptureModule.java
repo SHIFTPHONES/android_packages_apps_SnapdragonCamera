@@ -6815,6 +6815,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                 mUI.triggerShutterEffect();
             }
         }
+
+        // start animating the thumbnail preview to indicate we are starting to save
+        mActivity.startThumbnailAnimation();
     }
 
     public Surface getPreviewSurfaceForSession(int id) {
