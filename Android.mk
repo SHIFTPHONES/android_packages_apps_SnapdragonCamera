@@ -34,7 +34,7 @@ LOCAL_STATIC_JAVA_AAR_LIBRARIES += \
     qreader-core \
     qreader-zxing
 
-LOCAL_JAVA_LIBRARIES := com.shiftos.platform.internal
+LOCAL_JAVA_LIBRARIES := org.lineageos.platform.internal
 
 LOCAL_PACKAGE_NAME := SnapdragonCamera
 LOCAL_PRIVILEGED_MODULE := true

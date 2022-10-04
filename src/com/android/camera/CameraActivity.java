@@ -1509,11 +1509,11 @@ public class CameraActivity extends Activity
         if (checkSelfPermission(Manifest.permission.CAMERA) ==
                         PackageManager.PERMISSION_GRANTED &&
                 checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
-                        PackageManager.PERMISSION_GRANTED &&
+                        PackageManager.PERMISSION_GRANTED /*&&
                 checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED &&
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED*/) {
             hasCriticalPermission = true;
         }
         return hasCriticalPermission;
@@ -1778,6 +1778,7 @@ public class CameraActivity extends Activity
         if (!CameraUtil.hasCameraKey()) {
             mPowerShutter = val.equals(CameraSettings.VALUE_ON);
         }
+        /*
         if (mPowerShutter && mInCameraApp) {
             getWindow().addPrivateFlags(
                     WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_POWER_KEY);
@@ -1785,6 +1786,7 @@ public class CameraActivity extends Activity
             getWindow().clearPrivateFlags(
                     WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_POWER_KEY);
         }
+        */
     }
 
     protected void initMaxBrightness(ComboPreferences prefs) {

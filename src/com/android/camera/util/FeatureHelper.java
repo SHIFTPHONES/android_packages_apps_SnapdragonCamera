@@ -23,7 +23,6 @@ public class FeatureHelper {
     private static final String PERMISSION_PREVENT_POWER_KEY = "shiftos.permission.PREVENT_POWER_KEY";
 
     public static boolean isPowerShutterSupported(final Context context) {
-        return (context.checkSelfPermission(PERMISSION_PREVENT_POWER_KEY)
-                == PackageManager.PERMISSION_GRANTED);
+        return false; // not supported for now
     }
 }

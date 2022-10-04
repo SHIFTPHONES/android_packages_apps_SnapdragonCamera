@@ -1391,6 +1391,7 @@ public class CameraSettings {
     public static List<String> getSupportedHighFrameRateModes(Parameters params) {
         ArrayList<String> supported = new ArrayList<>();
         if (params == null) return supported;
+        /*
         List<String> supportedModes = params.getSupportedVideoHighFrameRateModes();
         if (supportedModes == null) return supported;
 
@@ -1404,7 +1405,7 @@ public class CameraSettings {
                     supported.add("hsr" + highFrameRateMode);
                 }
             }
-        }
+        }*/
         return supported;
     }
 
