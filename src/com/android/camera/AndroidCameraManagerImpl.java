@@ -22,8 +22,6 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.AutoFocusMoveCallback;
-import android.hardware.Camera.CameraDataCallback;
-import android.hardware.Camera.CameraMetaDataCallback;
 import android.hardware.Camera.ErrorCallback;
 import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.Camera.OnZoomChangeListener;
@@ -98,12 +96,10 @@ class AndroidCameraManagerImpl implements CameraManager {
     private static final int ENABLE_SHUTTER_SOUND =    501;
     private static final int SET_DISPLAY_ORIENTATION = 502;
     // Histogram
-    private static final int SET_HISTOGRAM_MODE =    601;
     private static final int SEND_HISTOGRAM_DATA =   602;
     //LONGSHOT
     private static final int SET_LONGSHOT = 701;
     private static final int STOP_LONGSHOT = 702;
-    private static final int SET_AUTO_HDR_MODE = 801;
 
     //HAL1 version code
     private static final int CAMERA_HAL_API_VERSION_1_0 = 0x100;
@@ -414,10 +410,6 @@ class AndroidCameraManagerImpl implements CameraManager {
                         mParametersIsDirty = true;
                         return;
 
-                    case SET_HISTOGRAM_MODE:
-                        CameraWrapper.setHistogramMode(mCamera, (CameraDataCallback) msg.obj);
-                        break;
-
                     case SEND_HISTOGRAM_DATA:
                         CameraWrapper.sendHistogramData(mCamera);
                         break;
@@ -428,10 +420,6 @@ class AndroidCameraManagerImpl implements CameraManager {
 
                     case STOP_LONGSHOT:
                         CameraWrapper.stopLongshot(mCamera);
-                        break;
-
-                    case SET_AUTO_HDR_MODE:
-                        CameraWrapper.setMetadataCb(mCamera, (CameraMetaDataCallback) msg.obj);
                         break;
 
                     default:
@@ -529,11 +517,6 @@ class AndroidCameraManagerImpl implements CameraManager {
         @Override
         public void lock() {
             mCameraHandler.sendEmptyMessage(LOCK);
-        }
-
-        @Override
-        public void setMetadataCb(CameraMetaDataCallback cb){
-            mCameraHandler.obtainMessage(SET_AUTO_HDR_MODE, cb).sendToTarget();
         }
 
         @Override
@@ -695,10 +678,6 @@ class AndroidCameraManagerImpl implements CameraManager {
             mCameraHandler.sendEmptyMessage(STOP_LONGSHOT);
         }
 
-        @Override
-        public void setHistogramMode(CameraDataCallback cb) {
-            mCameraHandler.obtainMessage(SET_HISTOGRAM_MODE, cb).sendToTarget();
-        }
         @Override
         public void sendHistogramData() {
             mCameraHandler.sendEmptyMessage(SEND_HISTOGRAM_DATA);

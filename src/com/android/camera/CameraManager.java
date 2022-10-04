@@ -19,8 +19,6 @@ package com.android.camera;
 import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.hardware.Camera.CameraDataCallback;
-import android.hardware.Camera.CameraMetaDataCallback;
 import android.hardware.Camera.ErrorCallback;
 import android.hardware.Camera.OnZoomChangeListener;
 import android.hardware.Camera.Parameters;
@@ -173,12 +171,6 @@ public interface CameraManager {
          * is released and can continue on.
          */
         public void release();
-
-        /**
-         * Sets the metadata cb
-         * @cb Metadata callback object
-        */
-        public void setMetadataCb (CameraMetaDataCallback cb);
 
         /**
          * Reconnects to the camera device.
@@ -366,12 +358,7 @@ public interface CameraManager {
          *                 {@code false} to disable it.
          */
         public void enableShutterSound(boolean enable);
-        /**
-         * Set histogram Mode
-         *
-         * @param cb   cameraDataCallback to use
-         */
-        public void setHistogramMode(CameraDataCallback cb);
+
         /**
          * Send the Histogram Data.
          *
