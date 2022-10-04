@@ -241,6 +241,7 @@
             android:summary="%s"
             android:title="@string/pref_video_time_lapse_frame_interval_title" />
 
+<!--
         <ListPreference
             android:defaultValue="@string/pref_camera_hfr_default"
             android:entries="@array/pref_camera_hfr_entries"
@@ -249,6 +250,7 @@
             android:key="pref_camera2_hfr_key"
             android:summary="%s"
             android:title="@string/pref_camera_hfr_title" />
+-->
     </PreferenceCategory>
 
     <PreferenceCategory
