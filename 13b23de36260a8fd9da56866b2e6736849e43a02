@@ -34,6 +34,24 @@
       "parentUuid": "50c19323_ec5430c4",
       "revId": "13b23de36260a8fd9da56866b2e6736849e43a02",
       "serverId": "5979fb85-960d-4ec4-8ce0-8568b21942fe"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2567bf0_e5566505",
+        "filename": "src/com/android/camera/CameraActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1509,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2022-10-17T09:08:37Z",
+      "side": 1,
+      "message": "worked without for me, it asked for storage permissions on startup.\nupon granting, everything worked as expected.\n\nremoved that change from PS3.\nif it is still needed, we can remove it in a followup patch.",
+      "parentUuid": "7737e9a4_ef359730",
+      "revId": "13b23de36260a8fd9da56866b2e6736849e43a02",
+      "serverId": "5979fb85-960d-4ec4-8ce0-8568b21942fe"
     }
   ]
 }
