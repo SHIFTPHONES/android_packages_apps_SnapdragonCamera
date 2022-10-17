@@ -16,6 +16,24 @@
       "message": "what is the reason for this?",
       "revId": "13b23de36260a8fd9da56866b2e6736849e43a02",
       "serverId": "5979fb85-960d-4ec4-8ce0-8568b21942fe"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7737e9a4_ef359730",
+        "filename": "src/com/android/camera/CameraActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1509,
+      "author": {
+        "id": 1000028
+      },
+      "writtenOn": "2022-10-17T08:36:22Z",
+      "side": 1,
+      "message": "camera app complained about not having those permissions, although it never asked for them. after removing this, app seems to be working fine...\nbut yeah... it\u0027s not related to making it compile",
+      "parentUuid": "50c19323_ec5430c4",
+      "revId": "13b23de36260a8fd9da56866b2e6736849e43a02",
+      "serverId": "5979fb85-960d-4ec4-8ce0-8568b21942fe"
     }
   ]
 }
